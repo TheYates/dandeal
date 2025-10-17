@@ -1,11 +1,12 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Phone, Mail, MapPin, Clock } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Header from "@/components/Header"
-import Footer from "@/components/Footer"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import HeroSection from "@/components/HeroSection";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -14,19 +15,21 @@ export default function Contact() {
     phone: "",
     subject: "",
     message: "",
-  })
+  });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
+    e.preventDefault();
+    console.log("Form submitted:", formData);
     // Reset form
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
-  }
+    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+  };
 
   const contactInfo = [
     {
@@ -36,16 +39,13 @@ export default function Contact() {
         "Accra: +233 58 523 3019",
         "Kumasi: +233 59 523 3020",
         "China: +86 139 2823 9401",
-        "Dubai: +971 557536772"
-      ]
+        "Dubai: +971 557536772",
+      ],
     },
     {
       icon: Mail,
       title: "Email Us",
-      details: [
-        "info@alsshipping.com",
-        "support@alsshipping.com"
-      ]
+      details: ["info@alsshipping.com", "support@alsshipping.com"],
     },
     {
       icon: MapPin,
@@ -54,8 +54,8 @@ export default function Contact() {
         "Ghana - Accra: Kaserbryn, Oscar Junction",
         "Kumasi: Haertsao Near Boankra",
         "China: Foshan & Guangzhou",
-        "Dubai: Al Muraqabat & Sharjah"
-      ]
+        "Dubai: Al Muraqabat & Sharjah",
+      ],
     },
     {
       icon: Clock,
@@ -64,39 +64,20 @@ export default function Contact() {
         "Monday - Friday: 8:00 AM - 6:00 PM",
         "Saturday: 9:00 AM - 2:00 PM",
         "Sunday: Closed",
-        "24/7 Emergency Support Available"
-      ]
-    }
-  ]
+        "24/7 Emergency Support Available",
+      ],
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero Section */}
-      <section
-        className="relative h-screen bg-cover bg-center pt-20 flex items-center"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=800&fit=crop')",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-white text-center"
-          >
-            <h1 className="text-5xl lg:text-6xl font-bold mb-4">Get In Touch</h1>
-            <p className="text-xl italic mb-6">We're here to help with your shipping and logistics needs</p>
-            <p className="text-lg max-w-2xl mx-auto">
-              Have questions or ready to book a shipment? Contact our team today and let's discuss how we can support your business.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <HeroSection
+        title="Get In Touch"
+        subtitle="We're here to help with your shipping and logistics needs"
+        description="Have questions or ready to book a shipment? Contact our team today and let's discuss how we can support your business."
+      />
 
       {/* Contact Form Section with Map */}
       <section className="py-20 bg-gray-50">
@@ -129,15 +110,20 @@ export default function Contact() {
               viewport={{ once: true }}
               className="bg-white rounded-lg shadow-lg p-8 border border-gray-200"
             >
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Send Us A Message</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Send Us A Message
+              </h2>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                Fill out the form below and our team will get back to you as soon as possible. We typically respond within 24 hours.
+                Fill out the form below and our team will get back to you as
+                soon as possible. We typically respond within 24 hours.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Full Name *</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    Full Name *
+                  </label>
                   <input
                     type="text"
                     name="name"
@@ -151,7 +137,9 @@ export default function Contact() {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Email Address *</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    Email Address *
+                  </label>
                   <input
                     type="email"
                     name="email"
@@ -165,7 +153,9 @@ export default function Contact() {
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Phone Number</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    Phone Number
+                  </label>
                   <input
                     type="tel"
                     name="phone"
@@ -178,7 +168,9 @@ export default function Contact() {
 
                 {/* Subject */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Subject *</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    Subject *
+                  </label>
                   <input
                     type="text"
                     name="subject"
@@ -192,7 +184,9 @@ export default function Contact() {
 
                 {/* Message */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Message *</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    Message *
+                  </label>
                   <textarea
                     name="message"
                     value={formData.message}
@@ -208,7 +202,9 @@ export default function Contact() {
                 <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition">
                   Send Message
                 </Button>
-                <p className="text-xs text-gray-500 text-center">* Required fields</p>
+                <p className="text-xs text-gray-500 text-center">
+                  * Required fields
+                </p>
               </form>
             </motion.div>
           </div>
@@ -216,7 +212,7 @@ export default function Contact() {
           {/* Contact Information Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {contactInfo.map((info, index) => {
-              const Icon = info.icon
+              const Icon = info.icon;
               return (
                 <motion.div
                   key={index}
@@ -228,10 +224,12 @@ export default function Contact() {
                 >
                   <div className="flex justify-center mb-4">
                     <div className="bg-red-100 p-4 rounded-full">
-                      <Icon className="w-6 h-6 text-red-600" />
+                      <Icon className="w-6 h-6 text-orange-600" />
                     </div>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">{info.title}</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">
+                    {info.title}
+                  </h3>
                   <div className="space-y-2">
                     {info.details.map((detail, idx) => (
                       <p key={idx} className="text-sm text-gray-600">
@@ -240,7 +238,7 @@ export default function Contact() {
                     ))}
                   </div>
                 </motion.div>
-              )
+              );
             })}
           </div>
         </div>
@@ -248,6 +246,5 @@ export default function Contact() {
 
       <Footer />
     </div>
-  )
+  );
 }
-

@@ -67,3 +67,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Hero Slideshow Zoom Animation */
+@keyframes zoom-in {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+.animate-zoom-in {
+  animation: zoom-in 5s ease-out forwards;
+}

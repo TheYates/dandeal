@@ -1,50 +1,21 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ArrowRight } from "lucide-react"
-import Header from "@/components/Header"
-import Footer from "@/components/Footer"
-import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import HeroSection from "@/components/HeroSection";
+import { Button } from "@/components/ui/button";
 
 export default function Services() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero Section */}
-      <section
-        className="relative h-screen bg-cover bg-center pt-20 flex items-center"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1586528116039-c48148d8e98f?w=1200&h=800&fit=crop')",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-          <div className="w-full">
-            {/* Hero Content */}
-            <div className="flex flex-col justify-center text-white">
-              <motion.h1
-                className="text-5xl lg:text-6xl font-bold mb-4"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
-              >
-                Our Services
-              </motion.h1>
-              <motion.p
-                className="text-xl italic mb-6 max-w-2xl"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                viewport={{ once: true }}
-              >
-                Comprehensive logistics solutions tailored to your shipping needs
-              </motion.p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection
+        title="Our Services"
+        subtitle="Comprehensive logistics solutions tailored to your shipping needs"
+      />
 
       {/* Services Overview */}
       <section className="py-16 bg-white">
@@ -56,707 +27,484 @@ export default function Services() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <p className="text-red-600 font-semibold text-sm tracking-widest mb-2">📋 ALL SERVICES</p>
-            <h2 className="text-4xl font-bold text-gray-900">Our Full Range of Services</h2>
+            <p className="text-orange-600 font-semibold text-sm tracking-widest mb-2">
+              📋 ALL SERVICES
+            </p>
+            <h2 className="text-4xl font-bold text-gray-900">
+              Our Full Range of Services
+            </h2>
           </motion.div>
         </div>
       </section>
 
-      {/* Air Freight Service */}
-      <section className="py-16 bg-white relative overflow-hidden">
+      {/* Services Grid Section */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Air Freight Service Card */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="order-2 lg:order-1"
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1552183756-bdca713ce952?w=600&h=400&fit=crop"
+                src="https://images.unsplash.com/photo-1571086291540-b137111fa1c7?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074"
                 alt="Air Freight"
-                className="rounded-2xl shadow-lg w-full"
+                className="w-full h-64 object-cover"
               />
-            </motion.div>
-
-            {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="order-1 lg:order-2"
-            >
-              <p className="text-red-600 font-semibold text-sm tracking-widest mb-2">📋 SERVICE DETAILS</p>
-              <h2 className="text-4xl font-bold text-gray-900 mb-2">AIR FREIGHT SERVICES</h2>
-              <p className="text-red-600 font-bold text-lg mb-6">GLOBAL REACH WITH SPEED AND PRECISION</p>
-
-              <div className="space-y-4 mb-8">
-                <p className="text-gray-600 leading-relaxed">
-                  When time is critical, our air freight solutions deliver unmatched efficiency and reliability. We maintain strategic relationships with premier cargo airlines to secure optimal routes and competitive rates for your shipments.
+              <div className="p-8">
+                <p className="text-orange-600 font-semibold text-sm tracking-widest mb-2">
+                  📋 SERVICE DETAILS
                 </p>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-2">Industries Served:</p>
-                  <p className="text-gray-600">Pharmaceuticals, Electronics, Fashion, Perishables, Automotive Parts, Emergency Replacements</p>
-                </div>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-3">Service Highlights:</p>
-                  <ul className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  AIR FREIGHT SERVICES
+                </h3>
+                <p className="text-orange-600 font-bold text-sm mb-4">
+                  GLOBAL REACH WITH SPEED AND PRECISION
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  When time is critical, our air freight solutions deliver
+                  unmatched efficiency and reliability.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <p className="text-gray-900 font-semibold text-sm">
+                    Service Highlights:
+                  </p>
+                  <ul className="space-y-1 text-sm">
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Express delivery options for time-sensitive cargo</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">
+                        Express delivery options
+                      </span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Consolidated shipping for cost optimization</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">
+                        Temperature-controlled transport
+                      </span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Temperature-controlled transport for sensitive goods</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Dangerous goods handling with full regulatory compliance</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Real-time shipment tracking and status updates</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Minimum loading capacity of 10kg</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Real-time tracking</span>
                     </li>
                   </ul>
                 </div>
+                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                  GET QUOTE <ArrowRight className="w-3 h-3" />
+                </Button>
               </div>
-
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-3 flex items-center gap-2">
-                GET AIR FREIGHT QUOTE <ArrowRight className="w-4 h-4" />
-              </Button>
             </motion.div>
-          </div>
-        </div>
 
-        {/* Red diagonal shape */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600 transform translate-x-1/3 translate-y-1/3 rounded-full opacity-10"></div>
-      </section>
-
-      {/* Sea Freight Service */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
+            {/* Sea Freight Service Card */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1537996051336-ea92ff11cfaf?w=600&h=400&fit=crop"
+                src="https://images.pexels.com/photos/1544372/pexels-photo-1544372.jpeg"
                 alt="Sea Freight"
-                className="rounded-2xl shadow-lg w-full"
+                className="w-full h-64 object-cover"
               />
-            </motion.div>
-
-            {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <p className="text-red-600 font-semibold text-sm tracking-widest mb-2">📋 SERVICE DETAILS</p>
-              <h2 className="text-4xl font-bold text-gray-900 mb-2">SEA FREIGHT SERVICES</h2>
-              <p className="text-red-600 font-bold text-lg mb-6">COST-EFFECTIVE SOLUTIONS FOR VOLUME SHIPPING</p>
-
-              <div className="space-y-4 mb-8">
-                <p className="text-gray-600 leading-relaxed">
-                  Our ocean freight services combine cost efficiency with reliable scheduling for larger shipments without urgent delivery requirements. We offer flexible options to match your exact volume needs.
+              <div className="p-8">
+                <p className="text-orange-600 font-semibold text-sm tracking-widest mb-2">
+                  📋 SERVICE DETAILS
                 </p>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-2">Industries Served:</p>
-                  <p className="text-gray-600">Manufacturing, Construction, Retail, Automotive, Industrial Equipment, Furniture</p>
-                </div>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-3">Service Highlights:</p>
-                  <ul className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  SEA FREIGHT SERVICES
+                </h3>
+                <p className="text-orange-600 font-bold text-sm mb-4">
+                  COST-EFFECTIVE SOLUTIONS FOR VOLUME SHIPPING
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  Our ocean freight services combine cost efficiency with
+                  reliable scheduling for larger shipments.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <p className="text-gray-900 font-semibold text-sm">
+                    Service Highlights:
+                  </p>
+                  <ul className="space-y-1 text-sm">
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Full Container Load (FCL) shipments</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">FCL & LCL shipments</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Less than Container Load (LCL) consolidation</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Break-bulk handling</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Break-bulk and project cargo handling</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Roll-on/Roll-off (RoRo) for vehicle transport</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Special equipment for oversized cargo</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Competitive rates through carrier partnerships</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Competitive rates</span>
                     </li>
                   </ul>
                 </div>
+                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                  GET QUOTE <ArrowRight className="w-3 h-3" />
+                </Button>
               </div>
-
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-3 flex items-center gap-2">
-                GET SEA FREIGHT QUOTE <ArrowRight className="w-4 h-4" />
-              </Button>
             </motion.div>
-          </div>
-        </div>
 
-        {/* Red diagonal shape */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600 transform translate-x-1/3 translate-y-1/3 rounded-full opacity-10"></div>
-      </section>
-
-      {/* Customs Brokerage Service */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
+            {/* Customs Brokerage Service Card */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="order-2 lg:order-1"
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1586528116039-c48148d8e98f?w=600&h=400&fit=crop"
+                src="https://images.pexels.com/photos/14801547/pexels-photo-14801547.jpeg"
                 alt="Customs Brokerage"
-                className="rounded-2xl shadow-lg w-full"
+                className="w-full h-64 object-cover"
               />
-            </motion.div>
-
-            {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="order-1 lg:order-2"
-            >
-              <p className="text-red-600 font-semibold text-sm tracking-widest mb-2">📋 SERVICE DETAILS</p>
-              <h2 className="text-4xl font-bold text-gray-900 mb-2">CUSTOMS BROKERAGE - AIR AND SEA CARGO (CONTAINER CLEARANCE)</h2>
-              <p className="text-red-600 font-bold text-lg mb-6">SWIFT CUSTOMS PROCESSING AND DOCUMENTATION</p>
-
-              <div className="space-y-4 mb-8">
-                <p className="text-gray-600 leading-relaxed">
-                  Our specialized clearance team navigates complex customs requirements to ensure your containers, bulk shipment as well as air cargo move through ports with maximum efficiency and minimal delay.
+              <div className="p-8">
+                <p className="text-orange-600 font-semibold text-sm tracking-widest mb-2">
+                  📋 SERVICE DETAILS
                 </p>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-2">Industries Served:</p>
-                  <p className="text-gray-600">All industries importing/exporting containerized goods</p>
-                </div>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-3">Service Highlights:</p>
-                  <ul className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  CUSTOMS BROKERAGE
+                </h3>
+                <p className="text-orange-600 font-bold text-sm mb-4">
+                  SWIFT CUSTOMS PROCESSING
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  Our specialized clearance team navigates complex customs
+                  requirements with maximum efficiency.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <p className="text-gray-900 font-semibold text-sm">
+                    Service Highlights:
+                  </p>
+                  <ul className="space-y-1 text-sm">
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">2-3 day clearance at Ghanaian ports (industry average: 7-10 days)</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">2-3 day clearance</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Expert management of all customs documentation</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">
+                        Expert documentation
+                      </span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Duty and tax calculation and processing</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Regulatory compliance management</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Strong relationships with customs authorities</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Real-time clearance status updates</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">
+                        Compliance management
+                      </span>
                     </li>
                   </ul>
                 </div>
+                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                  LEARN MORE <ArrowRight className="w-3 h-3" />
+                </Button>
               </div>
-
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-3 flex items-center gap-2">
-                LEARN ABOUT OUR CLEARANCE PROCESS <ArrowRight className="w-4 h-4" />
-              </Button>
             </motion.div>
-          </div>
-        </div>
 
-        {/* Red diagonal shape */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600 transform translate-x-1/3 translate-y-1/3 rounded-full opacity-10"></div>
-      </section>
-
-      {/* Door-to-Door Delivery Service */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
+            {/* Door-to-Door Delivery Service Card */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop"
+                src="https://images.pexels.com/photos/15218464/pexels-photo-15218464.jpeg"
                 alt="Door-to-Door Delivery"
-                className="rounded-2xl shadow-lg w-full"
+                className="w-full h-64 object-cover"
               />
-            </motion.div>
-
-            {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <p className="text-red-600 font-semibold text-sm tracking-widest mb-2">📋 SERVICE DETAILS</p>
-              <h2 className="text-4xl font-bold text-gray-900 mb-2">DOOR-TO-DOOR DELIVERY</h2>
-              <p className="text-red-600 font-bold text-lg mb-6">SEAMLESS FINAL MILE LOGISTICS THROUGHOUT GHANA</p>
-
-              <div className="space-y-4 mb-8">
-                <p className="text-gray-600 leading-relaxed">
-                  We manage the complete journey of your goods from international origin to final destination anywhere in UAE, GHANA, UGANDA & OTHER WEST AFRICAN COUNTRIES with precision and care.
+              <div className="p-8">
+                <p className="text-orange-600 font-semibold text-sm tracking-widest mb-2">
+                  📋 SERVICE DETAILS
                 </p>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-2">Coverage Areas:</p>
-                  <p className="text-gray-600">Accra, Kumasi, Takoradi, Tamale, Bolgatanga, and all points between</p>
-                </div>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-3">Service Highlights:</p>
-                  <ul className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  DOOR-TO-DOOR DELIVERY
+                </h3>
+                <p className="text-orange-600 font-bold text-sm mb-4">
+                  SEAMLESS FINAL MILE LOGISTICS
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  We manage the complete journey of your goods from
+                  international origin to final destination.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <p className="text-gray-900 font-semibold text-sm">
+                    Service Highlights:
+                  </p>
+                  <ul className="space-y-1 text-sm">
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Nationwide delivery network covering all regions</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Nationwide coverage</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Urban and rural delivery capabilities</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Scheduled delivery</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Scheduled delivery appointments</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Proof of delivery documentation</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Special handling for fragile or high-value items</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Installation and assembly options for equipment</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Special handling</span>
                     </li>
                   </ul>
                 </div>
+                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                  CHECK COVERAGE <ArrowRight className="w-3 h-3" />
+                </Button>
               </div>
-
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-3 flex items-center gap-2">
-                CHECK DELIVERY COVERAGE <ArrowRight className="w-4 h-4" />
-              </Button>
             </motion.div>
-          </div>
-        </div>
 
-        {/* Red diagonal shape */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600 transform translate-x-1/3 translate-y-1/3 rounded-full opacity-10"></div>
-      </section>
-
-      {/* Warehousing Solutions Service */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
+            {/* Warehousing Solutions Service Card */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="order-2 lg:order-1"
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1553531088-189a835cf17f?w=600&h=400&fit=crop"
+                src="https://images.pexels.com/photos/236705/pexels-photo-236705.jpeg"
                 alt="Warehousing Solutions"
-                className="rounded-2xl shadow-lg w-full"
+                className="w-full h-64 object-cover"
               />
-            </motion.div>
-
-            {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="order-1 lg:order-2"
-            >
-              <p className="text-red-600 font-semibold text-sm tracking-widest mb-2">📋 SERVICE DETAILS</p>
-              <h2 className="text-4xl font-bold text-gray-900 mb-2">WAREHOUSING SOLUTIONS</h2>
-              <p className="text-red-600 font-bold text-lg mb-6">STRATEGIC STORAGE AND DISTRIBUTION</p>
-
-              <div className="space-y-4 mb-8">
-                <p className="text-gray-600 leading-relaxed">
-                  Our warehousing network spans key locations in both China and Ghana, facilitating efficient inventory management and distribution across the region.
+              <div className="p-8">
+                <p className="text-orange-600 font-semibold text-sm tracking-widest mb-2">
+                  📋 SERVICE DETAILS
                 </p>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-2">Locations:</p>
-                  <p className="text-gray-600">Strategic industrial centers in China and major urban centers in Ghana</p>
-                </div>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-3">Service Highlights:</p>
-                  <ul className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  WAREHOUSING SOLUTIONS
+                </h3>
+                <p className="text-orange-600 font-bold text-sm mb-4">
+                  STRATEGIC STORAGE & DISTRIBUTION
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  Our warehousing network spans key locations in China and Ghana
+                  for efficient inventory management.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <p className="text-gray-900 font-semibold text-sm">
+                    Service Highlights:
+                  </p>
+                  <ul className="space-y-1 text-sm">
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Short and long-term storage options</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Storage options</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Inventory management systems</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">
+                        Inventory management
+                      </span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Order fulfillment services</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Cross-docking capabilities</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Value-added services (labeling, kitting, repackaging)</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Climate-controlled facilities available</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Order fulfillment</span>
                     </li>
                   </ul>
                 </div>
+                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                  EXPLORE <ArrowRight className="w-3 h-3" />
+                </Button>
               </div>
-
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-3 flex items-center gap-2">
-                EXPLORE WAREHOUSING OPTIONS <ArrowRight className="w-4 h-4" />
-              </Button>
             </motion.div>
-          </div>
-        </div>
 
-        {/* Red diagonal shape */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600 transform translate-x-1/3 translate-y-1/3 rounded-full opacity-10"></div>
-      </section>
-
-      {/* International Procurement Support Service */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
+            {/* International Procurement Support Service Card */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1578575437980-63e9f3c3ee8f?w=600&h=400&fit=crop"
+                src="https://images.pexels.com/photos/8069554/pexels-photo-8069554.jpeg"
                 alt="International Procurement Support"
-                className="rounded-2xl shadow-lg w-full"
+                className="w-full h-64 object-cover"
               />
-            </motion.div>
-
-            {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <p className="text-red-600 font-semibold text-sm tracking-widest mb-2">📋 SERVICE DETAILS</p>
-              <h2 className="text-4xl font-bold text-gray-900 mb-2">INTERNATIONAL PROCUREMENT SUPPORT</h2>
-              <p className="text-red-600 font-bold text-lg mb-6">CONNECTING YOU WITH VERIFIED GLOBAL SUPPLIERS</p>
-
-              <div className="space-y-4 mb-8">
-                <p className="text-gray-600 leading-relaxed">
-                  Beyond logistics, we facilitate your entire supply chain by connecting you with trusted manufacturers and suppliers in key global markets.
+              <div className="p-8">
+                <p className="text-orange-600 font-semibold text-sm tracking-widest mb-2">
+                  📋 SERVICE DETAILS
                 </p>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-2">Sourcing Regions:</p>
-                  <p className="text-gray-600">China, UAE (Dubai), Turkey, and other global manufacturing hubs</p>
-                </div>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-3">Key Industries We Source:</p>
-                  <ul className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  PROCUREMENT SUPPORT
+                </h3>
+                <p className="text-orange-600 font-bold text-sm mb-4">
+                  VERIFIED GLOBAL SUPPLIERS
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  We connect you with trusted manufacturers and suppliers in key
+                  global markets.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <p className="text-gray-900 font-semibold text-sm">
+                    Service Highlights:
+                  </p>
+                  <ul className="space-y-1 text-sm">
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">•</span>
-                      <span className="text-gray-600">Fast-Moving Consumer Goods (FMCG)</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">
+                        Supplier verification
+                      </span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">•</span>
-                      <span className="text-gray-600">Industrial Machinery</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Quality inspections</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">•</span>
-                      <span className="text-gray-600">Furniture and Home Goods</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">•</span>
-                      <span className="text-gray-600">Pharmaceuticals and Medical Equipment</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">•</span>
-                      <span className="text-gray-600">Cosmetics and Clothing</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">•</span>
-                      <span className="text-gray-600">Electronics and Electrical Components</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">•</span>
-                      <span className="text-gray-600">Construction Materials</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">•</span>
-                      <span className="text-gray-600">Automotive and Spare Parts</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Order management</span>
                     </li>
                   </ul>
                 </div>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-3">Service Highlights:</p>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Supplier verification and due diligence</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Product quality inspections</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Purchase order management</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Secure payment processing</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Negotiation assistance</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Consolidation of multiple supplier shipments</span>
-                    </li>
-                  </ul>
-                </div>
+                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                  DISCUSS NEEDS <ArrowRight className="w-3 h-3" />
+                </Button>
               </div>
-
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-3 flex items-center gap-2">
-                DISCUSS PROCUREMENT NEEDS <ArrowRight className="w-4 h-4" />
-              </Button>
             </motion.div>
-          </div>
-        </div>
 
-        {/* Red diagonal shape */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600 transform translate-x-1/3 translate-y-1/3 rounded-full opacity-10"></div>
-      </section>
-
-      {/* Import and Export Services */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
+            {/* Import and Export Services Card */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="order-2 lg:order-1"
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1578575437980-63e9f3c3ee8f?w=600&h=400&fit=crop"
+                src="https://images.pexels.com/photos/6169178/pexels-photo-6169178.jpeg"
                 alt="Import and Export Services"
-                className="rounded-2xl shadow-lg w-full"
+                className="w-full h-64 object-cover"
               />
-            </motion.div>
-
-            {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="order-1 lg:order-2"
-            >
-              <p className="text-red-600 font-semibold text-sm tracking-widest mb-2">📋 SERVICE DETAILS</p>
-              <h2 className="text-4xl font-bold text-gray-900 mb-2">IMPORT AND EXPORT SERVICES</h2>
-              <p className="text-red-600 font-bold text-lg mb-6">COMPREHENSIVE INTERNATIONAL TRADE FACILITATION</p>
-
-              <div className="space-y-4 mb-8">
-                <p className="text-gray-600 leading-relaxed">
-                  Our import/export services manage all aspects of cross-border trade, from documentation to regulatory compliance to physical logistics.
+              <div className="p-8">
+                <p className="text-orange-600 font-semibold text-sm tracking-widest mb-2">
+                  📋 SERVICE DETAILS
                 </p>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-2">Industries Served:</p>
-                  <p className="text-gray-600">All businesses engaged in international trade</p>
-                </div>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-3">Service Highlights:</p>
-                  <ul className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  IMPORT & EXPORT
+                </h3>
+                <p className="text-orange-600 font-bold text-sm mb-4">
+                  INTERNATIONAL TRADE FACILITATION
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  We manage all aspects of cross-border trade from documentation
+                  to regulatory compliance.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <p className="text-gray-900 font-semibold text-sm">
+                    Service Highlights:
+                  </p>
+                  <ul className="space-y-1 text-sm">
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Export documentation preparation</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">
+                        Export documentation
+                      </span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Import license management</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">License management</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Certificates of origin processing</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Commercial invoice preparation</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Regulatory compliance guidance</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Pre-shipment inspections</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Letter of credit handling</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Compliance guidance</span>
                     </li>
                   </ul>
                 </div>
+                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                  GET CONSULTATION <ArrowRight className="w-3 h-3" />
+                </Button>
               </div>
-
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-3 flex items-center gap-2">
-                GET IMPORT/EXPORT CONSULTATION <ArrowRight className="w-4 h-4" />
-              </Button>
             </motion.div>
-          </div>
-        </div>
 
-        {/* Red diagonal shape */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600 transform translate-x-1/3 translate-y-1/3 rounded-full opacity-10"></div>
-      </section>
-
-      {/* Specialized Solutions Service */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Image */}
+            {/* Specialized Solutions Service Card */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition"
             >
               <img
-                src="https://images.unsplash.com/photo-1578575437980-63e9f3c3ee8f?w=600&h=400&fit=crop"
+                src="https://images.pexels.com/photos/906484/pexels-photo-906484.jpeg"
                 alt="Specialized Solutions"
-                className="rounded-2xl shadow-lg w-full"
+                className="w-full h-64 object-cover"
               />
-            </motion.div>
-
-            {/* Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <p className="text-red-600 font-semibold text-sm tracking-widest mb-2">📋 SERVICE DETAILS</p>
-              <h2 className="text-4xl font-bold text-gray-900 mb-2">SPECIALIZED SOLUTIONS</h2>
-              <p className="text-red-600 font-bold text-lg mb-6">TAILORED LOGISTICS FOR UNIQUE REQUIREMENTS</p>
-
-              <div className="space-y-4 mb-8">
-                <p className="text-gray-600 leading-relaxed">
-                  Beyond our standard service offerings, we provide customized solutions for clients with specialized requirements or industry-specific challenges.
+              <div className="p-8">
+                <p className="text-orange-600 font-semibold text-sm tracking-widest mb-2">
+                  📋 SERVICE DETAILS
                 </p>
-
-                <div>
-                  <p className="text-gray-900 font-semibold mb-3">Specialized Capabilities:</p>
-                  <ul className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  SPECIALIZED SOLUTIONS
+                </h3>
+                <p className="text-orange-600 font-bold text-sm mb-4">
+                  TAILORED LOGISTICS
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  Customized solutions for clients with specialized requirements
+                  or industry-specific challenges.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <p className="text-gray-900 font-semibold text-sm">
+                    Service Highlights:
+                  </p>
+                  <ul className="space-y-1 text-sm">
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Project cargo logistics</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Project cargo</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Hazardous materials handling</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">Hazmat handling</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">High-value goods security protocols</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Trade show and exhibition logistics</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Humanitarian and relief logistics</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Temporary imports management</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-600 font-bold mr-3">✓</span>
-                      <span className="text-gray-600">Return logistics and reverse supply chain</span>
+                      <span className="text-orange-600 font-bold mr-2">✓</span>
+                      <span className="text-gray-600">High-value security</span>
                     </li>
                   </ul>
                 </div>
+                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                  DISCUSS NEEDS <ArrowRight className="w-3 h-3" />
+                </Button>
               </div>
-
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-3 flex items-center gap-2">
-                DISCUSS SPECIALIZED NEEDS <ArrowRight className="w-4 h-4" />
-              </Button>
             </motion.div>
           </div>
         </div>
+      </section>
 
-        {/* Red diagonal shape */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600 transform translate-x-1/3 translate-y-1/3 rounded-full opacity-10"></div>
+      {/* CTA Section - 80% Viewport Height */}
+      <section
+        className="relative overflow-hidden flex items-center justify-center"
+        style={{ height: "80vh" }}
+      >
+        {/* Background Image with Overlay */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1586528116039-c48148d8e98f?w=1200&h=800&fit=crop')",
+          }}
+        ></div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight">
+              We support clients in sourcing and procuring goods and equipment
+              locally and internationally, ensuring quality and timely supply.
+            </h2>
+            <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-10 py-4 text-lg font-semibold">
+              Book A Free Consultation
+            </Button>
+          </motion.div>
+        </div>
       </section>
 
       {/* Value Added Services Section */}
@@ -770,7 +518,7 @@ export default function Services() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-2 underline decoration-red-600 decoration-4 underline-offset-8">
+            <h2 className="text-4xl font-bold text-gray-900 mb-2 underline decoration-orange-600 decoration-4 underline-offset-8">
               Value Added Services
             </h2>
           </motion.div>
@@ -785,20 +533,38 @@ export default function Services() {
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               <div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-8">Logistics & Cargo Handling</h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-8">
+                  Logistics & Cargo Handling
+                </h3>
               </div>
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-lg font-bold text-red-600 mb-2">Cargo Consolidation / Deconsolidation</h4>
-                  <p className="text-gray-600">Combine multiple shipments into one container to save costs, or separate bulk cargos for last-mile delivery.</p>
+                  <h4 className="text-lg font-bold text-orange-600 mb-2">
+                    Cargo Consolidation / Deconsolidation
+                  </h4>
+                  <p className="text-gray-600">
+                    Combine multiple shipments into one container to save costs,
+                    or separate bulk cargos for last-mile delivery.
+                  </p>
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-red-600 mb-2">Custom Crating & Packaging</h4>
-                  <p className="text-gray-600">Offer professional, secure packaging for fragile, high-value, or specialized cargo (especially for air freight and project cargo).</p>
+                  <h4 className="text-lg font-bold text-orange-600 mb-2">
+                    Custom Crating & Packaging
+                  </h4>
+                  <p className="text-gray-600">
+                    Offer professional, secure packaging for fragile,
+                    high-value, or specialized cargo (especially for air freight
+                    and project cargo).
+                  </p>
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-red-600 mb-2">Last-Mile Delivery Coordination</h4>
-                  <p className="text-gray-600">Ensure door to door service, especially in hard-to-reach areas in Africa and UAE areas.</p>
+                  <h4 className="text-lg font-bold text-orange-600 mb-2">
+                    Last-Mile Delivery Coordination
+                  </h4>
+                  <p className="text-gray-600">
+                    Ensure door to door service, especially in hard-to-reach
+                    areas in Africa and UAE areas.
+                  </p>
                 </div>
               </div>
             </div>
@@ -814,16 +580,29 @@ export default function Services() {
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               <div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-8">Regulatory & Compliance Support</h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-8">
+                  Regulatory & Compliance Support
+                </h3>
               </div>
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-lg font-bold text-red-600 mb-2">HS Code Classification & Documentation Consulting</h4>
-                  <p className="text-gray-600">We help clients with correct classification, documentation, and compliance (especially valuable for new exporters/importers).</p>
+                  <h4 className="text-lg font-bold text-orange-600 mb-2">
+                    HS Code Classification & Documentation Consulting
+                  </h4>
+                  <p className="text-gray-600">
+                    We help clients with correct classification, documentation,
+                    and compliance (especially valuable for new
+                    exporters/importers).
+                  </p>
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-red-600 mb-2">Bonded Warehousing</h4>
-                  <p className="text-gray-600">We offer clients temporary duty-free storage for transit cargo or deferred customs payments.</p>
+                  <h4 className="text-lg font-bold text-orange-600 mb-2">
+                    Bonded Warehousing
+                  </h4>
+                  <p className="text-gray-600">
+                    We offer clients temporary duty-free storage for transit
+                    cargo or deferred customs payments.
+                  </p>
                 </div>
               </div>
             </div>
@@ -839,16 +618,29 @@ export default function Services() {
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               <div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-8">Technology & Visibility</h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-8">
+                  Technology & Visibility
+                </h3>
               </div>
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-lg font-bold text-red-600 mb-2">Client Shipment Tracking Dashboard</h4>
-                  <p className="text-gray-600">Give clients real-time visibility into their shipments and documents via a branded online dashboard.</p>
+                  <h4 className="text-lg font-bold text-orange-600 mb-2">
+                    Client Shipment Tracking Dashboard
+                  </h4>
+                  <p className="text-gray-600">
+                    Give clients real-time visibility into their shipments and
+                    documents via a branded online dashboard.
+                  </p>
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-red-600 mb-2">Carbon Footprint & Green Shipping Options</h4>
-                  <p className="text-gray-600">Offer eco-friendly shipping alternatives, carbon reporting, and offsetting partnerships—positioning ALS as a green logistics advocate.</p>
+                  <h4 className="text-lg font-bold text-orange-600 mb-2">
+                    Carbon Footprint & Green Shipping Options
+                  </h4>
+                  <p className="text-gray-600">
+                    Offer eco-friendly shipping alternatives, carbon reporting,
+                    and offsetting partnerships—positioning ALS as a green
+                    logistics advocate.
+                  </p>
                 </div>
               </div>
             </div>
@@ -864,16 +656,28 @@ export default function Services() {
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               <div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-8">Customer Experience & Support</h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-8">
+                  Customer Experience & Support
+                </h3>
               </div>
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-lg font-bold text-red-600 mb-2">Dedicated Account Manager or WhatsApp Support Line</h4>
-                  <p className="text-gray-600">A direct channel for top-tier clients to handle urgent queries, updates, and strategic support.</p>
+                  <h4 className="text-lg font-bold text-orange-600 mb-2">
+                    Dedicated Account Manager or WhatsApp Support Line
+                  </h4>
+                  <p className="text-gray-600">
+                    A direct channel for top-tier clients to handle urgent
+                    queries, updates, and strategic support.
+                  </p>
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-red-600 mb-2">Free Trade Zone (FTZ) Consulting & Setup</h4>
-                  <p className="text-gray-600">Advise clients on how to use UAE or Ghana FTZs for import/export cost optimization.</p>
+                  <h4 className="text-lg font-bold text-orange-600 mb-2">
+                    Free Trade Zone (FTZ) Consulting & Setup
+                  </h4>
+                  <p className="text-gray-600">
+                    Advise clients on how to use UAE or Ghana FTZs for
+                    import/export cost optimization.
+                  </p>
                 </div>
               </div>
             </div>
@@ -887,9 +691,17 @@ export default function Services() {
             viewport={{ once: true }}
             className="bg-white rounded-lg p-8 border-l-4 border-red-600"
           >
-            <h3 className="text-2xl font-bold text-red-600 mb-4">Bonus Add-On:</h3>
+            <h3 className="text-2xl font-bold text-orange-600 mb-4">
+              Bonus Add-On:
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              <span className="font-semibold text-gray-900">Supply Chain Consulting & Optimization</span> - For enterprise clients, offer strategic consulting on supply chain redesign, cost reduction, and efficiency improvements. This positions ALS as a trusted logistics partner, not just a service provider.
+              <span className="font-semibold text-gray-900">
+                Supply Chain Consulting & Optimization
+              </span>{" "}
+              - For enterprise clients, offer strategic consulting on supply
+              chain redesign, cost reduction, and efficiency improvements. This
+              positions ALS as a trusted logistics partner, not just a service
+              provider.
             </p>
           </motion.div>
         </div>
@@ -898,37 +710,18 @@ export default function Services() {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600 transform translate-x-1/3 translate-y-1/3 rounded-full opacity-10"></div>
       </section>
 
-      {/* CTA Section - 80% Viewport Height */}
-      <section className="relative overflow-hidden flex items-center justify-center" style={{ height: "80vh" }}>
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0 bg-cover bg-center" style={{
-          backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1586528116039-c48148d8e98f?w=1200&h=800&fit=crop')"
-        }}></div>
-
-        {/* Content */}
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight">
-              We support clients in sourcing and procuring goods and equipment locally and internationally, ensuring quality and timely supply.
-            </h2>
-            <Button className="bg-red-600 hover:bg-red-700 text-white rounded-full px-10 py-4 text-lg font-semibold">
-              Book A Free Consultation
-            </Button>
-          </motion.div>
-        </div>
-      </section>
-
       {/* Join Hundreds Of Satisfied Clients Section */}
       <section className="relative h-screen flex items-center overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 bg-gray-800">
-          <div className="absolute inset-0 bg-black/40"></div>
-        </div>
+        {/* Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/timelapse port.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-black/50"></div>
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -942,7 +735,8 @@ export default function Services() {
 
           {/* Main Heading */}
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8 leading-tight">
-            Join Hundreds Of Satisfied Clients Across Ghana And Beyond. Let Us Handle Your Cargo — Efficiently, Affordably, And Professionally.
+            Join Hundreds Of Satisfied Clients Across Ghana And Beyond. Let Us
+            Handle Your Cargo — Efficiently, Affordably, And Professionally.
           </h2>
 
           {/* CTA Button */}
@@ -954,6 +748,5 @@ export default function Services() {
 
       <Footer />
     </div>
-  )
+  );
 }
-
