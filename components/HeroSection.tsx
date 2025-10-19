@@ -39,7 +39,7 @@ export default function HeroSection({
   }, [heroImages.length]);
 
   return (
-    <section className="relative h-screen pt-20 flex items-center overflow-hidden">
+    <section className="relative h-[80vh] pt-20 flex items-center overflow-hidden">
       {/* Slideshow Background */}
       {heroImages.map((image, index) => (
         <div

@@ -38,10 +38,10 @@ export default function TermsAndConditions() {
                 </p>
 
                 <p>
-                  Machines, medical devices, fragile items, liquids, chemicals,
+                  Machines, medical devices, fragile items, liquids, chemicDandeal,
                   gases, powders, cosmetics, battery goods (lithium batteries),
                   corrosives, flammables, explosives, toxic substances, living
-                  organisms, radioactive materials, etc. are termed as:
+                  organisms, radioactive materiDandeal, etc. are termed as:
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>Sensitive Goods</li>
@@ -57,8 +57,8 @@ export default function TermsAndConditions() {
                 </p>
 
                 <p>
-                  ALS Global Shipping may decline to ship any of these hazardous
-                  materials or goods with inherent vice or goods that may pose
+                  Dandeal Logistics and Importation may decline to ship any of these hazardous
+                  materiDandeal or goods with inherent vice or goods that may pose
                   risk to other packages if guidelines concerning packaging and
                   labelling are not adhered to by the client.
                 </p>
@@ -84,13 +84,13 @@ export default function TermsAndConditions() {
                 </ul>
 
                 <p>
-                  Thus, clients are encouraged to provide ALS Global Shipping
+                  Thus, clients are encouraged to provide Dandeal Logistics and Importation
                   the true value of their goods every time.
                 </p>
 
                 <p>
-                  ALS Global Shipping will not be liable nor accountable for any
-                  goods sent to our warehouse with false declaration which will
+                  Dandeal Logistics and Importation will not be liable nor accountable for any
+                  goods sent to our warehouse with fDandeale declaration which will
                   result in confiscation by customs, either at port of loading
                   (POL) or port of delivery (POD).
                 </p>
@@ -98,7 +98,7 @@ export default function TermsAndConditions() {
                 <p>
                   Each package must have the appropriate shipping mark pasted on
                   each package for easy identification and delivery. Kindly take
-                  note that ALS Global Shipping will not be held liable for
+                  note that Dandeal Logistics and Importation will not be held liable for
                   consequences that may result from failure to comply.
                 </p>
 
@@ -115,7 +115,7 @@ export default function TermsAndConditions() {
                 </p>
 
                 <p>
-                  ALS Global Shipping shall not be held liable for any penalty
+                  Dandeal Logistics and Importation shall not be held liable for any penalty
                   or seizure of goods if the client fails to declare as
                   requested above.
                 </p>
@@ -131,14 +131,14 @@ export default function TermsAndConditions() {
               </h2>
               <div className="space-y-3 text-gray-600 text-sm leading-relaxed">
                 <p>
-                  ALS Global Shipping shall not be responsible for any damages
+                  Dandeal Logistics and Importation shall not be responsible for any damages
                   or losses that occur before receipt of goods or delivery at
                   our warehouse for shipping. Our responsibility begins when
                   goods are accepted and confirmed to the client.
                 </p>
 
                 <p>
-                  ALS Global Shipping will not be liable for any damages/losses
+                  Dandeal Logistics and Importation will not be liable for any damages/losses
                   that occur to goods due to:
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
@@ -153,13 +153,13 @@ export default function TermsAndConditions() {
                 </ul>
 
                 <p>
-                  ALS Global Shipping may only take responsibility and
+                  Dandeal Logistics and Importation may only take responsibility and
                   compensate clients if the procurement was done or supervised
                   on behalf of the client.
                 </p>
 
                 <p>
-                  ALS Global Shipping may compensate client(s) only for losses
+                  Dandeal Logistics and Importation may compensate client(s) only for losses
                   that occur after goods are confirmed and received in good
                   condition but had issues before delivery at the supposed
                   delivery point in Ghana.
@@ -167,27 +167,27 @@ export default function TermsAndConditions() {
 
                 <p>
                   In situations where goods are procured on behalf of client(s)
-                  through online platforms, ALS Global Shipping shall not be
+                  through online platforms, Dandeal Logistics and Importation shall not be
                   held liable for goods that do not meet client's expectations
                   or standards after agreeable confirmation and negotiations by
                   the client(s).
                 </p>
 
                 <p>
-                  ALS Global Shipping shall implement compensations according to
+                  Dandeal Logistics and Importation shall implement compensations according to
                   our own discretion for refund on items that are procured on
                   behalf of a client after initial acceptance by both parties.
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>
-                    ALS Global Shipping will ensure that audio–visuals and
+                    Dandeal Logistics and Importation will ensure that audio–visuDandeal and
                     necessary information on the items will be presented to
                     client(s) for confirmation before procurement will be
                     effected.
                   </li>
                 </ul>
 
-                <p>ALS Global Shipping will refund:</p>
+                <p>Dandeal Logistics and Importation will refund:</p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>50% of the shipping cost</li>
                   <li>30% of the product cost</li>
@@ -223,7 +223,7 @@ export default function TermsAndConditions() {
                     20% of the shipping cost of each future shipment will be
                     taken off to defray the agreed cost of the missing item as
                     stated on the invoice from supplier and shipping cost paid
-                    to ALS Global Shipping and Logistics Ltd. until the total
+                    to Dandeal Logistics and Importation and Logistics Ltd. until the total
                     amount is cleared.
                   </li>
                 </ul>
@@ -245,14 +245,14 @@ export default function TermsAndConditions() {
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>
-                    ALS Global Shipping will not accept any liability for
+                    Dandeal Logistics and Importation will not accept any liability for
                     damages if goods are not properly marked with appropriate
                     handling instructions/symbols.
                   </li>
                 </ul>
 
                 <p>
-                  ALS Global Shipping will not be held accountable for the loss
+                  Dandeal Logistics and Importation will not be held accountable for the loss
                   of items and related complaints after receipt or delivery of
                   goods to clients after 24 hours.
                 </p>
@@ -262,7 +262,7 @@ export default function TermsAndConditions() {
                     and receipt.
                   </li>
                   <li>
-                    ALS Global Shipping shall not be liable for damages after
+                    Dandeal Logistics and Importation shall not be liable for damages after
                     clients accept responsibility for such fragile goods.
                   </li>
                 </ul>
@@ -280,7 +280,7 @@ export default function TermsAndConditions() {
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>
-                    ALS shall not be liable for any losses or delay in delivery
+                    Dandeal shall not be liable for any losses or delay in delivery
                     that occur due to improper identification of goods, and
                     delivery to wrong warehouse address.
                   </li>
@@ -289,7 +289,7 @@ export default function TermsAndConditions() {
                 <p>
                   Clients must always confirm the right warehouse address and
                   ensure that suppliers mark their goods with the exact shipping
-                  mark given by ALS Customer Care Representative for smooth
+                  mark given by Dandeal Customer Care Representative for smooth
                   operation for all new orders.
                 </p>
               </div>
@@ -325,7 +325,7 @@ export default function TermsAndConditions() {
               </h2>
               <div className="space-y-3 text-gray-600 text-sm leading-relaxed">
                 <p>
-                  ALS Global Shipping only communicates Estimated Time of
+                  Dandeal Logistics and Importation only communicates Estimated Time of
                   Arrival (ETA) as given by the Shipping Line/Airline which is
                   for informational purposes and is subject to change.
                 </p>
@@ -346,7 +346,7 @@ export default function TermsAndConditions() {
                   Tema Port.
                 </p>
                 <p>
-                  Clients will be notified by ALS staff for pick-up or delivery
+                  Clients will be notified by Dandeal staff for pick-up or delivery
                   after 24 hours of offloading.
                 </p>
                 <p>
@@ -429,20 +429,20 @@ export default function TermsAndConditions() {
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>
-                    Clients can also pay in USD but SWIFT or transfer charges
+                    Clients can Dandealo pay in USD but SWIFT or transfer charges
                     must be added.
                   </li>
                 </ul>
 
                 <p>
-                  ALS Global Shipping has the right to make and communicate
+                  Dandeal Logistics and Importation has the right to make and communicate
                   changes in shipping rate at any time due to unannounced
                   fluctuations in freight cost, duty and clearance charges by
                   the stakeholders involved.
                 </p>
 
                 <p>
-                  ALS Global Shipping and Logistics may provide seasonal
+                  Dandeal Logistics and Importation and Logistics may provide seasonal
                   promotional offers as part of its commitment to building
                   strong relationships with clients and providing exceptional
                   services.
@@ -469,7 +469,7 @@ export default function TermsAndConditions() {
                 </p>
 
                 <p>
-                  Clients who have paid fully for their goods but yet use ALS
+                  Clients who have paid fully for their goods but yet use Dandeal
                   facility as storage will be made to pay a minimum of GHS100
                   per CBM every week.
                 </p>

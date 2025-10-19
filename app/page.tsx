@@ -90,7 +90,7 @@ export default function Home() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-screen pt-20 flex items-center overflow-hidden">
+      <section className="relative min-h-screen pt-20 pb-12 md:pb-0 flex items-center overflow-hidden">
         {/* Slideshow Background */}
         {heroImages.map((image, index) => (
           <div
@@ -107,12 +107,12 @@ export default function Home() {
         ))}
 
         {/* Content Overlay */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 w-full">
             {/* Left Content */}
             <div className="flex flex-col justify-center text-white">
               <motion.h1
-                className="text-5xl lg:text-6xl font-bold mb-4"
+                className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
@@ -121,7 +121,7 @@ export default function Home() {
                 Dandeal Logistics & Importation
               </motion.h1>
               <motion.p
-                className="text-xl italic mb-6"
+                className="text-lg sm:text-xl italic mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -137,19 +137,19 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 viewport={{ once: true }}
               >
-                From Sourcing Raw Materials, Machinery, And Vehicles Globally to
-                Shipping, ALS Delivers Seamless Logistics And Import & Export
+                From Sourcing Raw MateriDandeal, Machinery, And Vehicles Globally to
+                Shipping, Dandeal Delivers Seamless Logistics And Import & Export
                 Solutions.
               </motion.p>
 
               {/* CTA Buttons */}
-              <div className="flex space-x-4">
-                <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-8">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-6 sm:px-8 w-full sm:w-auto">
                   Free Consultation
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-black rounded-full px-8"
+                  className="border-white text-white hover:bg-white hover:text-black rounded-full px-6 sm:px-8 w-full sm:w-auto"
                 >
                   Contact Us
                 </Button>
@@ -157,9 +157,9 @@ export default function Home() {
             </div>
 
             {/* Right Form */}
-            <div className="flex items-center justify-center">
-              <div className="bg-white/10 rounded-lg p-8 w-full max-w-md shadow-lg backdrop-blur-sm">
-                <h2 className="text-2xl font-bold text-white mb-6">
+            <div className="flex items-center justify-center mt-8 lg:mt-0">
+              <div className="bg-white/10 rounded-lg p-6 sm:p-8 w-full max-w-md shadow-lg backdrop-blur-sm">
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-6">
                   Book A Free Consultation
                 </h2>
 
@@ -246,15 +246,15 @@ export default function Home() {
       </section>
 
       {/* Search, Tabs & Partners Section */}
-      <section className="bg-gray-50 h-screen flex items-center py-8">
+      <section className="bg-gray-50 min-h-screen flex items-center py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="flex flex-col gap-12 h-full justify-center">
+          <div className="flex flex-col gap-12 justify-center">
             {/* Tabs */}
             <div>
               {/* Tabs Header */}
               <div className="text-center mb-8">
                 <motion.h2
-                  className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3"
+                  className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
@@ -279,33 +279,36 @@ export default function Home() {
                 onValueChange={setActiveTab}
                 className="w-full"
               >
-                <TabsList className="grid w-full grid-cols-3 mb-6 bg-white border-b">
+                <TabsList className="grid w-full grid-cols-3 mb-6 bg-white border-b text-sm">
                   <TabsTrigger
                     value="rates"
-                    className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-600 rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600"
+                    className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-600 rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 text-xs sm:text-sm"
                   >
-                    <Package className="w-4 h-4 mr-2" />
-                    Rates
+                    <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Rates</span>
+                    <span className="sm:hidden">Rate</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="tracking"
-                    className="data-[state=active]:bg-green-100 data-[state=active]:text-green-600 rounded-none border-b-2 border-transparent data-[state=active]:border-green-600"
+                    className="data-[state=active]:bg-green-100 data-[state=active]:text-green-600 rounded-none border-b-2 border-transparent data-[state=active]:border-green-600 text-xs sm:text-sm"
                   >
-                    <Package className="w-4 h-4 mr-2" />
-                    Tracking
+                    <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Tracking</span>
+                    <span className="sm:hidden">Track</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="schedules"
-                    className="data-[state=active]:bg-orange-100 data-[state=active]:text-orange-600 rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600"
+                    className="data-[state=active]:bg-orange-100 data-[state=active]:text-orange-600 rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 text-xs sm:text-sm"
                   >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Schedules
+                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Schedules</span>
+                    <span className="sm:hidden">Sched</span>
                   </TabsTrigger>
                 </TabsList>
 
                 {/* Rates Tab */}
-                <TabsContent value="rates" className="bg-white p-6 rounded-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <TabsContent value="rates" className="bg-white p-4 sm:p-6 rounded-lg">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
                     <div>
                       <Label className="text-gray-700 text-sm mb-2 block">
                         From
@@ -343,7 +346,7 @@ export default function Home() {
                         className="border-gray-300 bg-white text-gray-900"
                       />
                     </div>
-                    <Button className="bg-orange-600 hover:bg-red-700 text-white w-full">
+                    <Button className="bg-orange-600 hover:bg-red-700 text-white w-full sm:col-span-2 md:col-span-1">
                       <ChevronDown className="w-4 h-4" />
                     </Button>
                   </div>
@@ -352,7 +355,7 @@ export default function Home() {
                 {/* Tracking Tab */}
                 <TabsContent
                   value="tracking"
-                  className="bg-white p-6 rounded-lg"
+                  className="bg-white p-4 sm:p-6 rounded-lg"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                     <div>
@@ -378,9 +381,9 @@ export default function Home() {
                 {/* Schedules Tab */}
                 <TabsContent
                   value="schedules"
-                  className="bg-white p-6 rounded-lg"
+                  className="bg-white p-4 sm:p-6 rounded-lg"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
                     <div>
                       <Label className="text-gray-700 text-sm mb-2 block">
                         From
@@ -418,7 +421,7 @@ export default function Home() {
                         className="border-gray-300 bg-white text-gray-900"
                       />
                     </div>
-                    <Button className="bg-orange-600 hover:bg-red-700 text-white w-full">
+                    <Button className="bg-orange-600 hover:bg-red-700 text-white w-full sm:col-span-2 md:col-span-1">
                       <ChevronDown className="w-4 h-4" />
                     </Button>
                   </div>
@@ -429,7 +432,7 @@ export default function Home() {
             {/* Partners & Accreditations */}
             <div>
               <div className="text-center mb-8">
-                <h2 className="text-4xl font-bold mb-4">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
                   <span className="text-gray-900">
                     Partners & Accreditations
                   </span>
@@ -449,13 +452,13 @@ export default function Home() {
       </section>
 
       {/* Trusted Shipping Agents Section */}
-      <section className="relative overflow-hidden h-screen flex items-center">
+      <section className="relative overflow-hidden min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             {/* Left Content */}
-            <div className="bg-white flex flex-col justify-center px-8 sm:px-6 lg:px-8 py-12 lg:py-0">
+            <div className="bg-white flex flex-col justify-center px-6 sm:px-8 lg:px-12 py-16 lg:py-20">
               <div className="max-w-lg">
-                <h2 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-6 leading-tight">
                   <span className="text-orange-600">Your Trusted Shipping</span>
                   <br />
                   <span className="text-gray-900">Agents</span>
@@ -481,65 +484,54 @@ export default function Home() {
             </div>
 
             {/* Right Image */}
-            <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
+            <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden min-h-[400px] lg:min-h-screen">
               {/* Diagonal shape background */}
               <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-gray-100"></div>
 
-              {/* Phone mockup with shipping imagery */}
-              <div className="relative z-10 w-full h-full flex items-center justify-center px-8">
-                <div className="relative w-64 h-96 bg-black rounded-3xl shadow-2xl overflow-hidden border-8 border-gray-800">
-                  {/* Phone screen content */}
-                  <div className="w-full h-full bg-gradient-to-b from-blue-400 to-blue-600 flex flex-col items-center justify-center p-4 relative">
-                    {/* Airplane */}
-                    <div className="absolute top-8 right-4 text-4xl">✈️</div>
-
-                    {/* Cargo containers */}
-                    <div className="absolute left-2 top-20 text-2xl">📦</div>
-                    <div className="absolute left-6 top-24 text-2xl">📦</div>
-
-                    {/* Ship */}
-                    <div className="absolute bottom-16 left-4 text-3xl">🚢</div>
-
-                    {/* Truck */}
-                    <div className="absolute bottom-8 right-6 text-3xl">🚚</div>
-
-                    {/* Center text */}
-                    <div className="text-center text-white font-bold text-sm mt-20">
-                      <div>Global</div>
-                      <div>Shipping</div>
-                    </div>
-                  </div>
-
-                  {/* Phone notch */}
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl z-20"></div>
-                </div>
+              {/* Shipping image */}
+              <div className="relative z-10 w-full h-full flex items-center justify-center px-8 py-12">
+                <img
+                  src="/trusted shipping.png"
+                  alt="Global Shipping Services"
+                  className="max-w-2xl w-auto h-auto object-contain"
+                />
               </div>
             </div>
           </div>
         </div>
 
         {/* Diagonal wave divider */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-r from-red-600 to-blue-900 clip-path-polygon"
-          style={{
-            clipPath: "polygon(0 30%, 100% 0%, 100% 100%, 0 100%)",
-          }}
-        ></div>
+        <div className="absolute bottom-0 left-0 right-0 h-32 overflow-hidden">
+          {/* Orange section - left side */}
+          <div
+            className="absolute inset-0 bg-orange-600"
+            style={{
+              clipPath: "polygon(0 0, 70% 0, 50% 100%, 0 100%)",
+            }}
+          ></div>
+          {/* Blue section - right side */}
+          <div
+            className="absolute inset-0 bg-blue-900"
+            style={{
+              clipPath: "polygon(50% 0, 100% 0, 100% 100%, 40% 100%)",
+            }}
+          ></div>
+        </div>
       </section>
 
       {/* Comprehensive Solutions Section */}
-      <section className="h-screen flex items-center bg-gray-50">
+      <section className="min-h-screen flex items-center bg-gray-50 py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-12 md:mb-16">
             <motion.h2
-              className="text-orange-600 text-4xl lg:text-5xl font-bold mb-4"
+              className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-4 px-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              Comprehensive Solutions From One Of{" "}
+              <span className="text-orange-600">Comprehensive Solutions From One Of{" "}</span>
               <span className="text-black">Ghana's</span>
               <br />
               <span className="text-black">Top Shipping Companies</span>
@@ -547,76 +539,112 @@ export default function Home() {
           </div>
 
           {/* Services Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Air Freight */}
-            <div className="bg-orange-600 text-white p-8 rounded-lg hover:shadow-lg transition">
+            <motion.div
+              className="bg-orange-600 text-white p-8 rounded-lg hover:shadow-lg transition flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
               <Plane className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Air Freight</h3>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed flex-grow">
                 Premium air cargo solutions with guaranteed delivery windows and
                 real-time tracking. Minimum 10kg load.
               </p>
-            </div>
+            </motion.div>
 
             {/* Sea Freight */}
-            <div className="bg-blue-900 text-white p-8 rounded-lg hover:shadow-lg transition">
+            <motion.div
+              className="bg-blue-900 text-white p-8 rounded-lg hover:shadow-lg transition flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
               <Ship className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Sea Freight</h3>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed flex-grow">
                 Cost-effective container shipping with flexible options from FCL
                 to LCL, tailored to your volume requirements.
               </p>
-            </div>
+            </motion.div>
 
             {/* Door-to-Door Delivery */}
-            <div className="bg-orange-600 text-white p-8 rounded-lg hover:shadow-lg transition">
+            <motion.div
+              className="bg-orange-600 text-white p-8 rounded-lg hover:shadow-lg transition flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+            >
               <Truck className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Door-to-Door Delivery</h3>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed flex-grow">
                 Seamless last-mile service throughout Ghana, from Accra to
                 Koforidua on time, every time.
               </p>
-            </div>
+            </motion.div>
 
             {/* International Procurement */}
-            <div className="bg-blue-900 text-white p-8 rounded-lg hover:shadow-lg transition">
+            <motion.div
+              className="bg-blue-900 text-white p-8 rounded-lg hover:shadow-lg transition flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
               <Globe className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">
                 International Procurement
               </h3>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed flex-grow">
                 Direct access to verified suppliers in China, UAE, and Turkey
                 with secure payment facilitation.
               </p>
-            </div>
+            </motion.div>
 
             {/* Container Clearance */}
-            <div className="bg-orange-600 text-white p-8 rounded-lg hover:shadow-lg transition">
+            <motion.div
+              className="bg-orange-600 text-white p-8 rounded-lg hover:shadow-lg transition flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              viewport={{ once: true }}
+            >
               <FileText className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Container Clearance</h3>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed flex-grow">
                 Swift 24-48 hour customs clearance at all Ghanaian ports,
                 managed by our expert teams.
               </p>
-            </div>
+            </motion.div>
 
             {/* Warehousing */}
-            <div className="bg-blue-900 text-white p-8 rounded-lg hover:shadow-lg transition">
+            <motion.div
+              className="bg-blue-900 text-white p-8 rounded-lg hover:shadow-lg transition flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              viewport={{ once: true }}
+            >
               <Building2 className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Warehousing</h3>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed flex-grow">
                 Strategic storage solutions in key industrial districts in China
                 and Ghana.
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Why Leading Businesses Choose ALS Section */}
-      <section className="h-screen flex items-center bg-white">
+      {/* Why Leading Businesses Choose Dandeal Section */}
+      <section className="min-h-screen flex items-center bg-white py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -625,18 +653,18 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <div className="mb-8">
-                <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mb-4">
-                  <span className="text-white text-2xl font-bold">ALS</span>
+                <div className="w-28 h-28 bg-orange-600 rounded-full flex items-center justify-center mb-4">
+                  <span className="text-white text-2xl font-bold">Dandeal</span>
                 </div>
               </div>
-              <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+              <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-6">
                 <span className="text-gray-900">
                   Why Leading <br />
                   Businesses{" "}
                 </span>
                 <span className="text-orange-600">Choose</span>
                 <br />
-                <span className="text-orange-600">ALS</span>.
+                <span className="text-orange-600">Dandeal</span>.
               </h2>
               <Button className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-full">
                 Book A Free Consultation
@@ -644,14 +672,14 @@ export default function Home() {
 
               {/* Images */}
               <div className="flex gap-4 mt-8">
-                <div className="w-32 h-24 bg-gray-300 rounded-lg overflow-hidden">
+                <div className="w-24 h-20 sm:w-32 sm:h-24 bg-gray-300 rounded-lg overflow-hidden">
                   <img
                     src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=300&h=200&fit=crop"
                     alt="Shipping"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="w-32 h-24 bg-gray-300 rounded-lg overflow-hidden">
+                <div className="w-24 h-20 sm:w-32 sm:h-24 bg-gray-300 rounded-lg overflow-hidden">
                   <img
                     src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop"
                     alt="Logistics"
@@ -662,15 +690,15 @@ export default function Home() {
             </motion.div>
 
             {/* Right Content - Benefits List */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="space-y-4"
-            >
+            <div className="space-y-4">
               {/* Benefit 1 */}
-              <div className="border-l-4 border-orange-600 bg-red-50 p-6 rounded-r-lg">
+              <motion.div
+                className="border-l-4 border-orange-600 bg-red-50 p-6 rounded-r-lg"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                viewport={{ once: true }}
+              >
                 <div className="flex items-start gap-4">
                   <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
                     01
@@ -684,12 +712,18 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Benefit 2 */}
-              <div className="border-l-4 border-orange-600 bg-red-50 p-6 rounded-r-lg">
+              <motion.div
+                className="border-l-4 border-blue-900 bg-blue-50 p-6 rounded-r-lg"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
                 <div className="flex items-start gap-4">
-                  <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
+                  <div className="bg-blue-900 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
                     02
                   </div>
                   <div>
@@ -701,10 +735,16 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Benefit 3 */}
-              <div className="border-l-4 border-orange-600 bg-red-50 p-6 rounded-r-lg">
+              <motion.div
+                className="border-l-4 border-orange-600 bg-red-50 p-6 rounded-r-lg"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
                 <div className="flex items-start gap-4">
                   <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
                     03
@@ -718,10 +758,16 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Benefit 4 */}
-              <div className="border-l-4 border-blue-900 bg-blue-50 p-6 rounded-r-lg">
+              <motion.div
+                className="border-l-4 border-blue-900 bg-blue-50 p-6 rounded-r-lg"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
                 <div className="flex items-start gap-4">
                   <div className="bg-blue-900 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
                     04
@@ -735,10 +781,16 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Benefit 5 */}
-              <div className="border-l-4 border-orange-600 bg-red-50 p-6 rounded-r-lg">
+              <motion.div
+                className="border-l-4 border-orange-600 bg-red-50 p-6 rounded-r-lg"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                viewport={{ once: true }}
+              >
                 <div className="flex items-start gap-4">
                   <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
                     05
@@ -748,18 +800,18 @@ export default function Home() {
                       All-in-One Service
                     </h3>
                     <p className="text-gray-700 text-sm">
-                      From source to doorstep, ALS has you covered.
+                      From source to doorstep, Dandeal has you covered.
                     </p>
                   </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Industries We Serve Section */}
-      <section className="relative h-screen flex items-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center overflow-hidden py-16 md:py-20">
         {/* Red background with wave */}
         <div
           className="absolute inset-0 bg-orange-600"
@@ -774,7 +826,7 @@ export default function Home() {
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-12 md:mb-16">
             <motion.p
               className="text-sm font-semibold text-gray-700 mb-2"
               initial={{ opacity: 0 }}
@@ -785,7 +837,7 @@ export default function Home() {
               📦 INDUSTRIES
             </motion.p>
             <motion.h2
-              className="text-4xl lg:text-5xl font-bold mb-4"
+              className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-4 px-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
@@ -794,7 +846,7 @@ export default function Home() {
               Industries We Serve
             </motion.h2>
             <motion.p
-              className="text-lg text-gray-700 max-w-3xl mx-auto"
+              className="text-base sm:text-lg text-gray-700 max-w-3xl mx-auto px-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -806,7 +858,7 @@ export default function Home() {
           </div>
 
           {/* Industries Grid - First Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-4 md:mb-6">
             {/* Fast-Moving Consumer Goods */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
               <div className="p-6">
@@ -815,8 +867,12 @@ export default function Home() {
                   Fast-Moving Consumer Goods
                 </h3>
               </div>
-              <div className="h-40 bg-gray-300 flex items-center justify-center text-gray-600">
-                [FMCG Image]
+              <div className="h-40 overflow-hidden">
+                <img
+                  src="https://images.pexels.com/photos/4829061/pexels-photo-4829061.jpeg"
+                  alt="Fast-Moving Consumer Goods"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
@@ -828,8 +884,12 @@ export default function Home() {
                   Industrial Machinery
                 </h3>
               </div>
-              <div className="h-40 bg-gray-300 flex items-center justify-center text-gray-600">
-                [Machinery Image]
+              <div className="h-40 overflow-hidden">
+                <img
+                  src="https://images.pexels.com/photos/191738/pexels-photo-191738.jpeg"
+                  alt="Industrial Machinery"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
@@ -841,27 +901,37 @@ export default function Home() {
                   Furniture & Home Goods
                 </h3>
               </div>
-              <div className="h-40 bg-gray-300 flex items-center justify-center text-gray-600">
-                [Furniture Image]
+              <div className="h-40 overflow-hidden">
+                <img
+                  src="https://images.pexels.com/photos/133919/pexels-photo-133919.jpeg"
+                  alt="Furniture & Home Goods"
+                  className="w-full h-full object-cover"
+                />
               </div>
+                [Furniture Image]
             </div>
 
-            {/* Pharmaceuticals & Medical Equipment */}
+            {/* PharmaceuticDandeal & Medical Equipment */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
               <div className="p-6">
                 <div className="text-3xl mb-3">🏥</div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Pharmaceuticals & Medical Equipment
+                  Pharmaceutical & Medical Equipment
                 </h3>
               </div>
-              <div className="h-40 bg-gray-300 flex items-center justify-center text-gray-600">
-                [Medical Image]
+              <div className="h-40 overflow-hidden">
+                <img
+                  src="https://images.pexels.com/photos/305568/pexels-photo-305568.jpeg"
+                  alt="Pharmaceutical & Medical Equipment"
+                  className="w-full h-full object-cover"
+                />
               </div>
+                [Medical Image]
             </div>
           </div>
 
           {/* Industries Grid - Second Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {/* Cosmetics & Apparel */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
               <div className="p-6">
@@ -870,9 +940,14 @@ export default function Home() {
                   Cosmetics & Apparel
                 </h3>
               </div>
-              <div className="h-40 bg-gray-300 flex items-center justify-center text-gray-600">
-                [Cosmetics Image]
+              <div className="h-40 overflow-hidden">
+                <img
+                  src="https://images.pexels.com/photos/234220/pexels-photo-234220.jpeg"
+                  alt="Cosmetics & Apparel"
+                  className="w-full h-full object-cover"
+                />
               </div>
+                [Cosmetics Image]
             </div>
 
             {/* Electronics & Electrical Components */}
@@ -883,12 +958,16 @@ export default function Home() {
                   Electronics & Electrical Components
                 </h3>
               </div>
-              <div className="h-40 bg-gray-300 flex items-center justify-center text-gray-600">
-                [Electronics Image]
+              <div className="h-40 overflow-hidden">
+                <img
+                  src="https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg"
+                  alt="Electronics & Electrical Components"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
-            {/* Construction Materials */}
+            {/* Construction MateriDandeal */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
               <div className="p-6">
                 <div className="text-3xl mb-3">🏗️</div>
@@ -896,8 +975,12 @@ export default function Home() {
                   Construction Materials
                 </h3>
               </div>
-              <div className="h-40 bg-gray-300 flex items-center justify-center text-gray-600">
-                [Construction Image]
+              <div className="h-40 overflow-hidden">
+                <img
+                  src="https://images.pexels.com/photos/2098624/pexels-photo-2098624.jpeg"
+                  alt="Construction Materials"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
@@ -909,36 +992,29 @@ export default function Home() {
                   Automotive & Spare Parts
                 </h3>
               </div>
-              <div className="h-40 bg-gray-300 flex items-center justify-center text-gray-600">
-                [Automotive Image]
+              <div className="h-40 overflow-hidden">
+                <img
+                  src="https://images.pexels.com/photos/159293/car-engine-motor-clean-customized-159293.jpeg"
+                  alt="Construction Materials"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Navy blue wave divider at bottom */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-32 bg-blue-900"
-          style={{
-            clipPath: "polygon(0 50%, 100% 0%, 100% 100%, 0 100%)",
-          }}
-        ></div>
+       
       </section>
 
       {/* CTA Section with Navy Background */}
-      <section className="relative h-screen flex items-center bg-blue-900 overflow-hidden">
-        {/* Angled top divider */}
-        <div
-          className="absolute top-0 left-0 right-0 h-20 bg-white"
-          style={{
-            clipPath: "polygon(0 0, 100% 20%, 100% 100%, 0 100%)",
-          }}
-        ></div>
+      <section className="relative h-[70vh] flex items-center bg-blue-900 overflow-hidden py-16 md:py-20">
+        
+        
 
         {/* Content */}
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Main Heading */}
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8 leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-8 leading-tight">
             Whatever your industry, we have the specialized experience to
             optimize your supply chain.
           </h2>
@@ -971,22 +1047,15 @@ export default function Home() {
               <span className="text-white text-xl">in</span>
             </a>
           </div>
-        </div>
-
-        {/* Angled bottom divider */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-20 bg-white"
-          style={{
-            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 80%)",
-          }}
-        ></div>
+        </div>   
+        
       </section>
 
-      {/* Testimonials Section */}
-      <section className="h-screen flex items-center bg-white">
+      {/* TestimoniDandeal Section */}
+      <section className="min-h-screen flex items-center bg-white py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-12 md:mb-16">
             <motion.p
               className="text-sm font-semibold text-gray-700 mb-2"
               initial={{ opacity: 0 }}
@@ -994,10 +1063,10 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              💬 TESTIMONIALS
+              💬 TESTIMONIDandeal
             </motion.p>
             <motion.h2
-              className="text-4xl lg:text-5xl font-bold text-gray-900"
+              className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
@@ -1008,11 +1077,17 @@ export default function Home() {
           </div>
 
           {/* Testimonials Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {/* Testimonial 1 - Red */}
-            <div className="bg-orange-600 rounded-2xl p-8 text-white">
-              <p className="mb-6 text-sm leading-relaxed">
-                "ALS has been our trusted logistics partner for over three
+            <motion.div
+              className="bg-orange-600 rounded-2xl p-8 text-white flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <p className="mb-6 text-sm leading-relaxed flex-grow">
+                "Dandeal has been our trusted logistics partner for over three
                 years. They handle our imports from China and Dubai with speed
                 and professionalism. Their door-to-door service is reliable and
                 stress-free. Highly recommended!"
@@ -1027,13 +1102,19 @@ export default function Home() {
                 <span className="text-yellow-300">⭐</span>
                 <span className="text-yellow-300">⭐</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Testimonial 2 - Navy */}
-            <div className="bg-blue-900 rounded-2xl p-8 text-white">
-              <p className="mb-6 text-sm leading-relaxed">
+            <motion.div
+              className="bg-blue-900 rounded-2xl p-8 text-white flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <p className="mb-6 text-sm leading-relaxed flex-grow">
                 "I used to struggle with sourcing beauty products from Turkey,
-                but ALS made it simple. They helped me find suppliers, handled
+                but Dandeal made it simple. They helped me find suppliers, handled
                 payments, and shipped everything right to my store in Kumasi.
                 Fantastic service!"
               </p>
@@ -1047,12 +1128,18 @@ export default function Home() {
                 <span className="text-yellow-300">⭐</span>
                 <span className="text-yellow-300">⭐</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Testimonial 3 - Red */}
-            <div className="bg-orange-600 rounded-2xl p-8 text-white">
-              <p className="mb-6 text-sm leading-relaxed">
-                "We import car parts monthly and ALS has been exceptional. Their
+            <motion.div
+              className="bg-orange-600 rounded-2xl p-8 text-white flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+            >
+              <p className="mb-6 text-sm leading-relaxed flex-grow">
+                "We import car parts monthly and Dandeal has been exceptional. Their
                 team clears our shipments fast and keeps us informed every step
                 of the way. Working with them has improved our turnaround time
                 significantly."
@@ -1067,12 +1154,18 @@ export default function Home() {
                 <span className="text-yellow-300">⭐</span>
                 <span className="text-yellow-300">⭐</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Testimonial 4 - Navy */}
-            <div className="bg-blue-900 rounded-2xl p-8 text-white">
-              <p className="mb-6 text-sm leading-relaxed">
-                "I found ALS through a friend and they've been a game-changer
+            <motion.div
+              className="bg-blue-900 rounded-2xl p-8 text-white flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <p className="mb-6 text-sm leading-relaxed flex-grow">
+                "I found Dandeal through a friend and they've been a game-changer
                 for my business. I now get my furniture imports from China
                 faster, safer, and at better rates. Highly recommended!"
               </p>
@@ -1086,13 +1179,19 @@ export default function Home() {
                 <span className="text-yellow-300">⭐</span>
                 <span className="text-yellow-300">⭐</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Testimonial 5 - Red */}
-            <div className="bg-orange-600 rounded-2xl p-8 text-white">
-              <p className="mb-6 text-sm leading-relaxed">
+            <motion.div
+              className="bg-orange-600 rounded-2xl p-8 text-white flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              viewport={{ once: true }}
+            >
+              <p className="mb-6 text-sm leading-relaxed flex-grow">
                 "As a company that regularly brings in industrial machinery, we
-                need a logistics partner we can rely on. ALS delivers every
+                need a logistics partner we can rely on. Dandeal delivers every
                 time. Their attention to detail and customs expertise is
                 unmatched."
               </p>
@@ -1106,12 +1205,18 @@ export default function Home() {
                 <span className="text-yellow-300">⭐</span>
                 <span className="text-yellow-300">⭐</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Testimonial 6 - Navy */}
-            <div className="bg-blue-900 rounded-2xl p-8 text-white">
-              <p className="mb-6 text-sm leading-relaxed">
-                "Thanks to ALS, I've been able to scale my clothing business by
+            <motion.div
+              className="bg-blue-900 rounded-2xl p-8 text-white flex flex-col h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <p className="mb-6 text-sm leading-relaxed flex-grow">
+                "Thanks to Dandeal, I've been able to scale my clothing business by
                 importing from Dubai and China without the usual headaches. They
                 even helped me source suppliers. Excellent service!"
               </p>
@@ -1125,13 +1230,13 @@ export default function Home() {
                 <span className="text-yellow-300">⭐</span>
                 <span className="text-yellow-300">⭐</span>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Final CTA Section with Background Video */}
-      <section className="relative h-screen flex items-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center overflow-hidden py-16 md:py-20">
         {/* Background Video */}
         <video
           autoPlay
@@ -1156,7 +1261,7 @@ export default function Home() {
           <p className="text-white text-sm font-semibold mb-4">Join Us</p>
 
           {/* Main Heading */}
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8 leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-8 leading-tight">
             Join Hundreds Of Satisfied Clients Across Ghana And Beyond. Let Us
             Handle Your Cargo — Efficiently, Affordably, And Professionally.
           </h2>
@@ -1169,17 +1274,17 @@ export default function Home() {
       </section>
 
       {/* Quote Request Section */}
-      <section className="relative h-screen flex items-center bg-white overflow-hidden">
+      <section className="relative min-h-screen flex items-center bg-white overflow-hidden py-16 md:py-20">
         {/* Red diagonal shape on right */}
         <div
-          className="absolute right-0 top-60 bottom-0 w-11/12 bg-orange-500"
+          className="absolute right-0 top-60 bottom-0 w-full bg-orange-500 hidden lg:block"
           style={{
-            clipPath: "polygon(100% 0%, 100% 00%, 100% 100%, 0% 100%)",
+            clipPath: "polygon(100% 0%, 100% 20%, 100% 100%, 0% 100%)",
           }}
         ></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <div>
               <motion.p
@@ -1192,7 +1297,7 @@ export default function Home() {
                 Ready to Ship & Source Smarter?
               </motion.p>
               <motion.h2
-                className="text-5xl font-bold mb-6"
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
@@ -1203,7 +1308,7 @@ export default function Home() {
               </motion.h2>
 
               <motion.p
-                className="text-gray-700 text-lg mb-6"
+                className="text-gray-700 text-base sm:text-lg mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -1213,7 +1318,7 @@ export default function Home() {
               </motion.p>
 
               <motion.p
-                className="text-gray-600 mb-8"
+                className="text-gray-600 text-sm sm:text-base mb-8"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
@@ -1243,7 +1348,7 @@ export default function Home() {
             </div>
 
             {/* Right Form */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200 w-full max-w-lg">
+            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 border border-gray-200 w-full max-w-lg mt-8 lg:mt-0">
               <form className="space-y-4">
                 {/* Form Header */}
                 <div className="mb-4">
