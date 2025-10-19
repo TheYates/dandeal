@@ -34,7 +34,7 @@ export default function Header() {
                   href="/why-als"
                   className="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-orange-600 text-sm first:rounded-t-lg"
                 >
-                  Why ALS
+                  Why Dandeal
                 </a>
                 <a
                   href="/terms-and-conditions"
