@@ -14,7 +14,7 @@ export default function Footer() {
               </p>
             </div>
             <p className="text-sm text-gray-600 leading-relaxed">
-              ALS Global Shipping & Logistics - Moving Africa, Middle East &
+              Dandeal Logistics & Importation - Moving Africa, Middle East &
               China, delivering excellence.
             </p>
           </div>
@@ -46,7 +46,7 @@ export default function Footer() {
                   href="/why-als"
                   className="text-gray-700 hover:text-orange-600 text-sm"
                 >
-                  Why ALS
+                  Why Dandeal
                 </a>
               </li>
               <li>
@@ -146,7 +146,7 @@ export default function Footer() {
         {/* Bottom Footer */}
         <div className="border-t border-gray-200 pt-3">
           <p className="text-sm text-gray-600 text-center">
-            Copyright © 2025 ALS Shipping. All rights reserved
+            Copyright © {new Date().getFullYear()} Dandeal Logistics & Importation. All rights reserved
           </p>
         </div>
       </div>

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   ChevronDown,
   Calendar,
@@ -12,34 +14,53 @@ import {
   Globe,
   FileText,
   Building2,
+  ShoppingCart,
+  Settings,
+  Home as HomeIcon,
+  Heart,
+  Shirt,
+  Cpu,
+  HardHat,
+  Car,
+  Pill,
+  Facebook,
+  Instagram,
+  Linkedin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LogoCarousel from "@/components/LogoCarousel";
+import ConsultationForm from "@/components/ConsultationForm";
+import QuoteForm from "@/components/QuoteForm";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
+
+// Dynamic import for RouteMap to avoid SSR issues with Leaflet
+const RouteMap = dynamic(() => import("@/components/RouteMap"), {
+  ssr: false,
+  loading: () => <div className="w-full h-[350px] rounded-lg border border-gray-300 mt-4 flex items-center justify-center bg-gray-50"><p className="text-gray-500">Loading map...</p></div>,
+});
+
+interface Location {
+  name: string;
+  lat: number;
+  lng: number;
+}
 
 export default function Home() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    service: "",
-    message: "",
-  });
-
   const [activeTab, setActiveTab] = useState("rates");
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Location state for Rates tab
+  const [fromLocationRates, setFromLocationRates] = useState<Location | null>(null);
+  const [toLocationRates, setToLocationRates] = useState<Location | null>(null);
+
+  // Location state for Schedules tab
+  const [fromLocationSchedules, setFromLocationSchedules] = useState<Location | null>(null);
+  const [toLocationSchedules, setToLocationSchedules] = useState<Location | null>(null);
 
   // Logistics slideshow images
   const heroImages = [
@@ -59,22 +80,6 @@ export default function Home() {
     { id: 8, name: "Shipping Authority", icon: "⚓" },
     { id: 9, name: "DF Alliance", icon: "🤝" },
   ];
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleServiceChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, service: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
-  };
 
   // Slideshow effect
   useEffect(() => {
@@ -144,59 +149,73 @@ export default function Home() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-6 sm:px-8 w-full sm:w-auto">
-                  Free Consultation
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-black rounded-full px-6 sm:px-8 w-full sm:w-auto"
-                >
-                  Contact Us
-                </Button>
+                <ConsultationForm
+                  trigger={
+                    <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-6 sm:px-8 w-full sm:w-auto">
+                      Free Consultation
+                    </Button>
+                  }
+                />
+                <QuoteForm
+                  trigger={
+                    <Button
+                      variant="outline"
+                      className="border-white text-white hover:bg-white hover:text-black rounded-full px-6 sm:px-8 w-full sm:w-auto"
+                    >
+                      Contact Us
+                    </Button>
+                  }
+                />
               </div>
             </div>
 
-            {/* Right Form */}
+            {/* Right Form - Embedded Consultation Form */}
             <div className="flex items-center justify-center mt-8 lg:mt-0">
               <div className="bg-white/10 rounded-lg p-6 sm:p-8 w-full max-w-md shadow-lg backdrop-blur-sm">
                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-6">
                   Book A Free Consultation
                 </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form className="space-y-4">
                   {/* Name */}
                   <div>
+                    <Label className="text-white text-sm mb-2 block">
+                      Name
+                    </Label>
                     <Input
                       type="text"
                       name="name"
-                      placeholder="Name"
-                      value={formData.name}
-                      onChange={handleInputChange}
+                      placeholder="Enter your name"
                       className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60"
+                      required
                     />
                   </div>
 
                   {/* Email */}
                   <div>
+                    <Label className="text-white text-sm mb-2 block">
+                      Email
+                    </Label>
                     <Input
                       type="email"
                       name="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={handleInputChange}
+                      placeholder="Enter your email"
                       className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60"
+                      required
                     />
                   </div>
 
                   {/* Phone */}
                   <div>
+                    <Label className="text-white text-sm mb-2 block">
+                      Phone
+                    </Label>
                     <Input
                       type="tel"
                       name="phone"
-                      placeholder="Phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
+                      placeholder="Enter your phone number"
                       className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60"
+                      required
                     />
                   </div>
 
@@ -205,36 +224,40 @@ export default function Home() {
                     <Label className="text-white text-sm mb-2 block">
                       Service Requested
                     </Label>
-                    <Select
-                      value={formData.service}
-                      onValueChange={handleServiceChange}
+                    <select
+                      name="service"
+                      className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white"
+                      required
                     >
-                      <SelectTrigger className="w-full bg-white/20 border border-white/30 rounded-md text-white">
-                        <SelectValue placeholder="Select a service" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="shipping">Shipping</SelectItem>
-                        <SelectItem value="logistics">Logistics</SelectItem>
-                        <SelectItem value="import">Import</SelectItem>
-                        <SelectItem value="export">Export</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <option value="" className="text-gray-900">Select a service</option>
+                      <option value="shipping" className="text-gray-900">Shipping</option>
+                      <option value="logistics" className="text-gray-900">Logistics</option>
+                      <option value="import" className="text-gray-900">Import</option>
+                      <option value="export" className="text-gray-900">Export</option>
+                      <option value="procurement" className="text-gray-900">International Procurement</option>
+                      <option value="customs" className="text-gray-900">Customs Clearance</option>
+                      <option value="warehousing" className="text-gray-900">Warehousing</option>
+                    </select>
                   </div>
 
                   {/* Message */}
                   <div>
-                    <Textarea
+                    <Label className="text-white text-sm mb-2 block">
+                      Message
+                    </Label>
+                    <textarea
                       name="message"
-                      placeholder="Message"
-                      value={formData.message}
-                      onChange={handleInputChange}
+                      placeholder="Tell us more about your needs..."
                       className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60 resize-none"
                       rows={4}
-                    />
+                    ></textarea>
                   </div>
 
                   {/* Submit Button */}
-                  <Button className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center">
+                  <Button
+                    type="submit"
+                    className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center"
+                  >
                     Book Free Consultation
                     <ChevronDown className="w-4 h-4 ml-2 rotate-[-90deg]" />
                   </Button>
@@ -310,21 +333,19 @@ export default function Home() {
                 <TabsContent value="rates" className="bg-white p-4 sm:p-6 rounded-lg">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
                     <div>
-                      <Label className="text-gray-700 text-sm mb-2 block">
-                        From
-                      </Label>
-                      <Input
+                      <LocationAutocomplete
+                        value={fromLocationRates}
+                        onChange={setFromLocationRates}
                         placeholder="City, terminal, zip code etc."
-                        className="border-gray-300 bg-white text-gray-900"
+                        label="From"
                       />
                     </div>
                     <div>
-                      <Label className="text-gray-700 text-sm mb-2 block">
-                        To
-                      </Label>
-                      <Input
+                      <LocationAutocomplete
+                        value={toLocationRates}
+                        onChange={setToLocationRates}
                         placeholder="City, terminal, zip code etc."
-                        className="border-gray-300 bg-white text-gray-900"
+                        label="To"
                       />
                     </div>
                     <div>
@@ -350,6 +371,14 @@ export default function Home() {
                       <ChevronDown className="w-4 h-4" />
                     </Button>
                   </div>
+
+                  {/* Route Map */}
+                  {fromLocationRates && toLocationRates && (
+                    <RouteMap
+                      fromLocation={fromLocationRates}
+                      toLocation={toLocationRates}
+                    />
+                  )}
                 </TabsContent>
 
                 {/* Tracking Tab */}
@@ -385,21 +414,19 @@ export default function Home() {
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
                     <div>
-                      <Label className="text-gray-700 text-sm mb-2 block">
-                        From
-                      </Label>
-                      <Input
+                      <LocationAutocomplete
+                        value={fromLocationSchedules}
+                        onChange={setFromLocationSchedules}
                         placeholder="From"
-                        className="border-gray-300 bg-white text-gray-900"
+                        label="From"
                       />
                     </div>
                     <div>
-                      <Label className="text-gray-700 text-sm mb-2 block">
-                        To
-                      </Label>
-                      <Input
+                      <LocationAutocomplete
+                        value={toLocationSchedules}
+                        onChange={setToLocationSchedules}
                         placeholder="To"
-                        className="border-gray-300 bg-white text-gray-900"
+                        label="To"
                       />
                     </div>
                     <div>
@@ -425,6 +452,14 @@ export default function Home() {
                       <ChevronDown className="w-4 h-4" />
                     </Button>
                   </div>
+
+                  {/* Route Map */}
+                  {fromLocationSchedules && toLocationSchedules && (
+                    <RouteMap
+                      fromLocation={fromLocationSchedules}
+                      toLocation={toLocationSchedules}
+                    />
+                  )}
                 </TabsContent>
               </Tabs>
             </div>
@@ -477,9 +512,13 @@ export default function Home() {
                   your cargo reaches its destination with precision and care.
                 </p>
 
-                <Button className="bg-orange-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-full">
-                  REQUEST A FREE QUOTE
-                </Button>
+                <QuoteForm
+                  trigger={
+                    <Button className="bg-orange-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-full">
+                      REQUEST A FREE QUOTE
+                    </Button>
+                  }
+                />
               </div>
             </div>
 
@@ -666,9 +705,13 @@ export default function Home() {
                 <br />
                 <span className="text-orange-600">Dandeal</span>.
               </h2>
-              <Button className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-full">
-                Book A Free Consultation
-              </Button>
+              <ConsultationForm
+                trigger={
+                  <Button className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-full">
+                    Book A Free Consultation
+                  </Button>
+                }
+              />
 
               {/* Images */}
               <div className="flex gap-4 mt-8">
@@ -861,9 +904,11 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-4 md:mb-6">
             {/* Fast-Moving Consumer Goods */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
-              <div className="p-6">
-                <div className="text-3xl mb-3">✓</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <div className="p-6 flex flex-col items-center text-center">
+                <div className="mb-3 flex items-center justify-center w-16 h-16 ">
+                  <ShoppingCart className="w-12 h-12 text-black" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Fast-Moving Consumer Goods
                 </h3>
               </div>
@@ -878,9 +923,11 @@ export default function Home() {
 
             {/* Industrial Machinery */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
-              <div className="p-6">
-                <div className="text-3xl mb-3">⚙️</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <div className="p-6 flex flex-col items-center text-center">
+                <div className="mb-3 flex items-center justify-center w-16 h-16 ">
+                  <Settings className="w-12 h-12 text-black" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Industrial Machinery
                 </h3>
               </div>
@@ -895,9 +942,11 @@ export default function Home() {
 
             {/* Furniture & Home Goods */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
-              <div className="p-6">
-                <div className="text-3xl mb-3">🏠</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <div className="p-6 flex flex-col items-center text-center">
+                <div className="mb-3 flex items-center justify-center w-16 h-16 ">
+                  <HomeIcon className="w-12 h-12 text-black" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Furniture & Home Goods
                 </h3>
               </div>
@@ -908,14 +957,15 @@ export default function Home() {
                   className="w-full h-full object-cover"
                 />
               </div>
-                [Furniture Image]
             </div>
 
-            {/* PharmaceuticDandeal & Medical Equipment */}
+            {/* Pharmaceutical & Medical Equipment */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
-              <div className="p-6">
-                <div className="text-3xl mb-3">🏥</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <div className="p-6 flex flex-col items-center text-center">
+                <div className="mb-3 flex items-center justify-center w-16 h-16 ">
+                  <Pill className="w-12 h-12 text-black" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Pharmaceutical & Medical Equipment
                 </h3>
               </div>
@@ -926,7 +976,6 @@ export default function Home() {
                   className="w-full h-full object-cover"
                 />
               </div>
-                [Medical Image]
             </div>
           </div>
 
@@ -934,9 +983,11 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {/* Cosmetics & Apparel */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
-              <div className="p-6">
-                <div className="text-3xl mb-3">👗</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <div className="p-6 flex flex-col items-center text-center">
+                <div className="mb-3 flex items-center justify-center w-16 h-16 ">
+                    <Shirt className="w-12 h-12 text-black" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Cosmetics & Apparel
                 </h3>
               </div>
@@ -947,14 +998,15 @@ export default function Home() {
                   className="w-full h-full object-cover"
                 />
               </div>
-                [Cosmetics Image]
             </div>
 
             {/* Electronics & Electrical Components */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
-              <div className="p-6">
-                <div className="text-3xl mb-3">🔌</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <div className="p-6 flex flex-col items-center text-center">
+                <div className="mb-3 flex items-center justify-center w-16 h-16 ">
+                  <Cpu className="w-12 h-12 text-black" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Electronics & Electrical Components
                 </h3>
               </div>
@@ -967,11 +1019,13 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Construction MateriDandeal */}
+            {/* Construction Materials */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
-              <div className="p-6">
-                <div className="text-3xl mb-3">🏗️</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <div className="p-6 flex flex-col items-center text-center">
+                <div className="mb-3 flex items-center justify-center w-16 h-16 ">
+                  <HardHat className="w-12 h-12 text-black" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Construction Materials
                 </h3>
               </div>
@@ -986,16 +1040,18 @@ export default function Home() {
 
             {/* Automotive & Spare Parts */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
-              <div className="p-6">
-                <div className="text-3xl mb-3">🚗</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <div className="p-6 flex flex-col items-center text-center">
+                <div className="mb-3 flex items-center justify-center w-16 h-16 ">
+                    <Car className="w-12 h-12 text-black" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Automotive & Spare Parts
                 </h3>
               </div>
               <div className="h-40 overflow-hidden">
                 <img
                   src="https://images.pexels.com/photos/159293/car-engine-motor-clean-customized-159293.jpeg"
-                  alt="Construction Materials"
+                  alt="Automotive & Spare Parts"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -1021,9 +1077,13 @@ export default function Home() {
 
           {/* CTA Button */}
           <div className="mb-8">
-            <Button className="bg-orange-600  hover:bg-red-700 text-white rounded-full px-8 py-3 font-semibold">
-              Book A Free Consultation
-            </Button>
+            <ConsultationForm
+              trigger={
+                <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-8 py-3 font-semibold">
+                  Book A Free Consultation
+                </Button>
+              }
+            />
           </div>
 
           {/* Social Media Icons */}
@@ -1032,19 +1092,19 @@ export default function Home() {
               href="#"
               className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center hover:bg-blue-700 transition"
             >
-              <span className="text-white text-xl">f</span>
+              <Facebook className="text-white text-xl" /> 
             </a>
             <a
               href="#"
               className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center hover:bg-pink-600 transition"
             >
-              <span className="text-white text-xl">📷</span>
+              <Instagram className="text-white text-xl" /> 
             </a>
             <a
               href="#"
               className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition"
             >
-              <span className="text-white text-xl">in</span>
+              <Linkedin className="text-white text-xl" /> 
             </a>
           </div>
         </div>   
@@ -1063,8 +1123,8 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              💬 TESTIMONIDandeal
-            </motion.p>
+              💬 TESTIMONIALS
+            </motion.p> 
             <motion.h2
               className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900"
               initial={{ opacity: 0, y: 20 }}
@@ -1267,9 +1327,11 @@ export default function Home() {
           </h2>
 
           {/* CTA Button */}
-          <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-900 rounded-full px-8 py-3 font-semibold transition">
-            Contact Us
-          </Button>
+          <Link href="/contact">
+            <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-900 rounded-full px-8 py-3 font-semibold transition">
+              Contact Us
+            </Button>
+          </Link>
         </div>
       </section>
 
@@ -1283,7 +1345,7 @@ export default function Home() {
           }}
         ></div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <div>
@@ -1329,7 +1391,7 @@ export default function Home() {
               </motion.p>
 
               {/* Benefits List */}
-              <ul className="space-y-4">
+              <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
                   <span className="text-orange-600 font-bold text-lg">🔒</span>
                   <span className="text-gray-700">
@@ -1345,9 +1407,18 @@ export default function Home() {
                   <span className="text-gray-700">Expert Advice Included</span>
                 </li>
               </ul>
+
+              {/* CTA Button */}
+              <QuoteForm
+                trigger={
+                  <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-8 py-3 font-semibold">
+                    Get Your Free Quote
+                  </Button>
+                }
+              />
             </div>
 
-            {/* Right Form */}
+            {/* Right Form - Embedded Quote Form */}
             <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 border border-gray-200 w-full max-w-lg mt-8 lg:mt-0">
               <form className="space-y-4">
                 {/* Form Header */}
@@ -1366,26 +1437,54 @@ export default function Home() {
                     Contact Information
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      placeholder="First Name *"
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Last Name *"
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email Address *"
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent col-span-2"
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Phone Number *"
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent col-span-2"
-                    />
+                    <div>
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        First Name *
+                      </Label>
+                      <input
+                        type="text"
+                        name="firstName"
+                        placeholder="First Name"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        Last Name *
+                      </Label>
+                      <input
+                        type="text"
+                        name="lastName"
+                        placeholder="Last Name"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        Email Address *
+                      </Label>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Email Address"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        Phone Number *
+                      </Label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="Phone Number"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -1395,37 +1494,79 @@ export default function Home() {
                     Shipment Details
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      placeholder="Origin Location *"
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Destination Location *"
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                    <select className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700">
-                      <option value="">Shipping Method *</option>
-                      <option value="air">Air Freight</option>
-                      <option value="sea">Sea Freight</option>
-                      <option value="land">Land Transport</option>
-                      <option value="multimodal">Multimodal</option>
-                    </select>
-                    <input
-                      type="text"
-                      placeholder="Cargo Type *"
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Weight/Volume"
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                    <input
-                      type="date"
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
+                    <div>
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        Origin Location *
+                      </Label>
+                      <input
+                        type="text"
+                        name="origin"
+                        placeholder="Origin Location"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        Destination Location *
+                      </Label>
+                      <input
+                        type="text"
+                        name="destination"
+                        placeholder="Destination Location"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        Shipping Method *
+                      </Label>
+                      <select
+                        name="shippingMethod"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700"
+                        required
+                      >
+                        <option value="">Select Method</option>
+                        <option value="air">Air Freight</option>
+                        <option value="sea">Sea Freight</option>
+                        <option value="land">Land Transport</option>
+                        <option value="multimodal">Multimodal</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        Cargo Type *
+                      </Label>
+                      <input
+                        type="text"
+                        name="cargoType"
+                        placeholder="Cargo Type"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        Weight/Volume
+                      </Label>
+                      <input
+                        type="text"
+                        name="weight"
+                        placeholder="Weight/Volume"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-700 text-xs mb-1 block">
+                        Preferred Date
+                      </Label>
+                      <input
+                        type="date"
+                        name="date"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -1434,7 +1575,11 @@ export default function Home() {
                   <h4 className="text-xs font-semibold text-gray-900 mb-3 uppercase tracking-wide">
                     Additional Information
                   </h4>
+                  <Label className="text-gray-700 text-xs mb-1 block">
+                    Special Requirements
+                  </Label>
                   <textarea
+                    name="notes"
                     placeholder="Special requirements or additional notes..."
                     rows={3}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
@@ -1443,7 +1588,10 @@ export default function Home() {
 
                 {/* Submit Button */}
                 <div className="pt-2">
-                  <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-semibold text-sm transition-colors">
+                  <Button
+                    type="submit"
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-semibold text-sm transition-colors"
+                  >
                     Request Quote
                   </Button>
                   <p className="text-xs text-gray-500 text-center mt-2">
