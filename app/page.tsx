@@ -3,11 +3,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import {
   ChevronDown,
-  Calendar,
-  Package,
   Plane,
   Ship,
   Truck,
@@ -30,37 +27,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LogoCarousel from "@/components/LogoCarousel";
 import ConsultationForm from "@/components/ConsultationForm";
 import QuoteForm from "@/components/QuoteForm";
-import LocationAutocomplete from "@/components/LocationAutocomplete";
-
-// Dynamic import for RouteMap to avoid SSR issues with Leaflet
-const RouteMap = dynamic(() => import("@/components/RouteMap"), {
-  ssr: false,
-  loading: () => <div className="w-full h-[350px] rounded-lg border border-gray-300 mt-4 flex items-center justify-center bg-gray-50"><p className="text-gray-500">Loading map...</p></div>,
-});
-
-interface Location {
-  name: string;
-  lat: number;
-  lng: number;
-}
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("rates");
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  // Location state for Rates tab
-  const [fromLocationRates, setFromLocationRates] = useState<Location | null>(null);
-  const [toLocationRates, setToLocationRates] = useState<Location | null>(null);
-
-  // Location state for Schedules tab
-  const [fromLocationSchedules, setFromLocationSchedules] = useState<Location | null>(null);
-  const [toLocationSchedules, setToLocationSchedules] = useState<Location | null>(null);
 
   // Logistics slideshow images
   const heroImages = [
@@ -142,9 +116,9 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 viewport={{ once: true }}
               >
-                From Sourcing Raw MateriDandeal, Machinery, And Vehicles Globally to
-                Shipping, Dandeal Delivers Seamless Logistics And Import & Export
-                Solutions.
+                From Sourcing Raw MateriDandeal, Machinery, And Vehicles
+                Globally to Shipping, Dandeal Delivers Seamless Logistics And
+                Import & Export Solutions.
               </motion.p>
 
               {/* CTA Buttons */}
@@ -229,14 +203,30 @@ export default function Home() {
                       className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white"
                       required
                     >
-                      <option value="" className="text-gray-900">Select a service</option>
-                      <option value="shipping" className="text-gray-900">Shipping</option>
-                      <option value="logistics" className="text-gray-900">Logistics</option>
-                      <option value="import" className="text-gray-900">Import</option>
-                      <option value="export" className="text-gray-900">Export</option>
-                      <option value="procurement" className="text-gray-900">International Procurement</option>
-                      <option value="customs" className="text-gray-900">Customs Clearance</option>
-                      <option value="warehousing" className="text-gray-900">Warehousing</option>
+                      <option value="" className="text-gray-900">
+                        Select a service
+                      </option>
+                      <option value="shipping" className="text-gray-900">
+                        Shipping
+                      </option>
+                      <option value="logistics" className="text-gray-900">
+                        Logistics
+                      </option>
+                      <option value="import" className="text-gray-900">
+                        Import
+                      </option>
+                      <option value="export" className="text-gray-900">
+                        Export
+                      </option>
+                      <option value="procurement" className="text-gray-900">
+                        International Procurement
+                      </option>
+                      <option value="customs" className="text-gray-900">
+                        Customs Clearance
+                      </option>
+                      <option value="warehousing" className="text-gray-900">
+                        Warehousing
+                      </option>
                     </select>
                   </div>
 
@@ -292,176 +282,23 @@ export default function Home() {
                   transition={{ duration: 0.8, delay: 0.2 }}
                   viewport={{ once: true }}
                 >
-                  Get instant shipping rates, track your cargo in real-time, or
-                  view our comprehensive schedules
+                  Use our real-time freight calculator to compare rates, track
+                  your cargo in real-time, and view comprehensive shipping
+                  schedules
                 </motion.p>
               </div>
 
-              <Tabs
-                value={activeTab}
-                onValueChange={setActiveTab}
-                className="w-full"
-              >
-                <TabsList className="grid w-full grid-cols-3 mb-6 bg-white border-b text-sm">
-                  <TabsTrigger
-                    value="rates"
-                    className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-600 rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 text-xs sm:text-sm"
-                  >
-                    <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Rates</span>
-                    <span className="sm:hidden">Rate</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="tracking"
-                    className="data-[state=active]:bg-green-100 data-[state=active]:text-green-600 rounded-none border-b-2 border-transparent data-[state=active]:border-green-600 text-xs sm:text-sm"
-                  >
-                    <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Tracking</span>
-                    <span className="sm:hidden">Track</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="schedules"
-                    className="data-[state=active]:bg-orange-100 data-[state=active]:text-orange-600 rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 text-xs sm:text-sm"
-                  >
-                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Schedules</span>
-                    <span className="sm:hidden">Sched</span>
-                  </TabsTrigger>
-                </TabsList>
-
-                {/* Rates Tab */}
-                <TabsContent value="rates" className="bg-white p-4 sm:p-6 rounded-lg">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
-                    <div>
-                      <LocationAutocomplete
-                        value={fromLocationRates}
-                        onChange={setFromLocationRates}
-                        placeholder="City, terminal, zip code etc."
-                        label="From"
-                      />
-                    </div>
-                    <div>
-                      <LocationAutocomplete
-                        value={toLocationRates}
-                        onChange={setToLocationRates}
-                        placeholder="City, terminal, zip code etc."
-                        label="To"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-sm mb-2 block">
-                        Date
-                      </Label>
-                      <Input
-                        type="date"
-                        defaultValue="2025-10-16"
-                        className="border-gray-300 bg-white text-gray-900"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-sm mb-2 block">
-                        Container Type
-                      </Label>
-                      <Input
-                        placeholder="FCL, 20'ST"
-                        className="border-gray-300 bg-white text-gray-900"
-                      />
-                    </div>
-                    <Button className="bg-orange-600 hover:bg-red-700 text-white w-full sm:col-span-2 md:col-span-1">
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  {/* Route Map */}
-                  {fromLocationRates && toLocationRates && (
-                    <RouteMap
-                      fromLocation={fromLocationRates}
-                      toLocation={toLocationRates}
-                    />
-                  )}
-                </TabsContent>
-
-                {/* Tracking Tab */}
-                <TabsContent
-                  value="tracking"
-                  className="bg-white p-4 sm:p-6 rounded-lg"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <div>
-                      <Input
-                        placeholder="Container, Booking, Bill of lading"
-                        className="border-gray-300 bg-white text-gray-900"
-                      />
-                    </div>
-                    <div>
-                      <Button
-                        variant="outline"
-                        className="w-full border-gray-300 "
-                      >
-                        Auto Detect
-                      </Button>
-                    </div>
-                    <Button className="bg-orange-600 hover:bg-red-700 text-white w-full">
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TabsContent>
-
-                {/* Schedules Tab */}
-                <TabsContent
-                  value="schedules"
-                  className="bg-white p-4 sm:p-6 rounded-lg"
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
-                    <div>
-                      <LocationAutocomplete
-                        value={fromLocationSchedules}
-                        onChange={setFromLocationSchedules}
-                        placeholder="From"
-                        label="From"
-                      />
-                    </div>
-                    <div>
-                      <LocationAutocomplete
-                        value={toLocationSchedules}
-                        onChange={setToLocationSchedules}
-                        placeholder="To"
-                        label="To"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-sm mb-2 block">
-                        Date
-                      </Label>
-                      <Input
-                        type="date"
-                        defaultValue="2025-10-16"
-                        className="border-gray-300 bg-white text-gray-900"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-sm mb-2 block">
-                        Frequency
-                      </Label>
-                      <Input
-                        placeholder="2 weeks, All sealines"
-                        className="border-gray-300 bg-white text-gray-900"
-                      />
-                    </div>
-                    <Button className="bg-orange-600 hover:bg-red-700 text-white w-full sm:col-span-2 md:col-span-1">
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  {/* Route Map */}
-                  {fromLocationSchedules && toLocationSchedules && (
-                    <RouteMap
-                      fromLocation={fromLocationSchedules}
-                      toLocation={toLocationSchedules}
-                    />
-                  )}
-                </TabsContent>
-              </Tabs>
+              {/* Searates Logistics Explorer Iframe */}
+              <div className="w-full bg-white rounded-lg shadow-lg overflow-hidden">
+                <iframe
+                  src="https://www.searates.com/logistics-explorer/"
+                  width="100%"
+                  height="800"
+                  style={{ border: "none" }}
+                  title="SeaRates Logistics Explorer"
+                  allowFullScreen
+                />
+              </div>
             </div>
 
             {/* Partners & Accreditations */}
@@ -570,7 +407,9 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <span className="text-orange-600">Comprehensive Solutions From One Of{" "}</span>
+              <span className="text-orange-600">
+                Comprehensive Solutions From One Of{" "}
+              </span>
               <span className="text-black">Ghana's</span>
               <br />
               <span className="text-black">Top Shipping Companies</span>
@@ -985,7 +824,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
               <div className="p-6 flex flex-col items-center text-center">
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
-                    <Shirt className="w-12 h-12 text-black" />
+                  <Shirt className="w-12 h-12 text-black" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Cosmetics & Apparel
@@ -1042,7 +881,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition border-4 border-gray-200">
               <div className="p-6 flex flex-col items-center text-center">
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
-                    <Car className="w-12 h-12 text-black" />
+                  <Car className="w-12 h-12 text-black" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
                   Automotive & Spare Parts
@@ -1058,15 +897,10 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-       
       </section>
 
       {/* CTA Section with Navy Background */}
       <section className="relative h-[70vh] flex items-center bg-blue-900 overflow-hidden py-16 md:py-20">
-        
-        
-
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Main Heading */}
@@ -1092,23 +926,22 @@ export default function Home() {
               href="#"
               className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center hover:bg-blue-700 transition"
             >
-              <Facebook className="text-white text-xl" /> 
+              <Facebook className="text-white text-xl" />
             </a>
             <a
               href="#"
               className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center hover:bg-pink-600 transition"
             >
-              <Instagram className="text-white text-xl" /> 
+              <Instagram className="text-white text-xl" />
             </a>
             <a
               href="#"
               className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition"
             >
-              <Linkedin className="text-white text-xl" /> 
+              <Linkedin className="text-white text-xl" />
             </a>
           </div>
-        </div>   
-        
+        </div>
       </section>
 
       {/* TestimoniDandeal Section */}
@@ -1124,7 +957,7 @@ export default function Home() {
               viewport={{ once: true }}
             >
               💬 TESTIMONIALS
-            </motion.p> 
+            </motion.p>
             <motion.h2
               className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900"
               initial={{ opacity: 0, y: 20 }}
@@ -1174,9 +1007,9 @@ export default function Home() {
             >
               <p className="mb-6 text-sm leading-relaxed flex-grow">
                 "I used to struggle with sourcing beauty products from Turkey,
-                but Dandeal made it simple. They helped me find suppliers, handled
-                payments, and shipped everything right to my store in Kumasi.
-                Fantastic service!"
+                but Dandeal made it simple. They helped me find suppliers,
+                handled payments, and shipped everything right to my store in
+                Kumasi. Fantastic service!"
               </p>
               <div className="mb-4">
                 <p className="font-bold text-lg">Akosua Serwaa</p>
@@ -1199,10 +1032,10 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <p className="mb-6 text-sm leading-relaxed flex-grow">
-                "We import car parts monthly and Dandeal has been exceptional. Their
-                team clears our shipments fast and keeps us informed every step
-                of the way. Working with them has improved our turnaround time
-                significantly."
+                "We import car parts monthly and Dandeal has been exceptional.
+                Their team clears our shipments fast and keeps us informed every
+                step of the way. Working with them has improved our turnaround
+                time significantly."
               </p>
               <div className="mb-4">
                 <p className="font-bold text-lg">Nana Yaw Boateng</p>
@@ -1225,9 +1058,10 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <p className="mb-6 text-sm leading-relaxed flex-grow">
-                "I found Dandeal through a friend and they've been a game-changer
-                for my business. I now get my furniture imports from China
-                faster, safer, and at better rates. Highly recommended!"
+                "I found Dandeal through a friend and they've been a
+                game-changer for my business. I now get my furniture imports
+                from China faster, safer, and at better rates. Highly
+                recommended!"
               </p>
               <div className="mb-4">
                 <p className="font-bold text-lg">Abena Agyekum</p>
@@ -1276,9 +1110,9 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <p className="mb-6 text-sm leading-relaxed flex-grow">
-                "Thanks to Dandeal, I've been able to scale my clothing business by
-                importing from Dubai and China without the usual headaches. They
-                even helped me source suppliers. Excellent service!"
+                "Thanks to Dandeal, I've been able to scale my clothing business
+                by importing from Dubai and China without the usual headaches.
+                They even helped me source suppliers. Excellent service!"
               </p>
               <div className="mb-4">
                 <p className="font-bold text-lg">Esi Darko</p>
