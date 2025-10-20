@@ -22,6 +22,48 @@ interface NominatimResult {
   lat: string;
   lon: string;
   place_id: number;
+  address?: {
+    country?: string;
+    country_code?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+  };
+  type?: string;
+  class?: string;
+}
+
+// Convert country code to flag emoji
+function countryCodeToFlag(countryCode: string): string {
+  if (!countryCode || countryCode.length !== 2) return "";
+  const codePoints = countryCode
+    .toUpperCase()
+    .split("")
+    .map((char) => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
+
+// Format display name with flag
+function formatLocationDisplay(result: NominatimResult): string {
+  const countryCode = result.address?.country_code?.toUpperCase() || "";
+  const flag = countryCode ? countryCodeToFlag(countryCode) : "";
+  const cityName =
+    result.address?.city ||
+    result.address?.town ||
+    result.address?.village ||
+    result.display_name.split(",")[0];
+  const country = result.address?.country || "";
+
+  if (flag && country) {
+    return `${flag} ${cityName}, ${country}`;
+  }
+  
+  // Fallback with just country code if no flag
+  if (countryCode && country) {
+    return `${countryCode} ${cityName}, ${country}`;
+  }
+  
+  return result.display_name;
 }
 
 export default function LocationAutocomplete({
@@ -69,18 +111,39 @@ export default function LocationAutocomplete({
     debounceTimerRef.current = setTimeout(async () => {
       setIsLoading(true);
       try {
+        // Single search query for major cities
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-            inputValue
-          )}&format=json&limit=5`,
+          `https://nominatim.openstreetmap.org/search?` +
+          `q=${encodeURIComponent(inputValue)}` +
+          `&format=json` +
+          `&limit=10` +
+          `&addressdetails=1` +
+          `&featuretype=city` +
+          `&accept-language=en`,
           {
             headers: {
               "User-Agent": "DandealLogistics/1.0",
             },
           }
         );
-        const data: NominatimResult[] = await response.json();
-        setSuggestions(data);
+
+        const data = await response.json() as NominatimResult[];
+
+        // Filter for city-level results (major cities likely have airports/ports)
+        const filteredResults = data
+          .filter((result) => {
+            // Filter for city-level administrative divisions
+            const hasCity =
+              result.address?.city ||
+              result.address?.town ||
+              result.type === "city" ||
+              result.type === "administrative" ||
+              result.class === "place";
+            return hasCity;
+          })
+          .slice(0, 5);
+
+        setSuggestions(filteredResults);
         setShowSuggestions(true);
       } catch (error) {
         console.error("Error fetching locations:", error);
@@ -88,7 +151,7 @@ export default function LocationAutocomplete({
       } finally {
         setIsLoading(false);
       }
-    }, 300);
+    }, 500);
 
     return () => {
       if (debounceTimerRef.current) {
@@ -106,12 +169,13 @@ export default function LocationAutocomplete({
   };
 
   const handleSelectLocation = (suggestion: NominatimResult) => {
+    const formattedName = formatLocationDisplay(suggestion);
     const location: Location = {
-      name: suggestion.display_name,
+      name: formattedName,
       lat: parseFloat(suggestion.lat),
       lng: parseFloat(suggestion.lon),
     };
-    setInputValue(suggestion.display_name);
+    setInputValue(formattedName);
     onChange(location);
     setShowSuggestions(false);
     setSuggestions([]);
@@ -135,18 +199,38 @@ export default function LocationAutocomplete({
       {showSuggestions && (suggestions.length > 0 || isLoading) && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
           {isLoading ? (
-            <div className="p-3 text-sm text-gray-500">Searching...</div>
+            <div className="p-3 text-sm text-gray-500">Searching locations...</div>
+          ) : suggestions.length > 0 ? (
+            suggestions.map((suggestion) => {
+              const countryCode = suggestion.address?.country_code?.toUpperCase() || "";
+              const flag = countryCode ? countryCodeToFlag(countryCode) : "";
+              const cityName =
+                suggestion.address?.city ||
+                suggestion.address?.town ||
+                suggestion.address?.village ||
+                suggestion.display_name.split(",")[0];
+              const country = suggestion.address?.country || "";
+              
+              return (
+                <button
+                  key={suggestion.place_id}
+                  type="button"
+                  onClick={() => handleSelectLocation(suggestion)}
+                  className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-gray-900 border-b border-gray-100 last:border-b-0 flex items-center gap-2"
+                >
+                  {flag && (
+                    <span className="text-xl" role="img" aria-label={country}>
+                      {flag}
+                    </span>
+                  )}
+                  <span>
+                    {cityName}, {country}
+                  </span>
+                </button>
+              );
+            })
           ) : (
-            suggestions.map((suggestion) => (
-              <button
-                key={suggestion.place_id}
-                type="button"
-                onClick={() => handleSelectLocation(suggestion)}
-                className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-gray-900 border-b border-gray-100 last:border-b-0"
-              >
-                {suggestion.display_name}
-              </button>
-            ))
+            <div className="p-3 text-sm text-gray-500">No locations found</div>
           )}
         </div>
       )}
