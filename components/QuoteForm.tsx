@@ -38,35 +38,59 @@ export default function QuoteForm({
   });
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Quote form submitted:", formData);
-    // Add your form submission logic here
-    
-    // Reset form
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      origin: "",
-      destination: "",
-      shippingMethod: "",
-      cargoType: "",
-      weight: "",
-      date: "",
-      notes: "",
-    });
-    
-    // Close dialog
-    if (onOpenChange) {
-      onOpenChange(false);
+
+    try {
+      const response = await fetch("/api/quote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Show success message
+        alert(
+          "Thank you! Your quote request has been submitted successfully. We'll get back to you soon."
+        );
+
+        // Reset form
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          origin: "",
+          destination: "",
+          shippingMethod: "",
+          cargoType: "",
+          weight: "",
+          date: "",
+          notes: "",
+        });
+
+        // Close dialog
+        if (onOpenChange) {
+          onOpenChange(false);
+        }
+      } else {
+        alert("Error: " + (data.error || "Failed to submit quote request"));
+      }
+    } catch (error) {
+      console.error("Error submitting quote:", error);
+      alert("An error occurred. Please try again later.");
     }
   };
 
@@ -75,7 +99,9 @@ export default function QuoteForm({
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Get Your Quote</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">
+            Get Your Quote
+          </DialogTitle>
           <DialogDescription>
             Fill out the form and we'll contact you shortly with a customized
             shipping solution.
@@ -277,4 +303,3 @@ export default function QuoteForm({
     </Dialog>
   );
 }
-

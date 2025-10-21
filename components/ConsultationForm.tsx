@@ -52,23 +52,47 @@ export default function ConsultationForm({
     setFormData((prev) => ({ ...prev, service: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Consultation form submitted:", formData);
-    // Add your form submission logic here
-    
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      service: "",
-      message: "",
-    });
-    
-    // Close dialog
-    if (onOpenChange) {
-      onOpenChange(false);
+
+    try {
+      const response = await fetch("/api/consultation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Show success message
+        alert(
+          "Thank you! Your consultation request has been submitted successfully. We'll contact you soon."
+        );
+
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          service: "",
+          message: "",
+        });
+
+        // Close dialog
+        if (onOpenChange) {
+          onOpenChange(false);
+        }
+      } else {
+        alert(
+          "Error: " + (data.error || "Failed to submit consultation request")
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting consultation:", error);
+      alert("An error occurred. Please try again later.");
     }
   };
 
@@ -130,9 +154,7 @@ export default function ConsultationForm({
 
           {/* Service Dropdown */}
           <div>
-            <Label className=" text-sm mb-2 block">
-              Service Requested *
-            </Label>
+            <Label className=" text-sm mb-2 block">Service Requested *</Label>
             <Select
               value={formData.service}
               onValueChange={handleServiceChange}
@@ -146,7 +168,9 @@ export default function ConsultationForm({
                 <SelectItem value="logistics">Logistics</SelectItem>
                 <SelectItem value="import">Import</SelectItem>
                 <SelectItem value="export">Export</SelectItem>
-                <SelectItem value="procurement">International Procurement</SelectItem>
+                <SelectItem value="procurement">
+                  International Procurement
+                </SelectItem>
                 <SelectItem value="customs">Customs Clearance</SelectItem>
                 <SelectItem value="warehousing">Warehousing</SelectItem>
               </SelectContent>
@@ -172,11 +196,9 @@ export default function ConsultationForm({
             className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center"
           >
             Book Free Consultation
-            
           </Button>
         </form>
       </DialogContent>
     </Dialog>
   );
 }
-
