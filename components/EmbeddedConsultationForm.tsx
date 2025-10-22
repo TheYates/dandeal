@@ -113,7 +113,7 @@ export default function EmbeddedConsultationForm() {
   };
 
   return (
-    <div className="bg-white/10 rounded-lg p-6 sm:p-8 w-full max-w-md shadow-lg backdrop-blur-sm">
+    <div className="bg-white/10 rounded-lg p-6 sm:p-8 w-full max-w-md shadow-lg backdrop-blur-xs">
       <h2 className="text-xl sm:text-2xl font-bold text-white mb-6">
         Book A Free Consultation
       </h2>
@@ -204,7 +204,7 @@ export default function EmbeddedConsultationForm() {
           className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Submitting..." : "Book Free Consultation"}
-          <ChevronDown className="w-4 h-4 ml-2 rotate-[-90deg]" />
+          <ChevronDown className="w-4 h-4 ml-2 -rotate-90" />
         </Button>
       </form>
 

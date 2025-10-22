@@ -49,7 +49,7 @@ export default async function AdminDashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-orange-900 to-orange-800 border-orange-700">
+        <Card className="bg-linear-to-br from-orange-900 to-orange-800 border-orange-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-orange-100">
               Total Consultations
@@ -64,7 +64,7 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-900 to-blue-800 border-blue-700">
+        <Card className="bg-linear-to-br from-blue-900 to-blue-800 border-blue-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-blue-100">Total Quotes</CardTitle>
             <FileText className="h-5 w-5 text-blue-400" />
@@ -77,7 +77,7 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-yellow-900 to-yellow-800 border-yellow-700">
+        <Card className="bg-linear-to-br from-yellow-900 to-yellow-800 border-yellow-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-yellow-100">Pending Items</CardTitle>
             <Clock className="h-5 w-5 text-yellow-400" />
@@ -88,7 +88,7 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-900 to-green-800 border-green-700">
+        <Card className="bg-linear-to-br from-green-900 to-green-800 border-green-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-green-100">Completed</CardTitle>
             <CheckCircle className="h-5 w-5 text-green-400" />
@@ -138,7 +138,7 @@ export default async function AdminDashboard() {
                             ? "default"
                             : consultation.status === "completed"
                             ? "secondary"
-                            : "outline"
+                            : "outline-solid"
                         }
                       >
                         {consultation.status}
@@ -183,7 +183,7 @@ export default async function AdminDashboard() {
                             ? "default"
                             : quote.status === "completed"
                             ? "secondary"
-                            : "outline"
+                            : "outline-solid"
                         }
                       >
                         {quote.status}

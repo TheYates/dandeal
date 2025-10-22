@@ -131,7 +131,7 @@ export default function Contact() {
                     onChange={handleInputChange}
                     placeholder="Your name"
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-red-600 focus:border-transparent"
                   />
                 </div>
 
@@ -147,7 +147,7 @@ export default function Contact() {
                     onChange={handleInputChange}
                     placeholder="your@email.com"
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-red-600 focus:border-transparent"
                   />
                 </div>
 
@@ -162,7 +162,7 @@ export default function Contact() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="+233 XXX XXX XXXX"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-red-600 focus:border-transparent"
                   />
                 </div>
 
@@ -178,7 +178,7 @@ export default function Contact() {
                     onChange={handleInputChange}
                     placeholder="How can we help?"
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-red-600 focus:border-transparent"
                   />
                 </div>
 
@@ -194,7 +194,7 @@ export default function Contact() {
                     placeholder="Tell us more about your inquiry..."
                     required
                     rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent resize-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-red-600 focus:border-transparent resize-none"
                   ></textarea>
                 </div>
 

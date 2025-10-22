@@ -252,9 +252,9 @@ export default function Home() {
             </div>
 
             {/* Right Image */}
-            <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden min-h-[400px] lg:min-h-screen">
+            <div className="relative bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden min-h-[400px] lg:min-h-screen">
               {/* Diagonal shape background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-gray-100"></div>
+              <div className="absolute inset-0 bg-linear-to-br from-white via-gray-50 to-gray-100"></div>
 
               {/* Shipping image */}
               <div className="relative z-10 w-full h-full flex items-center justify-center px-8 py-12">
@@ -320,7 +320,7 @@ export default function Home() {
             >
               <Plane className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Air Freight</h3>
-              <p className="text-sm leading-relaxed flex-grow">
+              <p className="text-sm leading-relaxed grow">
                 Premium air cargo solutions with guaranteed delivery windows and
                 real-time tracking. Minimum 10kg load.
               </p>
@@ -336,7 +336,7 @@ export default function Home() {
             >
               <Ship className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Sea Freight</h3>
-              <p className="text-sm leading-relaxed flex-grow">
+              <p className="text-sm leading-relaxed grow">
                 Cost-effective container shipping with flexible options from FCL
                 to LCL, tailored to your volume requirements.
               </p>
@@ -352,7 +352,7 @@ export default function Home() {
             >
               <Truck className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Door-to-Door Delivery</h3>
-              <p className="text-sm leading-relaxed flex-grow">
+              <p className="text-sm leading-relaxed grow">
                 Seamless last-mile service throughout Ghana, from Accra to
                 Koforidua on time, every time.
               </p>
@@ -370,7 +370,7 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-3">
                 International Procurement
               </h3>
-              <p className="text-sm leading-relaxed flex-grow">
+              <p className="text-sm leading-relaxed grow">
                 Direct access to verified suppliers in China, UAE, and Turkey
                 with secure payment facilitation.
               </p>
@@ -386,7 +386,7 @@ export default function Home() {
             >
               <FileText className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Container Clearance</h3>
-              <p className="text-sm leading-relaxed flex-grow">
+              <p className="text-sm leading-relaxed grow">
                 Swift 24-48 hour customs clearance at all Ghanaian ports,
                 managed by our expert teams.
               </p>
@@ -402,7 +402,7 @@ export default function Home() {
             >
               <Building2 className="w-12 h-12 mb-4" />
               <h3 className="text-2xl font-bold mb-3">Warehousing</h3>
-              <p className="text-sm leading-relaxed flex-grow">
+              <p className="text-sm leading-relaxed grow">
                 Strategic storage solutions in key industrial districts in China
                 and Ghana.
               </p>
@@ -474,7 +474,7 @@ export default function Home() {
                 viewport={{ once: true }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
+                  <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center shrink-0">
                     01
                   </div>
                   <div>
@@ -497,7 +497,7 @@ export default function Home() {
                 viewport={{ once: true }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="bg-blue-900 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
+                  <div className="bg-blue-900 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center shrink-0">
                     02
                   </div>
                   <div>
@@ -520,7 +520,7 @@ export default function Home() {
                 viewport={{ once: true }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
+                  <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center shrink-0">
                     03
                   </div>
                   <div>
@@ -543,7 +543,7 @@ export default function Home() {
                 viewport={{ once: true }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="bg-blue-900 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
+                  <div className="bg-blue-900 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center shrink-0">
                     04
                   </div>
                   <div>
@@ -566,7 +566,7 @@ export default function Home() {
                 viewport={{ once: true }}
               >
                 <div className="flex items-start gap-4">
-                  <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center flex-shrink-0">
+                  <div className="bg-orange-600 text-white font-bold text-xl w-12 h-12 rounded flex items-center justify-center shrink-0">
                     05
                   </div>
                   <div>
@@ -639,7 +639,7 @@ export default function Home() {
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
                   <ShoppingCart className="w-12 h-12 text-black" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-14 flex items-center">
                   Fast-Moving Consumer Goods
                 </h3>
               </div>
@@ -658,7 +658,7 @@ export default function Home() {
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
                   <Settings className="w-12 h-12 text-black" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-14 flex items-center">
                   Industrial Machinery
                 </h3>
               </div>
@@ -677,7 +677,7 @@ export default function Home() {
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
                   <HomeIcon className="w-12 h-12 text-black" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-14 flex items-center">
                   Furniture & Home Goods
                 </h3>
               </div>
@@ -696,7 +696,7 @@ export default function Home() {
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
                   <Pill className="w-12 h-12 text-black" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-14 flex items-center">
                   Pharmaceutical & Medical Equipment
                 </h3>
               </div>
@@ -718,7 +718,7 @@ export default function Home() {
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
                   <Shirt className="w-12 h-12 text-black" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-14 flex items-center">
                   Cosmetics & Apparel
                 </h3>
               </div>
@@ -737,7 +737,7 @@ export default function Home() {
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
                   <Cpu className="w-12 h-12 text-black" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-14 flex items-center">
                   Electronics & Electrical Components
                 </h3>
               </div>
@@ -756,7 +756,7 @@ export default function Home() {
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
                   <HardHat className="w-12 h-12 text-black" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-14 flex items-center">
                   Construction Materials
                 </h3>
               </div>
@@ -775,7 +775,7 @@ export default function Home() {
                 <div className="mb-3 flex items-center justify-center w-16 h-16 ">
                   <Car className="w-12 h-12 text-black" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-[3.5rem] flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 min-h-14 flex items-center">
                   Automotive & Spare Parts
                 </h3>
               </div>
@@ -871,7 +871,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               viewport={{ once: true }}
             >
-              <p className="mb-6 text-sm leading-relaxed flex-grow">
+              <p className="mb-6 text-sm leading-relaxed grow">
                 "Dandeal has been our trusted logistics partner for over three
                 years. They handle our imports from China and Dubai with speed
                 and professionalism. Their door-to-door service is reliable and
@@ -897,7 +897,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <p className="mb-6 text-sm leading-relaxed flex-grow">
+              <p className="mb-6 text-sm leading-relaxed grow">
                 "I used to struggle with sourcing beauty products from Turkey,
                 but Dandeal made it simple. They helped me find suppliers,
                 handled payments, and shipped everything right to my store in
@@ -923,7 +923,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <p className="mb-6 text-sm leading-relaxed flex-grow">
+              <p className="mb-6 text-sm leading-relaxed grow">
                 "We import car parts monthly and Dandeal has been exceptional.
                 Their team clears our shipments fast and keeps us informed every
                 step of the way. Working with them has improved our turnaround
@@ -949,7 +949,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <p className="mb-6 text-sm leading-relaxed flex-grow">
+              <p className="mb-6 text-sm leading-relaxed grow">
                 "I found Dandeal through a friend and they've been a
                 game-changer for my business. I now get my furniture imports
                 from China faster, safer, and at better rates. Highly
@@ -975,7 +975,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.5 }}
               viewport={{ once: true }}
             >
-              <p className="mb-6 text-sm leading-relaxed flex-grow">
+              <p className="mb-6 text-sm leading-relaxed grow">
                 "As a company that regularly brings in industrial machinery, we
                 need a logistics partner we can rely on. Dandeal delivers every
                 time. Their attention to detail and customs expertise is
@@ -1001,7 +1001,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.6 }}
               viewport={{ once: true }}
             >
-              <p className="mb-6 text-sm leading-relaxed flex-grow">
+              <p className="mb-6 text-sm leading-relaxed grow">
                 "Thanks to Dandeal, I've been able to scale my clothing business
                 by importing from Dubai and China without the usual headaches.
                 They even helped me source suppliers. Excellent service!"
@@ -1171,7 +1171,7 @@ export default function Home() {
                         type="text"
                         name="firstName"
                         placeholder="First Name"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         required
                       />
                     </div>
@@ -1183,7 +1183,7 @@ export default function Home() {
                         type="text"
                         name="lastName"
                         placeholder="Last Name"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         required
                       />
                     </div>
@@ -1195,7 +1195,7 @@ export default function Home() {
                         type="email"
                         name="email"
                         placeholder="Email Address"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         required
                       />
                     </div>
@@ -1207,7 +1207,7 @@ export default function Home() {
                         type="tel"
                         name="phone"
                         placeholder="Phone Number"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         required
                       />
                     </div>
@@ -1228,7 +1228,7 @@ export default function Home() {
                         type="text"
                         name="origin"
                         placeholder="Origin Location"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         required
                       />
                     </div>
@@ -1240,7 +1240,7 @@ export default function Home() {
                         type="text"
                         name="destination"
                         placeholder="Destination Location"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         required
                       />
                     </div>
@@ -1250,7 +1250,7 @@ export default function Home() {
                       </Label>
                       <select
                         name="shippingMethod"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700"
                         required
                       >
                         <option value="">Select Method</option>
@@ -1268,7 +1268,7 @@ export default function Home() {
                         type="text"
                         name="cargoType"
                         placeholder="Cargo Type"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         required
                       />
                     </div>
@@ -1280,7 +1280,7 @@ export default function Home() {
                         type="text"
                         name="weight"
                         placeholder="Weight/Volume"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -1290,7 +1290,7 @@ export default function Home() {
                       <input
                         type="date"
                         name="date"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -1308,7 +1308,7 @@ export default function Home() {
                     name="notes"
                     placeholder="Special requirements or additional notes..."
                     rows={3}
-                    className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
                   ></textarea>
                 </div>
 

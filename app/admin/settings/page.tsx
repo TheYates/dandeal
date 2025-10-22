@@ -143,7 +143,7 @@ export default function SettingsPage() {
       case "viewer":
         return "secondary";
       default:
-        return "outline";
+        return "outline-solid";
     }
   };
 

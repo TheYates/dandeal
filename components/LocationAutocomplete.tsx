@@ -218,7 +218,7 @@ export default function LocationAutocomplete({
                   className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-gray-900 border-b border-gray-100 last:border-b-0 flex items-center gap-2"
                 >
                   <span
-                    className="text-lg min-w-[2rem]"
+                    className="text-lg min-w-8"
                     role="img"
                     aria-label={country}
                   >

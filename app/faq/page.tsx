@@ -127,7 +127,7 @@ export default function FAQ() {
                     {item.question}
                   </h3>
                   <ChevronDown
-                    className={`w-5 h-5 text-orange-600 flex-shrink-0 transition-transform duration-300 ${
+                    className={`w-5 h-5 text-orange-600 shrink-0 transition-transform duration-300 ${
                       openIndex === index ? "rotate-180" : ""
                     }`}
                   />
@@ -157,7 +157,7 @@ export default function FAQ() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             viewport={{ once: true }}
-            className="mt-16 bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-8 text-center text-white"
+            className="mt-16 bg-linear-to-r from-red-600 to-red-700 rounded-lg p-8 text-center text-white"
           >
             <h3 className="text-2xl font-bold mb-3">Still Have Questions?</h3>
             <p className="mb-6">

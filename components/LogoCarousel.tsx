@@ -40,10 +40,10 @@ export default function LogoCarousel({ logos, speed = 30 }: LogoCarouselProps) {
   return (
     <div className="w-full py-12 relative">
       {/* Left fade gradient */}
-      <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute left-0 top-0 bottom-0 w-32 bg-linear-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
 
       {/* Right fade gradient */}
-      <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute right-0 top-0 bottom-0 w-32 bg-linear-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div
@@ -57,7 +57,7 @@ export default function LogoCarousel({ logos, speed = 30 }: LogoCarouselProps) {
           {duplicatedLogos.map((logo, index) => (
             <div
               key={`${logo.id}-${index}`}
-              className="flex-shrink-0 w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center text-5xl hover:shadow-lg transition hover:scale-105"
+              className="shrink-0 w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center text-5xl hover:shadow-lg transition hover:scale-105"
             >
               {logo.icon}
             </div>

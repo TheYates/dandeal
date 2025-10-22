@@ -41,19 +41,17 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+    <div className="flex min-h-screen items-center justify-center ">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Dandeal Admin
-          </h1>
-          <p className="text-gray-600">Sign in to access the admin dashboard</p>
+          <h1 className="text-3xl font-bold  mb-2">Dandeal Admin</h1>
+          <p className="">Sign in to access the admin dashboard</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="border  rounded-lg shadow-lg p-8">
           <form onSubmit={handleSignIn} className="space-y-6">
             <div>
-              <Label htmlFor="email" className="text-gray-700">
+              <Label htmlFor="email" className="">
                 Email
               </Label>
               <Input
@@ -68,7 +66,7 @@ export default function SignInPage() {
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-gray-700">
+              <Label htmlFor="password" className="">
                 Password
               </Label>
               <Input
@@ -92,9 +90,12 @@ export default function SignInPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-600 text-sm">
+            <p className=" text-sm">
               Don't have an account?{" "}
-              <Link href="/sign-up" className="text-orange-600 hover:text-orange-700 font-semibold">
+              <Link
+                href="/sign-up"
+                className="text-orange-600 hover:text-orange-700 font-semibold"
+              >
                 Sign up
               </Link>
             </p>
@@ -104,4 +105,3 @@ export default function SignInPage() {
     </div>
   );
 }
-
