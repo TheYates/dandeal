@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface QuoteFormProps {
   trigger?: React.ReactNode;
@@ -37,6 +38,16 @@ export default function QuoteForm({
     notes: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [messageDialog, setMessageDialog] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({
+    type: null,
+    message: "",
+  });
+
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -46,10 +57,24 @@ export default function QuoteForm({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
+    console.log("Quote form submitted, data:", formData);
+
+    // Validate required fields
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone ||
+        !formData.origin || !formData.destination || !formData.shippingMethod || !formData.cargoType) {
+      setMessageDialog({
+        type: "error",
+        message: "Please fill in all required fields",
+      });
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
+      console.log("Sending request to /api/quote");
       const response = await fetch("/api/quote", {
         method: "POST",
         headers: {
@@ -58,13 +83,17 @@ export default function QuoteForm({
         body: JSON.stringify(formData),
       });
 
+      console.log("Response status:", response.status);
       const data = await response.json();
+      console.log("Response data:", data);
 
       if (response.ok) {
         // Show success message
-        alert(
-          "Thank you! Your quote request has been submitted successfully. We'll get back to you soon."
-        );
+        setMessageDialog({
+          type: "success",
+          message:
+            "Thank you! Your quote request has been submitted successfully. We'll get back to you soon.",
+        });
 
         // Reset form
         setFormData({
@@ -81,16 +110,27 @@ export default function QuoteForm({
           notes: "",
         });
 
-        // Close dialog
-        if (onOpenChange) {
-          onOpenChange(false);
-        }
+        // Close dialog after 2 seconds
+        setTimeout(() => {
+          if (onOpenChange) {
+            onOpenChange(false);
+          }
+          setMessageDialog({ type: null, message: "" });
+        }, 2000);
       } else {
-        alert("Error: " + (data.error || "Failed to submit quote request"));
+        setMessageDialog({
+          type: "error",
+          message: data.error || "Failed to submit quote request",
+        });
       }
     } catch (error) {
       console.error("Error submitting quote:", error);
-      alert("An error occurred. Please try again later.");
+      setMessageDialog({
+        type: "error",
+        message: "An error occurred. Please try again later.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -288,18 +328,57 @@ export default function QuoteForm({
 
           {/* Submit Button */}
           <div className="pt-2">
-            <Button
-              type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-semibold text-sm transition-colors"
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Request Quote
-            </Button>
+              {isLoading ? "Submitting..." : "Request Quote"}
+            </button>
             <p className="text-xs text-gray-500 text-center mt-2">
               * Required fields
             </p>
           </div>
         </form>
       </DialogContent>
+
+      {/* Message Dialog */}
+      <Dialog
+        open={messageDialog.type !== null}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            setMessageDialog({ type: null, message: "" });
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle
+              className={
+                messageDialog.type === "success"
+                  ? "text-green-600"
+                  : "text-red-600"
+              }
+            >
+              {messageDialog.type === "success" ? "Success!" : "Error"}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-gray-700">{messageDialog.message}</p>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              onClick={() => setMessageDialog({ type: null, message: "" })}
+              className={
+                messageDialog.type === "success"
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-red-600 hover:bg-red-700"
+              }
+            >
+              {messageDialog.type === "success" ? "Close" : "Try Again"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }

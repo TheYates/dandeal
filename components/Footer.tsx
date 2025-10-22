@@ -100,10 +100,10 @@ export default function Footer() {
             <div className="space-y-2 text-sm">
               <div>
                 <p className="font-semibold text-gray-900">Call Us:</p>
-                <p className="text-gray-600">Accra: +233 58 523 3019</p>
-                <p className="text-gray-600">Kumasi: +233 59 523 3020</p>
-                <p className="text-gray-600">China: +86 139 2823 9401</p>
-                <p className="text-gray-600">Dubai: +971 557536772</p>
+                <p className="text-gray-600"> +233 25 608 8845</p>
+                <p className="text-gray-600"> +233 25 608 8846</p>
+                <p className="text-gray-600">WhatsApp: +49 15212203183</p>
+              
               </div>
               <div>
                 <p className="font-semibold text-gray-900">Email:</p>

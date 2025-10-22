@@ -139,9 +139,9 @@ export default function SettingsPage() {
   if (currentUserRole !== "super_admin" && !loading) {
     return (
       <div className="text-center py-12">
-        <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-        <p className="text-gray-600">
+        <Shield className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
+        <p className="text-gray-400">
           You need super admin privileges to access this page.
         </p>
       </div>
@@ -151,14 +151,14 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-2">Manage admin users and permissions</p>
+        <h1 className="text-3xl font-bold text-white">Settings</h1>
+        <p className="text-gray-400 mt-2">Manage admin users and permissions</p>
       </div>
 
-      <Card>
+      <Card className="bg-black border-gray-800">
         <CardHeader>
-          <CardTitle>Admin Users</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">Admin Users</CardTitle>
+          <CardDescription className="text-gray-400">
             Manage user roles and permissions. Only super admins can modify user
             roles.
           </CardDescription>
@@ -248,10 +248,10 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-black border-gray-800">
         <CardHeader>
-          <CardTitle>Role Permissions</CardTitle>
-          <CardDescription>Understanding different admin roles</CardDescription>
+          <CardTitle className="text-white">Role Permissions</CardTitle>
+          <CardDescription className="text-gray-400">Understanding different admin roles</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -260,8 +260,8 @@ export default function SettingsPage() {
                 Super Admin
               </Badge>
               <div>
-                <p className="font-medium text-gray-900">Full Access</p>
-                <p className="text-sm text-gray-600">
+                <p className="font-medium text-white">Full Access</p>
+                <p className="text-sm text-gray-400">
                   Can manage all submissions, modify user roles, and access all
                   settings
                 </p>
@@ -272,8 +272,8 @@ export default function SettingsPage() {
                 Admin
               </Badge>
               <div>
-                <p className="font-medium text-gray-900">Manage Submissions</p>
-                <p className="text-sm text-gray-600">
+                <p className="font-medium text-white">Manage Submissions</p>
+                <p className="text-sm text-gray-400">
                   Can view, update, and manage all consultation and quote
                   submissions
                 </p>
@@ -284,8 +284,8 @@ export default function SettingsPage() {
                 Viewer
               </Badge>
               <div>
-                <p className="font-medium text-gray-900">Read-Only Access</p>
-                <p className="text-sm text-gray-600">
+                <p className="font-medium text-white">Read-Only Access</p>
+                <p className="text-sm text-gray-400">
                   Can only view submissions without making any modifications
                 </p>
               </div>

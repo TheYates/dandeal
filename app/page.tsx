@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
-  ChevronDown,
   Plane,
   Ship,
   Truck,
@@ -14,7 +13,6 @@ import {
   ShoppingCart,
   Settings,
   Home as HomeIcon,
-  Heart,
   Shirt,
   Cpu,
   HardHat,
@@ -31,6 +29,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LogoCarousel from "@/components/LogoCarousel";
 import ConsultationForm from "@/components/ConsultationForm";
+import EmbeddedConsultationForm from "@/components/EmbeddedConsultationForm";
 import QuoteForm from "@/components/QuoteForm";
 
 export default function Home() {
@@ -145,114 +144,7 @@ export default function Home() {
 
             {/* Right Form - Embedded Consultation Form */}
             <div className="flex items-center justify-center mt-8 lg:mt-0">
-              <div className="bg-white/10 rounded-lg p-6 sm:p-8 w-full max-w-md shadow-lg backdrop-blur-sm">
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-6">
-                  Book A Free Consultation
-                </h2>
-
-                <form className="space-y-4">
-                  {/* Name */}
-                  <div>
-                    <Label className="text-white text-sm mb-2 block">
-                      Name
-                    </Label>
-                    <Input
-                      type="text"
-                      name="name"
-                      placeholder="Enter your name"
-                      className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60"
-                      required
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <Label className="text-white text-sm mb-2 block">
-                      Email
-                    </Label>
-                    <Input
-                      type="email"
-                      name="email"
-                      placeholder="Enter your email"
-                      className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60"
-                      required
-                    />
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <Label className="text-white text-sm mb-2 block">
-                      Phone
-                    </Label>
-                    <Input
-                      type="tel"
-                      name="phone"
-                      placeholder="Enter your phone number"
-                      className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60"
-                      required
-                    />
-                  </div>
-
-                  {/* Service Dropdown */}
-                  <div>
-                    <Label className="text-white text-sm mb-2 block">
-                      Service Requested
-                    </Label>
-                    <select
-                      name="service"
-                      className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white"
-                      required
-                    >
-                      <option value="" className="text-gray-900">
-                        Select a service
-                      </option>
-                      <option value="shipping" className="text-gray-900">
-                        Shipping
-                      </option>
-                      <option value="logistics" className="text-gray-900">
-                        Logistics
-                      </option>
-                      <option value="import" className="text-gray-900">
-                        Import
-                      </option>
-                      <option value="export" className="text-gray-900">
-                        Export
-                      </option>
-                      <option value="procurement" className="text-gray-900">
-                        International Procurement
-                      </option>
-                      <option value="customs" className="text-gray-900">
-                        Customs Clearance
-                      </option>
-                      <option value="warehousing" className="text-gray-900">
-                        Warehousing
-                      </option>
-                    </select>
-                  </div>
-
-                  {/* Message */}
-                  <div>
-                    <Label className="text-white text-sm mb-2 block">
-                      Message
-                    </Label>
-                    <textarea
-                      name="message"
-                      placeholder="Tell us more about your needs..."
-                      className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60 resize-none"
-                      rows={4}
-                    ></textarea>
-                  </div>
-
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center"
-                  >
-                    Book Free Consultation
-                    <ChevronDown className="w-4 h-4 ml-2 rotate-[-90deg]" />
-                  </Button>
-                </form>
-              </div>
+              <EmbeddedConsultationForm />
             </div>
           </div>
         </div>

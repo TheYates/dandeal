@@ -2,6 +2,13 @@
 
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs';
 
 export default function Header() {
   return (
@@ -74,12 +81,29 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <div className="hidden lg:block text-right">
               <div className="text-white text-xs">
-                <div>(+233) 055 369 0081</div>
+                <div>+49 15212203183</div>
               </div>
             </div>
             <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-6">
               Get a Free Quote
             </Button>
+            
+            {/* Authentication */}
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button variant="ghost" className="text-white hover:text-orange-600">
+                  Sign In
+                </Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6">
+                  Sign Up
+                </Button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
           </div>
         </div>
       </div>

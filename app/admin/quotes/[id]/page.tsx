@@ -99,7 +99,7 @@ export default function QuoteDetailPage() {
   if (!submission) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Quote not found</p>
+        <p className="text-gray-400">Quote not found</p>
         <Link href="/admin/quotes">
           <Button className="mt-4">Back to Quotes</Button>
         </Link>
@@ -111,16 +111,16 @@ export default function QuoteDetailPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/admin/quotes">
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-white">
             Quote Request Details
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-400 mt-1">
             Submitted on {new Date(submission.createdAt).toLocaleString()}
           </p>
         </div>
@@ -128,77 +128,77 @@ export default function QuoteDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Details */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle>Request Information</CardTitle>
+            <CardTitle className="text-white">Request Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Contact Info */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">
+              <h3 className="text-sm font-semibold text-white mb-3">
                 Contact Information
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Name</p>
-                  <p className="text-base font-semibold">
+                  <p className="text-sm font-medium text-gray-400">Name</p>
+                  <p className="text-base font-semibold text-white">
                     {submission.firstName} {submission.lastName}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Email</p>
-                  <p className="text-base">{submission.email}</p>
+                  <p className="text-sm font-medium text-gray-400">Email</p>
+                  <p className="text-base text-gray-300">{submission.email}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Phone</p>
-                  <p className="text-base">{submission.phone}</p>
+                  <p className="text-sm font-medium text-gray-400">Phone</p>
+                  <p className="text-base text-gray-300">{submission.phone}</p>
                 </div>
               </div>
             </div>
 
             {/* Shipment Details */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">
+              <h3 className="text-sm font-semibold text-white mb-3">
                 Shipment Details
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Origin</p>
-                  <p className="text-base">{submission.origin}</p>
+                  <p className="text-sm font-medium text-gray-400">Origin</p>
+                  <p className="text-base text-gray-300">{submission.origin}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-gray-400">
                     Destination
                   </p>
-                  <p className="text-base">{submission.destination}</p>
+                  <p className="text-base text-gray-300">{submission.destination}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-gray-400">
                     Shipping Method
                   </p>
-                  <p className="text-base capitalize">
+                  <p className="text-base capitalize text-gray-300">
                     {submission.shippingMethod}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-gray-400">
                     Cargo Type
                   </p>
-                  <p className="text-base">{submission.cargoType}</p>
+                  <p className="text-base text-gray-300">{submission.cargoType}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-gray-400">
                     Weight/Volume
                   </p>
-                  <p className="text-base">
+                  <p className="text-base text-gray-300">
                     {submission.weight || "Not specified"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-gray-400">
                     Preferred Date
                   </p>
-                  <p className="text-base">
+                  <p className="text-base text-gray-300">
                     {submission.preferredDate
                       ? new Date(submission.preferredDate).toLocaleDateString()
                       : "Not specified"}
@@ -209,10 +209,10 @@ export default function QuoteDetailPage() {
 
             {/* Notes */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">
+              <h3 className="text-sm font-semibold text-white mb-2">
                 Special Requirements
               </h3>
-              <p className="text-base bg-gray-50 p-4 rounded-lg">
+              <p className="text-base bg-gray-900 p-4 rounded-lg text-gray-300">
                 {submission.notes || "No special requirements"}
               </p>
             </div>
@@ -220,20 +220,20 @@ export default function QuoteDetailPage() {
         </Card>
 
         {/* Status & Actions */}
-        <Card>
+        <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle>Status & Actions</CardTitle>
+            <CardTitle className="text-white">Status & Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-2">
+              <p className="text-sm font-medium text-gray-400 mb-2">
                 Current Status
               </p>
               <Badge className="text-base px-3 py-1">{submission.status}</Badge>
             </div>
 
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-2">
+              <p className="text-sm font-medium text-gray-400 mb-2">
                 Update Status
               </p>
               <Select
@@ -254,9 +254,9 @@ export default function QuoteDetailPage() {
               </Select>
             </div>
 
-            <div className="pt-4 border-t">
-              <p className="text-xs text-gray-500">Last Updated</p>
-              <p className="text-sm font-medium">
+            <div className="pt-4 border-t border-gray-700">
+              <p className="text-xs text-gray-400">Last Updated</p>
+              <p className="text-sm font-medium text-white">
                 {new Date(submission.updatedAt).toLocaleString()}
               </p>
             </div>

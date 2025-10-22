@@ -33,6 +33,8 @@ export default function ConsultationForm({
   open,
   onOpenChange,
 }: ConsultationFormProps) {
+  console.log("ConsultationForm component rendered");
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,6 +42,16 @@ export default function ConsultationForm({
     service: "",
     message: "",
   });
+
+  const [messageDialog, setMessageDialog] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({
+    type: null,
+    message: "",
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -52,10 +64,23 @@ export default function ConsultationForm({
     setFormData((prev) => ({ ...prev, service: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
+    console.log("Form submitted, data:", formData);
+
+    // Validate required fields
+    if (!formData.name || !formData.email || !formData.phone || !formData.service) {
+      setMessageDialog({
+        type: "error",
+        message: "Please fill in all required fields",
+      });
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
+      console.log("Sending request to /api/consultation");
       const response = await fetch("/api/consultation", {
         method: "POST",
         headers: {
@@ -64,13 +89,17 @@ export default function ConsultationForm({
         body: JSON.stringify(formData),
       });
 
+      console.log("Response status:", response.status);
       const data = await response.json();
+      console.log("Response data:", data);
 
       if (response.ok) {
         // Show success message
-        alert(
-          "Thank you! Your consultation request has been submitted successfully. We'll contact you soon."
-        );
+        setMessageDialog({
+          type: "success",
+          message:
+            "Thank you! Your consultation request has been submitted successfully. We'll contact you soon.",
+        });
 
         // Reset form
         setFormData({
@@ -81,18 +110,27 @@ export default function ConsultationForm({
           message: "",
         });
 
-        // Close dialog
-        if (onOpenChange) {
-          onOpenChange(false);
-        }
+        // Close dialog after 2 seconds
+        setTimeout(() => {
+          if (onOpenChange) {
+            onOpenChange(false);
+          }
+          setMessageDialog({ type: null, message: "" });
+        }, 2000);
       } else {
-        alert(
-          "Error: " + (data.error || "Failed to submit consultation request")
-        );
+        setMessageDialog({
+          type: "error",
+          message: data.error || "Failed to submit consultation request",
+        });
       }
     } catch (error) {
       console.error("Error submitting consultation:", error);
-      alert("An error occurred. Please try again later.");
+      setMessageDialog({
+        type: "error",
+        message: "An error occurred. Please try again later.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -191,14 +229,40 @@ export default function ConsultationForm({
           </div>
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center"
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Book Free Consultation
-          </Button>
+            {isLoading ? "Submitting..." : "Book Free Consultation"}
+          </button>
         </form>
       </DialogContent>
+
+      {/* Message Dialog */}
+      <Dialog open={messageDialog.type !== null} onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          setMessageDialog({ type: null, message: "" });
+        }
+      }}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle className={messageDialog.type === "success" ? "text-green-600" : "text-red-600"}>
+              {messageDialog.type === "success" ? "Success!" : "Error"}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-gray-700">{messageDialog.message}</p>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              onClick={() => setMessageDialog({ type: null, message: "" })}
+              className={messageDialog.type === "success" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}
+            >
+              {messageDialog.type === "success" ? "Close" : "Try Again"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
