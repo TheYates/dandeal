@@ -65,7 +65,7 @@ export const quoteSubmissions = pgTable("quote_submissions", {
 
 export const adminUsers = pgTable("admin_users", {
   id: uuid("id").primaryKey().defaultRandom(),
-  clerkUserId: text("clerk_user_id").notNull().unique(),
+  supabaseUserId: text("supabase_user_id").notNull().unique(),
   email: text("email").notNull(),
   name: text("name").notNull(),
   role: adminRoleEnum("role").notNull().default("viewer"),

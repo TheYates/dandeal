@@ -1,16 +1,43 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs';
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+      setLoading(false);
+    };
+
+    getUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription?.unsubscribe();
+  }, [supabase]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -87,23 +114,42 @@ export default function Header() {
             <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-6">
               Get a Free Quote
             </Button>
-            
+
             {/* Authentication */}
-            <SignedOut>
-              <SignInButton mode="modal">
-                <Button variant="ghost" className="text-white hover:text-orange-600">
-                  Sign In
-                </Button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6">
-                  Sign Up
-                </Button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
+            {!loading && (
+              <>
+                {!user ? (
+                  <>
+                    <Link href="/sign-in">
+                      <Button
+                        variant="ghost"
+                        className="text-white hover:text-orange-600"
+                      >
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link href="/sign-up">
+                      <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-4">
+                    <span className="text-white text-sm">{user.email}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSignOut}
+                      className="text-white hover:text-orange-600"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

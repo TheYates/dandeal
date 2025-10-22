@@ -1,5 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { adminUsers } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -11,15 +11,19 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = await auth();
+  const supabase = await createClient();
 
-  if (!userId) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
     redirect("/sign-in");
   }
 
   // Check if user is an admin
   const admin = await db.query.adminUsers.findFirst({
-    where: eq(adminUsers.clerkUserId, userId),
+    where: eq(adminUsers.supabaseUserId, user.id),
   });
 
   if (!admin || !admin.isActive) {

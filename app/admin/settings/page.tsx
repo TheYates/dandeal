@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { createClient } from "@/lib/supabase/client";
 import {
   Card,
   CardContent,
@@ -31,7 +31,7 @@ import toast from "react-hot-toast";
 
 type AdminUser = {
   id: string;
-  clerkUserId: string;
+  supabaseUserId: string;
   email: string;
   name: string;
   role: string;
@@ -41,16 +41,27 @@ type AdminUser = {
 };
 
 export default function SettingsPage() {
-  const { user } = useUser();
+  const supabase = createClient();
+  const [user, setUser] = useState<any>(null);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserRole, setCurrentUserRole] = useState<string>("");
 
   useEffect(() => {
-    fetchAdminUsers();
-  }, []);
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+      if (user) {
+        fetchAdminUsers(user.id);
+      }
+    };
 
-  const fetchAdminUsers = async () => {
+    getUser();
+  }, [supabase]);
+
+  const fetchAdminUsers = async (userId: string) => {
     try {
       const response = await fetch("/api/admin/users");
       if (response.ok) {
@@ -59,7 +70,7 @@ export default function SettingsPage() {
 
         // Find current user's role
         const currentUser = data.users?.find(
-          (u: AdminUser) => u.clerkUserId === user?.id
+          (u: AdminUser) => u.supabaseUserId === userId
         );
         if (currentUser) {
           setCurrentUserRole(currentUser.role);
@@ -203,7 +214,7 @@ export default function SettingsPage() {
                           onValueChange={(value) =>
                             updateUserRole(adminUser.id, value)
                           }
-                          disabled={adminUser.clerkUserId === user?.id}
+                          disabled={adminUser.supabaseUserId === user?.id}
                         >
                           <SelectTrigger className="w-[140px]">
                             <SelectValue />
@@ -234,7 +245,7 @@ export default function SettingsPage() {
                           onClick={() =>
                             toggleUserStatus(adminUser.id, adminUser.isActive)
                           }
-                          disabled={adminUser.clerkUserId === user?.id}
+                          disabled={adminUser.supabaseUserId === user?.id}
                         >
                           {adminUser.isActive ? "Deactivate" : "Activate"}
                         </Button>
@@ -251,7 +262,9 @@ export default function SettingsPage() {
       <Card className="bg-black border-gray-800">
         <CardHeader>
           <CardTitle className="text-white">Role Permissions</CardTitle>
-          <CardDescription className="text-gray-400">Understanding different admin roles</CardDescription>
+          <CardDescription className="text-gray-400">
+            Understanding different admin roles
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

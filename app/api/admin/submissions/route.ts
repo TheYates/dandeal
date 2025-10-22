@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import {
   consultationSubmissions,
@@ -11,7 +11,7 @@ import { eq, desc } from "drizzle-orm";
 // Helper function to check if user is admin
 async function checkAdminRole(userId: string) {
   const admin = await db.query.adminUsers.findFirst({
-    where: eq(adminUsers.clerkUserId, userId),
+    where: eq(adminUsers.supabaseUserId, userId),
   });
 
   if (!admin || !admin.isActive) {
@@ -23,13 +23,16 @@ async function checkAdminRole(userId: string) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const admin = await checkAdminRole(userId);
+    const admin = await checkAdminRole(user.id);
     if (!admin) {
       return NextResponse.json(
         { error: "Forbidden - Admin access required" },
@@ -73,13 +76,16 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const admin = await checkAdminRole(userId);
+    const admin = await checkAdminRole(user.id);
     if (!admin) {
       return NextResponse.json(
         { error: "Forbidden - Admin access required" },
