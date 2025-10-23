@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { useDropdownOptions } from "@/hooks/use-dropdown-options";
 
 interface ConsultationFormProps {
   trigger?: React.ReactNode;
@@ -35,19 +37,14 @@ export default function ConsultationForm({
 }: ConsultationFormProps) {
   console.log("ConsultationForm component rendered");
 
+  const { options: services, loading: servicesLoading } =
+    useDropdownOptions("services");
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     service: "",
-    message: "",
-  });
-
-  const [messageDialog, setMessageDialog] = useState<{
-    type: "success" | "error" | null;
-    message: string;
-  }>({
-    type: null,
     message: "",
   });
 
@@ -69,11 +66,13 @@ export default function ConsultationForm({
     console.log("Form submitted, data:", formData);
 
     // Validate required fields
-    if (!formData.name || !formData.email || !formData.phone || !formData.service) {
-      setMessageDialog({
-        type: "error",
-        message: "Please fill in all required fields",
-      });
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.service
+    ) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -95,11 +94,9 @@ export default function ConsultationForm({
 
       if (response.ok) {
         // Show success message
-        setMessageDialog({
-          type: "success",
-          message:
-            "Thank you! Your consultation request has been submitted successfully. We'll contact you soon.",
-        });
+        toast.success(
+          "Thank you! Your consultation request has been submitted successfully. We'll contact you soon."
+        );
 
         // Reset form
         setFormData({
@@ -115,20 +112,13 @@ export default function ConsultationForm({
           if (onOpenChange) {
             onOpenChange(false);
           }
-          setMessageDialog({ type: null, message: "" });
         }, 2000);
       } else {
-        setMessageDialog({
-          type: "error",
-          message: data.error || "Failed to submit consultation request",
-        });
+        toast.error(data.error || "Failed to submit consultation request");
       }
     } catch (error) {
       console.error("Error submitting consultation:", error);
-      setMessageDialog({
-        type: "error",
-        message: "An error occurred. Please try again later.",
-      });
+      toast.error("An error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +137,12 @@ export default function ConsultationForm({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 mt-4"
+          action="#"
+          method="POST"
+        >
           {/* Name */}
           <div>
             <Label className=" text-sm mb-2 block">Name *</Label>
@@ -197,20 +192,24 @@ export default function ConsultationForm({
               value={formData.service}
               onValueChange={handleServiceChange}
               required
+              disabled={servicesLoading}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a service" />
+                {servicesLoading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading services...
+                  </div>
+                ) : (
+                  <SelectValue placeholder="Select a service" />
+                )}
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="shipping">Shipping</SelectItem>
-                <SelectItem value="logistics">Logistics</SelectItem>
-                <SelectItem value="import">Import</SelectItem>
-                <SelectItem value="export">Export</SelectItem>
-                <SelectItem value="procurement">
-                  International Procurement
-                </SelectItem>
-                <SelectItem value="customs">Customs Clearance</SelectItem>
-                <SelectItem value="warehousing">Warehousing</SelectItem>
+                {services.map((service) => (
+                  <SelectItem key={service.id} value={service.value}>
+                    {service.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -230,8 +229,7 @@ export default function ConsultationForm({
 
           {/* Submit Button */}
           <button
-            type="button"
-            onClick={handleSubmit}
+            type="submit"
             disabled={isLoading}
             className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -239,30 +237,6 @@ export default function ConsultationForm({
           </button>
         </form>
       </DialogContent>
-
-      {/* Message Dialog */}
-      <Dialog open={messageDialog.type !== null} onOpenChange={(isOpen) => {
-        if (!isOpen) {
-          setMessageDialog({ type: null, message: "" });
-        }
-      }}>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle className={messageDialog.type === "success" ? "text-green-600" : "text-red-600"}>
-              {messageDialog.type === "success" ? "Success!" : "Error"}
-            </DialogTitle>
-          </DialogHeader>
-          <p className="text-gray-700">{messageDialog.message}</p>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button
-              onClick={() => setMessageDialog({ type: null, message: "" })}
-              className={messageDialog.type === "success" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}
-            >
-              {messageDialog.type === "success" ? "Close" : "Try Again"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </Dialog>
   );
 }

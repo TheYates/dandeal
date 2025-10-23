@@ -44,66 +44,68 @@ export default function SignInPage() {
     <>
       <Toaster position="top-right" />
       <div className="flex min-h-screen items-center justify-center ">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold  mb-2">Dandeal Admin</h1>
-          <p className="">Sign in to access the admin dashboard</p>
-        </div>
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold  mb-2">
+              Dandeal Logistics & Importation
+            </h1>
+            <p className="">Sign in to access the admin panel</p>
+          </div>
 
-        <div className="border  rounded-lg shadow-lg p-8">
-          <form onSubmit={handleSignIn} className="space-y-6">
-            <div>
-              <Label htmlFor="email" className="">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="mt-2"
-              />
-            </div>
+          <div className="border  rounded-lg shadow-lg p-8">
+            <form onSubmit={handleSignIn} className="space-y-6">
+              <div>
+                <Label htmlFor="email" className="">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="mt-2"
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="password" className="">
-                Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="mt-2"
-              />
-            </div>
+              <div>
+                <Label htmlFor="password" className="">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="mt-2"
+                />
+              </div>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white"
-            >
-              {loading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className=" text-sm">
-              Don't have an account?{" "}
-              <Link
-                href="/sign-up"
-                className="text-orange-600 hover:text-orange-700 font-semibold"
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white"
               >
-                Sign up
-              </Link>
-            </p>
+                {loading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className=" text-sm">
+                Don't have an account?{" "}
+                <Link
+                  href="/sign-up"
+                  className="text-orange-600 hover:text-orange-700 font-semibold"
+                >
+                  Sign up
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </>
   );

@@ -1,55 +1,37 @@
 "use client";
 
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["700"] });
 
 export default function Header() {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClient();
-  const router = useRouter();
-
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-      setLoading(false);
-    };
-
-    getUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription?.unsubscribe();
-  }, [supabase]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-  };
-
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xs h-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex items-center justify-between h-full">
           {/* Logo */}
-          <div className="flex items-center">
-            <div className="text-orange-400 font-bold text-xl">Dandeal</div>
-            <div className="text-white text-xs ml-2">
-              <div>Logistics &</div>
-              <div>Importation</div>
-            </div>
-          </div>
+          <Link
+            href="/"
+            className="flex items-center gap-2 hover:opacity-80 transition h-full"
+          >
+            <Image
+              src="/dandeal-icon.png"
+              alt="Dandeal Icon"
+              width={60}
+              height={60}
+              className="w-12 h-12"
+            />
+            <span
+              className={`${montserrat.className} text-white text-3xl font-bold`}
+            >
+              <span className="text-whitel">Dan</span>
+              <span className="text-[#AF7E37]">deal</span>
+            </span>
+          </Link>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -114,42 +96,6 @@ export default function Header() {
             <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-6">
               Get a Free Quote
             </Button>
-
-            {/* Authentication */}
-            {!loading && (
-              <>
-                {!user ? (
-                  <>
-                    <Link href="/sign-in">
-                      <Button
-                        variant="ghost"
-                        className="text-white hover:text-orange-600"
-                      >
-                        Sign In
-                      </Button>
-                    </Link>
-                    <Link href="/sign-up">
-                      <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6">
-                        Sign Up
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
-                  <div className="flex items-center gap-4">
-                    <span className="text-white text-sm">{user.email}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleSignOut}
-                      className="text-white hover:text-orange-600"
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
-                    </Button>
-                  </div>
-                )}
-              </>
-            )}
           </div>
         </div>
       </div>

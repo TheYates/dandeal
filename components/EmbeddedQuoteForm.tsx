@@ -1,37 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useDropdownOptions } from "@/hooks/use-dropdown-options";
 
-interface QuoteFormProps {
-  trigger?: React.ReactNode;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-}
-
-export default function QuoteForm({
-  trigger,
-  open,
-  onOpenChange,
-}: QuoteFormProps) {
-  const { options: shippingMethods, loading: shippingLoading } =
-    useDropdownOptions("shipping_methods");
-  const { options: cargoTypes, loading: cargoLoading } =
-    useDropdownOptions("cargo_types");
-
+export default function EmbeddedQuoteForm() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -57,9 +31,9 @@ export default function QuoteForm({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
-    if (e) e.preventDefault();
-    console.log("Quote form submitted, data:", formData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Embedded quote form submitted, data:", formData);
 
     // Validate required fields
     if (
@@ -112,13 +86,6 @@ export default function QuoteForm({
           date: "",
           notes: "",
         });
-
-        // Close dialog after 2 seconds
-        setTimeout(() => {
-          if (onOpenChange) {
-            onOpenChange(false);
-          }
-        }, 2000);
       } else {
         toast.error(data.error || "Failed to submit quote request");
       }
@@ -131,25 +98,24 @@ export default function QuoteForm({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">
-            Get Your Quote
-          </DialogTitle>
-          <DialogDescription>
-            Fill out the form and we'll contact you shortly with a customized
-            shipping solution.
-          </DialogDescription>
-        </DialogHeader>
-
+    <>
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 border border-gray-200 w-full max-w-lg mt-8 lg:mt-0">
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 mt-4"
+          className="space-y-4"
           action="#"
           method="POST"
         >
+          {/* Form Header */}
+          <div className="mb-4">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">
+              Get Your Quote
+            </h3>
+            <p className="text-sm text-gray-600">
+              Fill out the form and we'll contact you shortly
+            </p>
+          </div>
+
           {/* Contact Information Section */}
           <div>
             <h4 className="text-xs font-semibold text-gray-900 mb-3 uppercase tracking-wide">
@@ -259,39 +225,27 @@ export default function QuoteForm({
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700"
                   required
-                  disabled={shippingLoading}
                 >
-                  <option value="">
-                    {shippingLoading ? "Loading..." : "Select Method"}
-                  </option>
-                  {shippingMethods.map((method) => (
-                    <option key={method.id} value={method.value}>
-                      {method.label}
-                    </option>
-                  ))}
+                  <option value="">Select Method</option>
+                  <option value="air">Air Freight</option>
+                  <option value="sea">Sea Freight</option>
+                  <option value="land">Land Transport</option>
+                  <option value="multimodal">Multimodal</option>
                 </select>
               </div>
               <div>
                 <Label className="text-gray-700 text-xs mb-1 block">
                   Cargo Type *
                 </Label>
-                <select
+                <input
+                  type="text"
                   name="cargoType"
+                  placeholder="Cargo Type"
                   value={formData.cargoType}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700"
+                  className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   required
-                  disabled={cargoLoading}
-                >
-                  <option value="">
-                    {cargoLoading ? "Loading..." : "Select Cargo Type"}
-                  </option>
-                  {cargoTypes.map((cargo) => (
-                    <option key={cargo.id} value={cargo.value}>
-                      {cargo.label}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
               <div>
                 <Label className="text-gray-700 text-xs mb-1 block">
@@ -341,19 +295,19 @@ export default function QuoteForm({
 
           {/* Submit Button */}
           <div className="pt-2">
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Submitting..." : "Request Quote"}
-            </button>
+            </Button>
             <p className="text-xs text-gray-500 text-center mt-2">
               * Required fields
             </p>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </>
   );
 }

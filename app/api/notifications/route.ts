@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
     const { type, submission } = await request.json();
 
     const adminEmails = process.env.ADMIN_NOTIFICATION_EMAILS?.split(",") || [];
-    const fromEmail =
-      process.env.NOTIFICATION_EMAIL_FROM || "notifications@dandeal.com";
 
     if (adminEmails.length === 0) {
       console.warn("No admin emails configured for notifications");
@@ -37,7 +32,7 @@ export async function POST(request: NextRequest) {
         <br />
         <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/consultations/${
         submission.id
-      }" 
+      }"
            style="background-color: #ea580c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
           View in Dashboard
         </a>
@@ -66,26 +61,21 @@ export async function POST(request: NextRequest) {
         <br />
         <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/quotes/${
         submission.id
-      }" 
+      }"
            style="background-color: #ea580c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
           View in Dashboard
         </a>
       `;
     }
 
-    // Send email to all admin emails
-    await resend.emails.send({
-      from: fromEmail,
-      to: adminEmails,
-      subject,
-      html,
-    });
+    // Log notification instead of sending (email service not configured)
+    console.log(`Notification: ${subject}`, { html, recipients: adminEmails });
 
-    return NextResponse.json({ success: true, message: "Notification sent" });
+    return NextResponse.json({ success: true, message: "Notification logged" });
   } catch (error) {
-    console.error("Error sending notification:", error);
+    console.error("Error processing notification:", error);
     return NextResponse.json(
-      { error: "Failed to send notification" },
+      { error: "Failed to process notification" },
       { status: 500 }
     );
   }

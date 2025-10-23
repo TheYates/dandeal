@@ -24,55 +24,38 @@ import {
   Search,
   Loader2,
   Eye,
-  CheckCircle,
   Clock,
-  XCircle,
-  FileText,
-  CheckCheck,
+  CheckCircle,
+  MessageSquare,
 } from "lucide-react";
-import { QuoteDetailDialog } from "./quote-detail-dialog";
+import { ContactDetailDialog } from "./contact-detail-dialog";
 import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
 import { toast } from "sonner";
 
-interface Quote {
+interface Contact {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
-  phone: string;
-  origin: string;
-  destination: string;
-  shippingMethod: string;
-  cargoType: string;
-  weight: string | null;
-  preferredDate: string | null;
-  notes: string | null;
-  status: "new" | "quoted" | "accepted" | "declined" | "completed";
+  phone: string | null;
+  subject: string;
+  message: string;
+  status: "new" | "read" | "responded" | "archived";
   createdAt: string;
   updatedAt: string;
 }
 
-const shippingMethods = [
-  "Land Transport",
-  "Air Freight",
-  "Sea Freight",
-  "Multimodal",
-  "Rail Transport",
-];
-
-export function QuotesTable() {
+export function ContactsTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [methodFilter, setMethodFilter] = useState<string>("all");
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const {
-    data: quotes,
+    data: contacts,
     loading,
     invalidateCache,
-  } = useSubmissionsCache<Quote>("quotes", async () => {
-    const response = await fetch("/api/admin/submissions?type=quotes");
+  } = useSubmissionsCache<Contact>("contacts", async () => {
+    const response = await fetch("/api/admin/submissions?type=contacts");
     const data = await response.json();
     return data.submissions || [];
   });
@@ -84,29 +67,26 @@ export function QuotesTable() {
       .join(" ");
   };
 
-  const filteredQuotes = useMemo(() => {
-    return quotes.filter((quote) => {
+  const filteredContacts = useMemo(() => {
+    return contacts.filter((contact) => {
       const matchesSearch =
-        quote.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quote.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quote.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quote.phone.includes(searchTerm);
+        contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        contact.subject.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus =
-        statusFilter === "all" || quote.status === statusFilter;
-      const matchesMethod =
-        methodFilter === "all" || quote.shippingMethod === methodFilter;
+        statusFilter === "all" || contact.status === statusFilter;
 
-      return matchesSearch && matchesStatus && matchesMethod;
+      return matchesSearch && matchesStatus;
     });
-  }, [quotes, searchTerm, statusFilter, methodFilter]);
+  }, [contacts, searchTerm, statusFilter]);
 
-  const updateStatus = async (id: string, newStatus: Quote["status"]) => {
+  const updateStatus = async (id: string, newStatus: Contact["status"]) => {
     try {
       const response = await fetch("/api/admin/submissions", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: newStatus, type: "quotes" }),
+        body: JSON.stringify({ id, status: newStatus, type: "contacts" }),
       });
       if (response.ok) {
         invalidateCache();
@@ -120,77 +100,33 @@ export function QuotesTable() {
     }
   };
 
-  const deleteQuote = async (id: string) => {
+  const deleteContact = async (id: string) => {
     try {
       const response = await fetch("/api/admin/submissions", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, type: "quotes" }),
+        body: JSON.stringify({ id, type: "contacts" }),
       });
       if (response.ok) {
         invalidateCache();
       }
     } catch (error) {
-      console.error("Error deleting quote:", error);
+      console.error("Error deleting contact:", error);
     }
   };
 
-  const exportData = () => {
-    const csv = [
-      [
-        "ID",
-        "Name",
-        "Email",
-        "Phone",
-        "Origin",
-        "Destination",
-        "Method",
-        "Cargo Type",
-        "Weight",
-        "Preferred Date",
-        "Special Requirements",
-        "Status",
-        "Submitted",
-      ],
-      ...filteredQuotes.map((q) => [
-        q.id,
-        `${q.firstName} ${q.lastName}`,
-        q.email,
-        q.phone,
-        q.origin,
-        q.destination,
-        q.shippingMethod,
-        q.cargoType,
-        q.weight || "",
-        q.preferredDate || "",
-        q.notes || "",
-        q.status,
-        new Date(q.createdAt).toLocaleString(),
-      ]),
-    ]
-      .map((row) => row.map((cell) => `"${cell}"`).join(","))
-      .join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `quotes-${new Date().toISOString().split("T")[0]}.csv`;
-    a.click();
-  };
-
-  const getStatusColor = (status: Quote["status"]) => {
+  const getStatusColor = (status: Contact["status"]) => {
     switch (status) {
       case "new":
-        return "bg-yellow-100 text-yellow-800";
-      case "quoted":
         return "bg-blue-100 text-blue-800";
-      case "accepted":
+      case "read":
+        return "bg-yellow-100 text-yellow-800";
+      case "responded":
         return "bg-green-100 text-green-800";
-      case "declined":
-        return "bg-red-100 text-red-800";
-      case "completed":
-        return "bg-purple-100 text-purple-800";
+      case "archived":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -198,9 +134,9 @@ export function QuotesTable() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Quote Requests</CardTitle>
+          <CardTitle>Contact Messages</CardTitle>
           <CardDescription>
-            Manage and track all quote submissions
+            Manage and track all contact form submissions
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -209,45 +145,23 @@ export function QuotesTable() {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-400" />
               <Input
-                placeholder="Search by name, email, or phone..."
+                placeholder="Search by name, email, or subject..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
             <select
-              value={methodFilter}
-              onChange={(e) => setMethodFilter(e.target.value)}
-              className="px-3 py-2 border border-slate-800 rounded-md text-sm bg-white dark:bg-background"
-            >
-              <option value="all">All Methods</option>
-              {shippingMethods.map((method) => (
-                <option key={method} value={method}>
-                  {method}
-                </option>
-              ))}
-            </select>
-            <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-slate-800 rounded-md text-sm  bg-white dark:bg-background"
+              className="px-3 py-2 border border-slate-800 rounded-md text-sm bg-white dark:bg-background"
             >
               <option value="all">All Status</option>
               <option value="new">New</option>
-              <option value="quoted">Quoted</option>
-              <option value="accepted">Accepted</option>
-              <option value="declined">Declined</option>
-              <option value="completed">Completed</option>
+              <option value="read">Read</option>
+              <option value="responded">Responded</option>
+              <option value="archived">Archived</option>
             </select>
-            <Button
-              onClick={exportData}
-              variant="outline"
-              size="sm"
-              className="gap-2 bg-transparent"
-            >
-              <Download className="w-4 h-4" />
-              Export
-            </Button>
           </div>
 
           {/* Table */}
@@ -267,10 +181,7 @@ export function QuotesTable() {
                       Email
                     </th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-white">
-                      Route
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-white">
-                      Method
+                      Subject
                     </th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-white">
                       Status
@@ -287,45 +198,39 @@ export function QuotesTable() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredQuotes.map((quote) => (
+                  {filteredContacts.map((contact) => (
                     <tr
-                      key={quote.id}
+                      key={contact.id}
                       className="border-b border-slate-200 hover:bg-slate-50 dark:hover:bg-accent cursor-pointer"
                       onClick={() => {
-                        setSelectedQuote(quote);
+                        setSelectedContact(contact);
                         setDialogOpen(true);
                       }}
                     >
                       <td className="py-3 px-4">
                         <div className="font-medium text-slate-900 dark:text-white">
-                          {quote.firstName} {quote.lastName}
+                          {contact.name}
                         </div>
                         <div className="text-xs text-slate-500 dark:text-slate-400">
-                          {quote.id}
+                          {contact.id}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white">
-                        {quote.email}
+                        {contact.email}
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white">
-                        <div className="text-xs dark:text-white">
-                          {quote.origin}
+                        <div className="truncate max-w-xs">
+                          {contact.subject}
                         </div>
-                        <div className="text-xs dark:text-white">
-                          → {quote.destination}
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 text-slate-600 dark:text-white">
-                        {quote.shippingMethod}
                       </td>
                       <td className="py-3 px-4">
-                        <Badge className={getStatusColor(quote.status)}>
-                          {toTitleCase(quote.status)}
+                        <Badge className={getStatusColor(contact.status)}>
+                          {toTitleCase(contact.status)}
                         </Badge>
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(quote.createdAt).toLocaleDateString(
+                          {new Date(contact.createdAt).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -335,7 +240,7 @@ export function QuotesTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(quote.createdAt).toLocaleTimeString(
+                          {new Date(contact.createdAt).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",
@@ -346,7 +251,7 @@ export function QuotesTable() {
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(quote.updatedAt).toLocaleDateString(
+                          {new Date(contact.updatedAt).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -356,7 +261,7 @@ export function QuotesTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(quote.updatedAt).toLocaleTimeString(
+                          {new Date(contact.updatedAt).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",
@@ -378,53 +283,40 @@ export function QuotesTable() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() => {
-                                setSelectedQuote(quote);
+                                setSelectedContact(contact);
                                 setDialogOpen(true);
                               }}
-                              className="flex items-center gap-2"
                             >
-                              <Eye className="w-4 h-4" />
+                              <Eye className="w-4 h-4 mr-2" />
                               View Details
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => updateStatus(quote.id, "new")}
+                              onClick={() => updateStatus(contact.id, "read")}
                               className="flex items-center gap-2"
                             >
                               <Clock className="w-4 h-4" />
-                              Mark New
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => updateStatus(quote.id, "quoted")}
-                              className="flex items-center gap-2"
-                            >
-                              <FileText className="w-4 h-4" />
-                              Mark Quoted
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => updateStatus(quote.id, "accepted")}
-                              className="flex items-center gap-2"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                              Mark Accepted
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => updateStatus(quote.id, "declined")}
-                              className="flex items-center gap-2"
-                            >
-                              <XCircle className="w-4 h-4" />
-                              Mark Declined
+                              Mark as Read
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                updateStatus(quote.id, "completed")
+                                updateStatus(contact.id, "responded")
                               }
                               className="flex items-center gap-2"
                             >
-                              <CheckCheck className="w-4 h-4" />
-                              Mark Completed
+                              <MessageSquare className="w-4 h-4" />
+                              Mark as Responded
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => deleteQuote(quote.id)}
+                              onClick={() =>
+                                updateStatus(contact.id, "archived")
+                              }
+                              className="flex items-center gap-2"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              Archive
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => deleteContact(contact.id)}
                               className="text-destructive"
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
@@ -440,22 +332,22 @@ export function QuotesTable() {
             </div>
           )}
 
-          {!loading && filteredQuotes.length === 0 && (
+          {!loading && filteredContacts.length === 0 && (
             <div className="text-center py-8 text-slate-500 dark:text-slate-300">
-              No quote requests found matching your criteria.
+              No contact messages found matching your criteria.
             </div>
           )}
 
           {!loading && (
             <div className="text-xs text-slate-500 dark:text-slate-300 pt-2">
-              Showing {filteredQuotes.length} of {quotes.length} submissions
+              Showing {filteredContacts.length} of {contacts.length} submissions
             </div>
           )}
         </CardContent>
       </Card>
 
-      <QuoteDetailDialog
-        quote={selectedQuote}
+      <ContactDetailDialog
+        contact={selectedContact}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />

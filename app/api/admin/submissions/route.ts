@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import {
   consultationSubmissions,
   quoteSubmissions,
+  contactSubmissions,
   adminUsers,
 } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
@@ -53,8 +54,13 @@ export async function GET(request: NextRequest) {
         orderBy: [desc(quoteSubmissions.createdAt)],
       });
       return NextResponse.json({ submissions });
+    } else if (type === "contacts") {
+      const submissions = await db.query.contactSubmissions.findMany({
+        orderBy: [desc(contactSubmissions.createdAt)],
+      });
+      return NextResponse.json({ submissions });
     } else {
-      // Return both
+      // Return all types
       const consultations = await db.query.consultationSubmissions.findMany({
         orderBy: [desc(consultationSubmissions.createdAt)],
         limit: 10,
@@ -63,7 +69,11 @@ export async function GET(request: NextRequest) {
         orderBy: [desc(quoteSubmissions.createdAt)],
         limit: 10,
       });
-      return NextResponse.json({ consultations, quotes });
+      const contacts = await db.query.contactSubmissions.findMany({
+        orderBy: [desc(contactSubmissions.createdAt)],
+        limit: 10,
+      });
+      return NextResponse.json({ consultations, quotes, contacts });
     }
   } catch (error) {
     console.error("Error fetching submissions:", error);
@@ -102,7 +112,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, type, updates } = body;
+    const { id, type, status } = body;
 
     if (!id || !type) {
       return NextResponse.json(
@@ -111,21 +121,32 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // Add updated timestamp
+    // Prepare updates object
+    const updates: any = {};
+    if (status) {
+      updates.status = status;
+    }
     updates.updatedAt = new Date();
 
-    if (type === "consultation") {
+    if (type === "consultation" || type === "consultations") {
       const [updated] = await db
         .update(consultationSubmissions)
         .set(updates)
         .where(eq(consultationSubmissions.id, id))
         .returning();
       return NextResponse.json({ success: true, submission: updated });
-    } else if (type === "quote") {
+    } else if (type === "quote" || type === "quotes") {
       const [updated] = await db
         .update(quoteSubmissions)
         .set(updates)
         .where(eq(quoteSubmissions.id, id))
+        .returning();
+      return NextResponse.json({ success: true, submission: updated });
+    } else if (type === "contact" || type === "contacts") {
+      const [updated] = await db
+        .update(contactSubmissions)
+        .set(updates)
+        .where(eq(contactSubmissions.id, id))
         .returning();
       return NextResponse.json({ success: true, submission: updated });
     } else {
@@ -167,9 +188,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    const type = searchParams.get("type");
+    const body = await request.json();
+    const { id, type } = body;
 
     if (!id || !type) {
       return NextResponse.json(
@@ -178,12 +198,14 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    if (type === "consultation") {
+    if (type === "consultation" || type === "consultations") {
       await db
         .delete(consultationSubmissions)
         .where(eq(consultationSubmissions.id, id));
-    } else if (type === "quote") {
+    } else if (type === "quote" || type === "quotes") {
       await db.delete(quoteSubmissions).where(eq(quoteSubmissions.id, id));
+    } else if (type === "contact" || type === "contacts") {
+      await db.delete(contactSubmissions).where(eq(contactSubmissions.id, id));
     } else {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }

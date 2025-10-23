@@ -24,10 +24,23 @@ export const quoteStatusEnum = pgEnum("quote_status", [
   "completed",
 ]);
 
+export const contactStatusEnum = pgEnum("contact_status", [
+  "new",
+  "read",
+  "responded",
+  "archived",
+]);
+
 export const adminRoleEnum = pgEnum("admin_role", [
   "super_admin",
   "admin",
   "viewer",
+]);
+
+export const dropdownTypeEnum = pgEnum("dropdown_type", [
+  "services",
+  "shipping_methods",
+  "cargo_types",
 ]);
 
 // Tables
@@ -63,12 +76,35 @@ export const quoteSubmissions = pgTable("quote_submissions", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const contactSubmissions = pgTable("contact_submissions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  status: contactStatusEnum("status").notNull().default("new"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const adminUsers = pgTable("admin_users", {
   id: uuid("id").primaryKey().defaultRandom(),
   supabaseUserId: text("supabase_user_id").notNull().unique(),
   email: text("email").notNull(),
   name: text("name").notNull(),
   role: adminRoleEnum("role").notNull().default("viewer"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const dropdownOptions = pgTable("dropdown_options", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  type: dropdownTypeEnum("type").notNull(),
+  label: text("label").notNull(),
+  value: text("value").notNull(),
+  order: text("order").default("0"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -85,3 +121,6 @@ export type NewQuoteSubmission = typeof quoteSubmissions.$inferInsert;
 
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type NewAdminUser = typeof adminUsers.$inferInsert;
+
+export type DropdownOption = typeof dropdownOptions.$inferSelect;
+export type NewDropdownOption = typeof dropdownOptions.$inferInsert;

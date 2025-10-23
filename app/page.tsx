@@ -24,13 +24,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LogoCarousel from "@/components/LogoCarousel";
 import ConsultationForm from "@/components/ConsultationForm";
 import EmbeddedConsultationForm from "@/components/EmbeddedConsultationForm";
 import QuoteForm from "@/components/QuoteForm";
+import EmbeddedQuoteForm from "@/components/EmbeddedQuoteForm";
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -129,16 +129,14 @@ export default function Home() {
                     </Button>
                   }
                 />
-                <QuoteForm
-                  trigger={
-                    <Button
-                      variant="outline"
-                      className="border-white text-white hover:bg-white hover:text-black rounded-full px-6 sm:px-8 w-full sm:w-auto"
-                    >
-                      Contact Us
-                    </Button>
-                  }
-                />
+                <Link href="/contact">
+                  <Button
+                    variant="outline"
+                    className="border-white text-black hover:bg-gray-300 rounded-full px-6 sm:px-8 w-full sm:w-auto"
+                  >
+                    Contact Us
+                  </Button>
+                </Link>
               </div>
             </div>
 
@@ -1054,7 +1052,7 @@ export default function Home() {
 
           {/* CTA Button */}
           <Link href="/contact">
-            <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-900 rounded-full px-8 py-3 font-semibold transition">
+            <Button className=" border-2 border-white text-white hover:bg-accent hover:text-blue-900 rounded-full px-8 py-3 font-semibold transition">
               Contact Us
             </Button>
           </Link>
@@ -1145,187 +1143,7 @@ export default function Home() {
             </div>
 
             {/* Right Form - Embedded Quote Form */}
-            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 border border-gray-200 w-full max-w-lg mt-8 lg:mt-0">
-              <form className="space-y-4">
-                {/* Form Header */}
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">
-                    Get Your Quote
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Fill out the form and we'll contact you shortly
-                  </p>
-                </div>
-
-                {/* Contact Information Section */}
-                <div>
-                  <h4 className="text-xs font-semibold text-gray-900 mb-3 uppercase tracking-wide">
-                    Contact Information
-                  </h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        First Name *
-                      </Label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        placeholder="First Name"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        Last Name *
-                      </Label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        placeholder="Last Name"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        required
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        Email Address *
-                      </Label>
-                      <input
-                        type="email"
-                        name="email"
-                        placeholder="Email Address"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        required
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        Phone Number *
-                      </Label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        placeholder="Phone Number"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Shipment Details Section */}
-                <div>
-                  <h4 className="text-xs font-semibold text-gray-900 mb-3 uppercase tracking-wide">
-                    Shipment Details
-                  </h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        Origin Location *
-                      </Label>
-                      <input
-                        type="text"
-                        name="origin"
-                        placeholder="Origin Location"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        Destination Location *
-                      </Label>
-                      <input
-                        type="text"
-                        name="destination"
-                        placeholder="Destination Location"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        Shipping Method *
-                      </Label>
-                      <select
-                        name="shippingMethod"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700"
-                        required
-                      >
-                        <option value="">Select Method</option>
-                        <option value="air">Air Freight</option>
-                        <option value="sea">Sea Freight</option>
-                        <option value="land">Land Transport</option>
-                        <option value="multimodal">Multimodal</option>
-                      </select>
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        Cargo Type *
-                      </Label>
-                      <input
-                        type="text"
-                        name="cargoType"
-                        placeholder="Cargo Type"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        Weight/Volume
-                      </Label>
-                      <input
-                        type="text"
-                        name="weight"
-                        placeholder="Weight/Volume"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-gray-700 text-xs mb-1 block">
-                        Preferred Date
-                      </Label>
-                      <input
-                        type="date"
-                        name="date"
-                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Additional Information Section */}
-                <div>
-                  <h4 className="text-xs font-semibold text-gray-900 mb-3 uppercase tracking-wide">
-                    Additional Information
-                  </h4>
-                  <Label className="text-gray-700 text-xs mb-1 block">
-                    Special Requirements
-                  </Label>
-                  <textarea
-                    name="notes"
-                    placeholder="Special requirements or additional notes..."
-                    rows={3}
-                    className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
-                  ></textarea>
-                </div>
-
-                {/* Submit Button */}
-                <div className="pt-2">
-                  <Button
-                    type="submit"
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-semibold text-sm transition-colors"
-                  >
-                    Request Quote
-                  </Button>
-                  <p className="text-xs text-gray-500 text-center mt-2">
-                    * Required fields
-                  </p>
-                </div>
-              </form>
-            </div>
+            <EmbeddedQuoteForm />
           </div>
         </div>
       </section>

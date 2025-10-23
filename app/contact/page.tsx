@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
@@ -24,23 +25,63 @@ export default function Contact() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Reset form
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+
+    // Validate required fields
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.subject ||
+      !formData.message
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(
+          "Thank you! Your message has been sent successfully. We'll get back to you soon."
+        );
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        toast.error(data.error || "Failed to send message");
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      toast.error("An error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const contactInfo = [
     {
       icon: Phone,
       title: "Call Us",
-      details: [
-        "Accra: +233 58 523 3019",
-        "Kumasi: +233 59 523 3020",
-        "China: +86 139 2823 9401",
-        "Dubai: +971 557536772",
-      ],
+      details: ["+233 25 608 8845", "+233 25 608 8846"],
     },
     {
       icon: Mail,
@@ -51,21 +92,15 @@ export default function Contact() {
       icon: MapPin,
       title: "Visit Us",
       details: [
-        "Ghana - Accra: Kaserbryn, Oscar Junction",
-        "Kumasi: Haertsao Near Boankra",
-        "China: Foshan & Guangzhou",
-        "Dubai: Al Muraqabat & Sharjah",
+        "Kumasi - Ghana: Santasi",
+        "Obuasi - Ashanti Region: Mangoase",
+        "China Office: Gunagzhou",
       ],
     },
     {
-      icon: Clock,
-      title: "Business Hours",
-      details: [
-        "Monday - Friday: 8:00 AM - 6:00 PM",
-        "Saturday: 9:00 AM - 2:00 PM",
-        "Sunday: Closed",
-        "24/7 Emergency Support Available",
-      ],
+      icon: MessageCircle,
+      title: "Message Us",
+      details: ["+233 25 608 8845", "+233 25 608 8846"],
     },
   ];
 
@@ -199,8 +234,12 @@ export default function Contact() {
                 </div>
 
                 {/* Submit Button */}
-                <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition">
-                  Send Message
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? "Sending..." : "Send Message"}
                 </Button>
                 <p className="text-xs text-gray-500 text-center">
                   * Required fields

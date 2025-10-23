@@ -11,14 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function EmbeddedConsultationForm() {
   const [formData, setFormData] = useState({
@@ -30,14 +25,6 @@ export default function EmbeddedConsultationForm() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const [messageDialog, setMessageDialog] = useState<{
-    type: "success" | "error" | null;
-    message: string;
-  }>({
-    type: null,
-    message: "",
-  });
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -55,11 +42,13 @@ export default function EmbeddedConsultationForm() {
     console.log("Form submitted, data:", formData);
 
     // Validate required fields
-    if (!formData.name || !formData.email || !formData.phone || !formData.service) {
-      setMessageDialog({
-        type: "error",
-        message: "Please fill in all required fields",
-      });
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.service
+    ) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -81,11 +70,9 @@ export default function EmbeddedConsultationForm() {
 
       if (response.ok) {
         // Show success message
-        setMessageDialog({
-          type: "success",
-          message:
-            "Thank you! Your consultation request has been submitted successfully. We'll contact you soon.",
-        });
+        toast.success(
+          "Thank you! Your consultation request has been submitted successfully. We'll contact you soon."
+        );
 
         // Reset form
         setFormData({
@@ -96,17 +83,11 @@ export default function EmbeddedConsultationForm() {
           message: "",
         });
       } else {
-        setMessageDialog({
-          type: "error",
-          message: data.error || "Failed to submit consultation request",
-        });
+        toast.error(data.error || "Failed to submit consultation request");
       }
     } catch (error) {
       console.error("Error submitting consultation:", error);
-      setMessageDialog({
-        type: "error",
-        message: "An error occurred. Please try again later.",
-      });
+      toast.error("An error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +109,7 @@ export default function EmbeddedConsultationForm() {
             placeholder="Enter your name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60"
+            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-red-500"
             required
           />
         </div>
@@ -207,44 +188,6 @@ export default function EmbeddedConsultationForm() {
           <ChevronDown className="w-4 h-4 ml-2 -rotate-90" />
         </Button>
       </form>
-
-      {/* Message Dialog */}
-      <Dialog
-        open={messageDialog.type !== null}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) {
-            setMessageDialog({ type: null, message: "" });
-          }
-        }}
-      >
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle
-              className={
-                messageDialog.type === "success"
-                  ? "text-green-600"
-                  : "text-red-600"
-              }
-            >
-              {messageDialog.type === "success" ? "Success!" : "Error"}
-            </DialogTitle>
-          </DialogHeader>
-          <p className="text-gray-700">{messageDialog.message}</p>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button
-              onClick={() => setMessageDialog({ type: null, message: "" })}
-              className={
-                messageDialog.type === "success"
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-red-600 hover:bg-red-700"
-              }
-            >
-              {messageDialog.type === "success" ? "Close" : "Try Again"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
-
