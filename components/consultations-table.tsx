@@ -81,6 +81,11 @@ export function ConsultationsTable() {
       .join(" ");
   };
 
+  const truncateId = (id: string, visibleChars: number = 8) => {
+    if (id.length <= visibleChars) return id;
+    return id.substring(0, visibleChars);
+  };
+
   const filteredConsultations = useMemo(() => {
     return consultations.filter((consultation) => {
       const matchesSearch =
@@ -289,8 +294,8 @@ export function ConsultationsTable() {
                         <div className="font-medium text-slate-900 dark:text-white">
                           {consultation.name}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
-                          {consultation.id}
+                        <div className="text-xs text-slate-500 dark:text-slate-400 font-mono" title={consultation.id}>
+                          {truncateId(consultation.id)}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white">

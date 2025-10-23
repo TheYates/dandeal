@@ -8,10 +8,9 @@ export default function Footer() {
           {/* Logo and Description */}
           <div>
             <div className="mb-2">
-              <div className="text-2xl font-bold text-orange-400">Dandeal</div>
-              <p className="text-sm text-gray-600 mt-1">
-                Dandeal Logistics & Importation
-              </p>
+              <div className="text-2xl font-bold"> <span className="text-whitel">Dan</span>
+              <span className="text-[#AF7E37]">deal</span></div>
+              
             </div>
             <p className="text-sm text-gray-600 leading-relaxed">
               Dandeal Logistics & Importation - Moving Africa, Middle East &

@@ -47,7 +47,7 @@ export default function Header() {
               </button>
               <div className="absolute left-0 mt-0 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <a
-                  href="/why-als"
+                  href="/why-dandeal"
                   className="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-orange-600 text-sm first:rounded-t-lg"
                 >
                   Why Dandeal

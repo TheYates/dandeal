@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import { ModeToggle } from "@/components/ui/modetoggle";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function SignInPage() {
@@ -43,7 +43,12 @@ export default function SignInPage() {
   return (
     <>
       <Toaster position="top-right" />
-      <div className="flex min-h-screen items-center justify-center ">
+      <div className="flex min-h-screen items-center justify-center">
+        {/* Mode Toggle */}
+        <div className="absolute top-4 right-4">
+          <ModeToggle />
+        </div>
+
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold  mb-2">
@@ -92,18 +97,6 @@ export default function SignInPage() {
                 {loading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
-
-            <div className="mt-6 text-center">
-              <p className=" text-sm">
-                Don't have an account?{" "}
-                <Link
-                  href="/sign-up"
-                  className="text-orange-600 hover:text-orange-700 font-semibold"
-                >
-                  Sign up
-                </Link>
-              </p>
-            </div>
           </div>
         </div>
       </div>

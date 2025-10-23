@@ -72,14 +72,14 @@ export function QuoteDetailDialog({
         <DialogHeader>
           <div>
             <DialogTitle>Quote Request Details</DialogTitle>
-            <p className="text-sm text-slate-500 mt-1">ID: {quote.id}</p>
+            <p className="text-sm text-slate-500 mt-1 dark:text-slate-400">ID: {quote.id}</p>
           </div>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Status */}
           <div className="flex items-center justify-between pb-3 border-b">
-            <span className="text-sm font-medium text-slate-600">Status</span>
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Status</span>
             <Badge className={getStatusColor(quote.status)}>
               {quote.status
                 .split("_")

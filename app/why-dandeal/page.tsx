@@ -30,7 +30,7 @@ export default function WhyALS() {
                 Our Commitment
               </h2>
               <p className="text-gray-600 mb-4">
-                ALS Global Shipping & Logistics is committed to providing
+                Dandeal Logistics & Importation is committed to providing
                 world-class logistics solutions that connect Africa, the Middle
                 East, and China. We understand the complexities of international
                 trade and deliver seamless, reliable services.
@@ -43,7 +43,7 @@ export default function WhyALS() {
             </div>
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                Why Choose ALS?
+                Why Choose Dandeal?
               </h2>
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start">

@@ -12,9 +12,9 @@ export default function FAQ() {
 
   const faqItems = [
     {
-      question: "What shipping methods does ALS Global offer?",
+      question: "What shipping methods does Dandeal Logistics & Importation offer?",
       answer:
-        "ALS Global offers comprehensive shipping solutions including Air Freight, Sea Freight (FCL & LCL), Door-to-Door Delivery, and Multimodal transport. We serve routes from China, Dubai, and Turkey to Ghana and across Africa.",
+        "Dandeal Logistics & Importation offers comprehensive shipping solutions including Air Freight, Sea Freight (FCL & LCL), Door-to-Door Delivery, and Multimodal transport. We serve routes from China, Dubai, and Turkey to Ghana and across Africa.",
     },
     {
       question: "How long does customs clearance take?",
@@ -84,7 +84,8 @@ export default function FAQ() {
       <HeroSection
         title="Frequently Asked Questions"
         subtitle="Find answers to common questions about our services"
-        description="Have questions about shipping, logistics, or our services? We've compiled answers to help you understand how ALS Global can support your business."
+        description="Have questions about shipping, logistics, or our services? 
+        We've compiled answers to help you understand how Dandeal Logistics & Importation can support your business."
       />
 
       {/* FAQ Section */}
@@ -107,8 +108,8 @@ export default function FAQ() {
             </p>
           </motion.div>
 
-          {/* FAQ Accordion - 2 Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* FAQ Accordion - 1 Column */}
+          <div className="grid grid-cols-1 gap-6">
             {faqItems.map((item, index) => (
               <motion.div
                 key={index}

@@ -14,8 +14,11 @@ import {
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useDropdownOptions } from "@/hooks/use-dropdown-options";
 
 export default function EmbeddedConsultationForm() {
+  const { options: services, loading: servicesLoading } =
+    useDropdownOptions("services");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -109,7 +112,7 @@ export default function EmbeddedConsultationForm() {
             placeholder="Enter your name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-red-500"
+            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-gray-200"
             required
           />
         </div>
@@ -123,7 +126,7 @@ export default function EmbeddedConsultationForm() {
             placeholder="Enter your email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60"
+            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-gray-200"
             required
           />
         </div>
@@ -137,7 +140,7 @@ export default function EmbeddedConsultationForm() {
             placeholder="Enter your phone number"
             value={formData.phone}
             onChange={handleInputChange}
-            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60"
+            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-gray-200"
             required
           />
         </div>
@@ -147,20 +150,16 @@ export default function EmbeddedConsultationForm() {
           <Label className="text-white text-sm mb-2 block">
             Service Requested *
           </Label>
-          <Select value={formData.service} onValueChange={handleServiceChange}>
+          <Select value={formData.service} onValueChange={handleServiceChange} disabled={servicesLoading}>
             <SelectTrigger className="w-full bg-white/20 border border-white/30 text-white">
-              <SelectValue placeholder="Select a service" />
+              <SelectValue placeholder={servicesLoading ? "Loading services..." : "Select a service"} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="shipping">Shipping</SelectItem>
-              <SelectItem value="logistics">Logistics</SelectItem>
-              <SelectItem value="import">Import</SelectItem>
-              <SelectItem value="export">Export</SelectItem>
-              <SelectItem value="procurement">
-                International Procurement
-              </SelectItem>
-              <SelectItem value="customs">Customs Clearance</SelectItem>
-              <SelectItem value="warehousing">Warehousing</SelectItem>
+              {services.map((service) => (
+                <SelectItem key={service.id} value={service.value}>
+                  {service.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -173,7 +172,7 @@ export default function EmbeddedConsultationForm() {
             placeholder="Tell us more about your needs..."
             value={formData.message}
             onChange={handleInputChange}
-            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-white/60 resize-none"
+            className="w-full bg-white/20 border border-white/30 rounded-md px-4 py-2 text-white placeholder-gray-200 resize-none"
             rows={4}
           />
         </div>
@@ -185,7 +184,7 @@ export default function EmbeddedConsultationForm() {
           className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Submitting..." : "Book Free Consultation"}
-          <ChevronDown className="w-4 h-4 ml-2 -rotate-90" />
+
         </Button>
       </form>
     </div>

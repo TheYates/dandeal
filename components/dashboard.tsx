@@ -1,19 +1,13 @@
 "use client";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { QuotesTable } from "@/components/quotes-table";
 import { ConsultationsTable } from "@/components/consultations-table";
 import { ContactsTable } from "@/components/contacts-table";
-import { DropdownManagement } from "@/components/dropdown-management";
+import { DropdownManagementAccordion } from "@/components/dropdown-management-accordion";
 import { UserManagement } from "@/components/user-management";
 import { ModeToggle } from "@/components/ui/modetoggle";
 import { LogOut, Settings } from "lucide-react";
-
-interface DropdownOption {
-  id: string;
-  value: string;
-}
 
 interface DashboardProps {
   onLogout: () => void;
@@ -26,7 +20,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
       <header className=" border-b border-slate-200  sticky top-0 z-50 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold ">Submissions Manager</h1>
+            <h1 className="text-2xl font-bold ">Dandeal Manager</h1>
             <p className="text-sm ">Manage quotes and consultation requests</p>
           </div>
           <div className="flex items-center gap-3">
@@ -70,22 +64,8 @@ export function Dashboard({ onLogout }: DashboardProps) {
             <ContactsTable />
           </TabsContent>
 
-          <TabsContent value="dropdowns" className="mt-6 space-y-6">
-            <DropdownManagement
-              title="Shipping Methods"
-              description="Manage the shipping method options available in the quote form"
-              type="shipping_methods"
-            />
-            <DropdownManagement
-              title="Services"
-              description="Manage the service options available in the consultation form"
-              type="services"
-            />
-            <DropdownManagement
-              title="Cargo Types"
-              description="Manage the cargo type options available in the quote form"
-              type="cargo_types"
-            />
+          <TabsContent value="dropdowns" className="mt-6">
+            <DropdownManagementAccordion />
           </TabsContent>
 
           <TabsContent value="users" className="mt-6">

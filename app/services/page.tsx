@@ -2,10 +2,12 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import { Button } from "@/components/ui/button";
+import ConsultationForm from "@/components/ConsultationForm";
 
 export default function Services() {
   return (
@@ -91,9 +93,11 @@ export default function Services() {
                     </li>
                   </ul>
                 </div>
-                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
-                  GET QUOTE <ArrowRight className="w-3 h-3" />
-                </Button>
+                <Link href="/contact" className="w-full">
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                    GET QUOTE <ArrowRight className="w-3 h-3" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -143,9 +147,11 @@ export default function Services() {
                     </li>
                   </ul>
                 </div>
-                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
-                  GET QUOTE <ArrowRight className="w-3 h-3" />
-                </Button>
+                <Link href="/contact" className="w-full">
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                    GET QUOTE <ArrowRight className="w-3 h-3" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -199,9 +205,11 @@ export default function Services() {
                     </li>
                   </ul>
                 </div>
-                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
-                  LEARN MORE <ArrowRight className="w-3 h-3" />
-                </Button>
+                <Link href="/contact" className="w-full">
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                    LEARN MORE <ArrowRight className="w-3 h-3" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -251,9 +259,11 @@ export default function Services() {
                     </li>
                   </ul>
                 </div>
-                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
-                  CHECK COVERAGE <ArrowRight className="w-3 h-3" />
-                </Button>
+                <Link href="/contact" className="w-full">
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                    CHECK COVERAGE <ArrowRight className="w-3 h-3" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -305,9 +315,11 @@ export default function Services() {
                     </li>
                   </ul>
                 </div>
-                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
-                  EXPLORE <ArrowRight className="w-3 h-3" />
-                </Button>
+                <Link href="/contact" className="w-full">
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                    EXPLORE <ArrowRight className="w-3 h-3" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -359,9 +371,11 @@ export default function Services() {
                     </li>
                   </ul>
                 </div>
-                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
-                  DISCUSS NEEDS <ArrowRight className="w-3 h-3" />
-                </Button>
+                <Link href="/contact" className="w-full">
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                    DISCUSS NEEDS <ArrowRight className="w-3 h-3" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -413,9 +427,11 @@ export default function Services() {
                     </li>
                   </ul>
                 </div>
-                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
-                  GET CONSULTATION <ArrowRight className="w-3 h-3" />
-                </Button>
+                <Link href="/contact" className="w-full">
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                    GET CONSULTATION <ArrowRight className="w-3 h-3" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -465,9 +481,11 @@ export default function Services() {
                     </li>
                   </ul>
                 </div>
-                <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
-                  DISCUSS NEEDS <ArrowRight className="w-3 h-3" />
-                </Button>
+                <Link href="/contact" className="w-full">
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm flex items-center gap-2 w-full justify-center">
+                    DISCUSS NEEDS <ArrowRight className="w-3 h-3" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
           </div>
@@ -500,9 +518,13 @@ export default function Services() {
               We support clients in sourcing and procuring goods and equipment
               locally and internationally, ensuring quality and timely supply.
             </h2>
-            <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-10 py-4 text-lg font-semibold">
-              Book A Free Consultation
-            </Button>
+            <ConsultationForm
+            trigger={
+              <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-10 py-4 text-lg font-semibold">
+                  Book A Free Consultation
+                </Button>
+              }
+            />
           </motion.div>
         </div>
       </section>
@@ -740,9 +762,11 @@ export default function Services() {
           </h2>
 
           {/* CTA Button */}
-          <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-900 rounded-full px-8 py-3 font-semibold transition">
-            Contact Us
-          </Button>
+          <Link href="/contact">
+            <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-900 rounded-full px-8 py-3 font-semibold transition">
+              Contact Us
+            </Button>
+          </Link>
         </div>
       </section>
 

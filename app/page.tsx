@@ -115,7 +115,7 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 viewport={{ once: true }}
               >
-                From Sourcing Raw MateriDandeal, Machinery, And Vehicles
+                From Sourcing Raw Material, Machinery, And Vehicles
                 Globally to Shipping, Dandeal Delivers Seamless Logistics And
                 Import & Export Solutions.
               </motion.p>

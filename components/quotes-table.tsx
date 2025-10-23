@@ -84,6 +84,13 @@ export function QuotesTable() {
       .join(" ");
   };
 
+  const truncateId = (id: string, visibleChars: number = 8) => {
+    if (id.length <= visibleChars) return id;
+    const start = id.substring(0, visibleChars / 1);
+    const end = id.substring(id.length - visibleChars / 2);
+    return `${start}`;
+  };
+
   const filteredQuotes = useMemo(() => {
     return quotes.filter((quote) => {
       const matchesSearch =
@@ -300,8 +307,8 @@ export function QuotesTable() {
                         <div className="font-medium text-slate-900 dark:text-white">
                           {quote.firstName} {quote.lastName}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
-                          {quote.id}
+                        <div className="text-xs text-slate-500 dark:text-slate-400 font-mono" title={quote.id}>
+                          {truncateId(quote.id)}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white">

@@ -27,13 +27,13 @@ interface User {
 }
 
 const ROLE_PERMISSIONS = {
-  "Super Admin": {
-    title: "Full Access",
-    description: "Can manage all submissions, modify user roles, and access all settings",
-  },
+  // "Super Admin": {
+  //   title: "Full Access",
+  //   description: "Can manage all submissions, modify user roles, manage user accounts, and access all settings",
+  // },
   Admin: {
-    title: "Manage Submissions",
-    description: "Can view, update, and manage all consultation and quote submissions",
+    title: "Manage Submissions & Users",
+    description: "Can view, update, and manage all consultation and quote submissions, and manage user accounts",
   },
   Viewer: {
     title: "Read-Only Access",
@@ -170,7 +170,6 @@ export function UserManagement() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Super Admin">Super Admin</SelectItem>
                       <SelectItem value="Admin">Admin</SelectItem>
                       <SelectItem value="Viewer">Viewer</SelectItem>
                     </SelectContent>
@@ -212,7 +211,9 @@ export function UserManagement() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {users
+                  .filter((user) => user.role !== "Super Admin")
+                  .map((user) => (
                   <tr key={user.id} className="border-b border-slate-100 hover:bg-slate-50 dark:hover:bg-accent">
                     <td className="py-3 px-4 text-slate-900 dark:text-white">{user.name}</td>
                     <td className="py-3 px-4 text-slate-600 dark:text-white">{user.email}</td>
@@ -223,7 +224,6 @@ export function UserManagement() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Super Admin">Super Admin</SelectItem>
                             <SelectItem value="Admin">Admin</SelectItem>
                             <SelectItem value="Viewer">Viewer</SelectItem>
                           </SelectContent>
