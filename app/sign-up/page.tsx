@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -33,9 +33,12 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/admin`,
+        },
       });
 
       if (error) {
@@ -53,7 +56,9 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center ">
+    <>
+      <Toaster position="top-right" />
+      <div className="flex min-h-screen items-center justify-center ">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold  mb-2">Dandeal Admin</h1>
@@ -132,6 +137,7 @@ export default function SignUpPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

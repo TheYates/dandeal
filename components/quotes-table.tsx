@@ -176,7 +176,7 @@ export function QuotesTable() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-400" />
             <Input
               placeholder="Search by name, email, or phone..."
               value={searchTerm}
@@ -187,7 +187,7 @@ export function QuotesTable() {
           <select
             value={methodFilter}
             onChange={(e) => setMethodFilter(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-md text-sm bg-white"
+            className="px-3 py-2 border border-slate-800 rounded-md text-sm bg-white dark:bg-background"
           >
             <option value="all">All Methods</option>
             {shippingMethods.map((method) => (
@@ -199,7 +199,7 @@ export function QuotesTable() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-md text-sm bg-white"
+            className="px-3 py-2 border border-slate-800 rounded-md text-sm  bg-white dark:bg-background"
           >
             <option value="all">All Status</option>
             <option value="new">New</option>
@@ -223,14 +223,14 @@ export function QuotesTable() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50">
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Email</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Route</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Method</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Status</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Submitted</th>
-                  <th className="text-right py-3 px-4 font-semibold text-slate-700">Actions</th>
+                <tr className="border-b border-slate-200 bg-slate-50 dark:bg-background">
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-white">Name</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-white">Email</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-white">Route</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-white">Method</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-white">Status</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-white">Submitted</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-white">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -305,13 +305,13 @@ export function QuotesTable() {
         )}
 
         {!loading && filteredQuotes.length === 0 && (
-          <div className="text-center py-8 text-slate-500">
+          <div className="text-center py-8 text-slate-500 dark:text-slate-300">
             No quote requests found matching your criteria.
           </div>
         )}
 
         {!loading && (
-          <div className="text-xs text-slate-500 pt-2">
+          <div className="text-xs text-slate-500 dark:text-slate-300 pt-2">
             Showing {filteredQuotes.length} of {quotes.length} submissions
           </div>
         )}

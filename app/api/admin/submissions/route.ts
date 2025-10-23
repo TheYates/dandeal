@@ -142,13 +142,16 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const admin = await checkAdminRole(userId);
+    const admin = await checkAdminRole(user.id);
     if (!admin) {
       return NextResponse.json(
         { error: "Forbidden - Admin access required" },
