@@ -24,29 +24,16 @@ Invite links are redirecting to the homepage instead of the `/invite` page where
 
 ## What Still Needs to Be Done
 
-### ⚠️ CRITICAL: Update Supabase Email Template
+### ✅ NO LONGER NEEDED: Supabase Email Template Update
 
-The email template in Supabase must be configured to use the correct redirect URL.
+The code now handles the email link format correctly! The email sends users to `/api/invite-redirect?token=XXX`, and our route now:
 
-**Steps:**
+1. Receives the token from the email
+2. Redirects to Supabase verify endpoint
+3. Supabase verifies the token and redirects back to `/invite` with access_token
+4. Invite page extracts the access_token and shows password form
 
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Select project: **dandeal** (jynqlznzrxzjvdpqehuy)
-3. Navigate to: **Authentication** → **Email Templates**
-4. Find the **"Invite user"** template
-5. Look for the confirmation link (should contain `{{ .ConfirmationURL }}`)
-
-**If using `{{ .ConfirmationURL }}`:**
-- This should work automatically with our code changes
-- The `redirectTo` parameter we set in the API will be used
-
-**If using a hardcoded URL:**
-- Update it to:
-```html
-<a href="https://jynqlznzrxzjvdpqehuy.supabase.co/auth/v1/verify?token={{ .Token }}&type=invite&redirect_to=https://dandeal.vercel.app/invite">Accept the invite</a>
-```
-
-6. Click **Save**
+**No Supabase email template changes needed!** ✅
 
 ### Deploy Code Changes
 
@@ -91,23 +78,27 @@ Vercel will automatically deploy.
    ↓
 2. API creates user in Supabase
    ↓
-3. Supabase sends email with verification link
+3. Supabase sends email with link: /api/invite-redirect?token=369907
    ↓
 4. User clicks link
    ↓
-5. Supabase verifies token
+5. /api/invite-redirect route receives token
    ↓
-6. Redirects to: /invite#access_token=...&type=invite
+6. Route redirects to Supabase verify endpoint with token
    ↓
-7. Invite page extracts token
+7. Supabase verifies token
    ↓
-8. Shows password form
+8. Supabase redirects to: /invite#access_token=...&type=invite
    ↓
-9. User sets password
+9. Invite page extracts access_token from hash
    ↓
-10. Account activated
+10. Shows password form
     ↓
-11. Redirected to sign-in
+11. User sets password
+    ↓
+12. Account activated
+    ↓
+13. Redirected to sign-in
 ```
 
 ## Troubleshooting

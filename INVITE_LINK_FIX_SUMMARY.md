@@ -11,20 +11,22 @@ The Supabase email template was not properly using the `redirectTo` parameter, c
 ## Changes Made
 
 ### 1. Updated `/api/invite-redirect/route.ts`
-**Purpose**: Handle redirect from Supabase verification to the invite page
+**Purpose**: Handle invite token from Supabase email and redirect to Supabase verify endpoint
 
 **Changes**:
-- Now properly handles both hash and query parameter formats
-- Redirects to `/invite` with tokens preserved
+- Now properly handles the token from the email (`?token=XXX`)
+- Redirects to Supabase verify endpoint to exchange token for access_token
+- Supabase then redirects back to `/invite` with access_token in hash
 - Better error handling (redirects to `/sign-in` instead of homepage)
 - Improved logging for debugging
 
 **Key improvements**:
 ```typescript
 // Now handles:
-// 1. Access tokens from Supabase verification
-// 2. Query parameters with tokens
-// 3. Proper redirect to /invite with hash format
+// 1. Token from email (?token=369907)
+// 2. Redirects to Supabase verify endpoint
+// 3. Supabase verifies and redirects back with access_token
+// 4. Proper redirect to /invite with hash format
 ```
 
 ### 2. Updated `/app/invite/page.tsx`

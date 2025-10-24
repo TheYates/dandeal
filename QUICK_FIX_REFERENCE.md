@@ -5,15 +5,16 @@ Invite links redirect to homepage instead of `/invite` page.
 
 ## Solution Status
 ✅ **Code changes: COMPLETE**
-⏳ **Supabase configuration: PENDING**
+✅ **Supabase configuration: NOT NEEDED**
 
 ## What Was Fixed
 
 ### 3 Files Modified:
 
-1. **`app/api/invite-redirect/route.ts`**
-   - Now redirects to `/invite` with tokens
-   - Handles both hash and query formats
+1. **`app/api/invite-redirect/route.ts`** ⭐ KEY FIX
+   - Now receives token from email (`?token=369907`)
+   - Redirects to Supabase verify endpoint
+   - Supabase verifies and redirects back with access_token
    - Better error handling
 
 2. **`app/invite/page.tsx`**
@@ -26,57 +27,56 @@ Invite links redirect to homepage instead of `/invite` page.
 
 ## What You Need to Do
 
-### Step 1: Update Supabase Email Template
-
-1. Go to: https://supabase.com/dashboard
-2. Select: **dandeal** project
-3. Go to: **Authentication** → **Email Templates**
-4. Find: **"Invite user"** template
-5. Update the link to use `/invite` as redirect
-6. Click **Save**
-
-### Step 2: Deploy Code
+### Step 1: Deploy Code
 
 ```bash
 git add .
-git commit -m "Fix invite link redirect to /invite page"
+git commit -m "Fix invite link redirect - handle token from email"
 git push origin main
 ```
 
-### Step 3: Test
+### Step 2: Test
 
 1. Go to: https://dandeal.vercel.app/admin
 2. Users tab → Invite User
 3. Send test invite
 4. Click link in email
 5. Should go to `/invite` page ✅
+6. Should show password form ✅
 
 ## Expected Flow
 
 ```
-Email link
+Email link: /api/invite-redirect?token=369907
     ↓
-Supabase verification
+Our route receives token
     ↓
-Redirect to /invite
+Redirects to Supabase verify endpoint
     ↓
-Password form
+Supabase verifies token
     ↓
-Set password
+Redirects to /invite#access_token=...
+    ↓
+Invite page extracts access_token
+    ↓
+Shows password form
+    ↓
+User sets password
     ↓
 Account activated
     ↓
-Sign in
+Redirected to sign-in
 ```
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| Still goes to homepage | Clear cache, check Supabase template |
-| Token expired | Send new invite |
+| Still shows "missing access token" | Check browser console, verify Supabase URL is set |
+| Token expired | Send new invite (tokens expire after 24 hours) |
 | Email not received | Check spam, verify email address |
 | Password form not showing | Check browser console for errors |
+| Redirects to homepage | Check that `/api/invite-redirect` is working |
 
 ## Files to Reference
 
@@ -91,8 +91,8 @@ Sign in
 ✅ No database changes needed
 ✅ Better error handling
 ✅ Improved logging
+✅ No Supabase configuration needed
 
-⏳ Awaiting Supabase email template update
 ⏳ Awaiting production deployment
 ⏳ Awaiting testing
 
@@ -106,5 +106,5 @@ Verify in Vercel:
 
 ## Next Action
 
-👉 **Update Supabase email template** (see Step 1 above)
+👉 **Deploy code changes** (see Step 1 above)
 
