@@ -77,7 +77,9 @@ export function useSubmissionsCache<T>(
       cacheInstance.set(cacheKey, freshData);
       setData(freshData);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error("Unknown error"));
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      setError(err instanceof Error ? err : new Error(errorMessage));
+      console.error(`Error fetching ${cacheKey}:`, errorMessage);
     } finally {
       setLoading(false);
     }
@@ -108,4 +110,3 @@ export function clearAllCache() {
 export function clearCacheKey(key: string) {
   cacheInstance.clear(key);
 }
-

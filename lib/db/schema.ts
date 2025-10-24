@@ -110,6 +110,16 @@ export const dropdownOptions = pgTable("dropdown_options", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const partners = pgTable("partners", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  icon: text("icon").notNull(),
+  order: text("order").default("0"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Types
 export type ConsultationSubmission =
   typeof consultationSubmissions.$inferSelect;
@@ -124,3 +134,6 @@ export type NewAdminUser = typeof adminUsers.$inferInsert;
 
 export type DropdownOption = typeof dropdownOptions.$inferSelect;
 export type NewDropdownOption = typeof dropdownOptions.$inferInsert;
+
+export type Partner = typeof partners.$inferSelect;
+export type NewPartner = typeof partners.$inferInsert;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,6 @@ export default function InvitePage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createClient();
 
   useEffect(() => {
@@ -47,10 +46,11 @@ export default function InvitePage() {
           }
 
           // Set the session directly with the token from the URL
-          const { data, error: setSessionError } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: params.get("refresh_token") || "",
-          });
+          const { data, error: setSessionError } =
+            await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: params.get("refresh_token") || "",
+            });
 
           console.log("Set Session Data:", data);
           console.log("Set Session Error:", setSessionError);
@@ -134,7 +134,9 @@ export default function InvitePage() {
 
       if (!activateResponse.ok) {
         console.error("Failed to activate user");
-        toast.error("Password set, but failed to activate account. Please contact support.");
+        toast.error(
+          "Password set, but failed to activate account. Please contact support."
+        );
         setLoading(false);
         return;
       }
@@ -179,7 +181,9 @@ export default function InvitePage() {
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
                   Invalid Invitation Link
                 </h2>
-                <p className="text-slate-600 dark:text-slate-400 mb-6">{error}</p>
+                <p className="text-slate-600 dark:text-slate-400 mb-6">
+                  {error}
+                </p>
                 <Button
                   onClick={() => router.push("/sign-in")}
                   className="bg-orange-600 hover:bg-orange-700"
@@ -244,7 +248,9 @@ export default function InvitePage() {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                     >
                       {showConfirmPassword ? (
@@ -261,7 +267,9 @@ export default function InvitePage() {
                   disabled={loading}
                   className="w-full bg-orange-600 hover:bg-orange-700 text-white"
                 >
-                  {loading ? "Setting password..." : "Set Password & Activate Account"}
+                  {loading
+                    ? "Setting password..."
+                    : "Set Password & Activate Account"}
                 </Button>
               </form>
             ) : (
@@ -287,4 +295,3 @@ export default function InvitePage() {
     </>
   );
 }
-

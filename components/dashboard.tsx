@@ -6,6 +6,7 @@ import { ConsultationsTable } from "@/components/consultations-table";
 import { ContactsTable } from "@/components/contacts-table";
 import { DropdownManagementAccordion } from "@/components/dropdown-management-accordion";
 import { UserManagement } from "@/components/user-management";
+import { PartnersManagement } from "@/components/partners-management";
 import { ModeToggle } from "@/components/ui/modetoggle";
 import { LogOut, Settings } from "lucide-react";
 
@@ -41,11 +42,12 @@ export function Dashboard({ onLogout }: DashboardProps) {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="quotes" className="w-full">
-          <TabsList className="grid w-full max-w-4xl grid-cols-5">
+          <TabsList className="grid w-full max-w-6xl grid-cols-6">
             <TabsTrigger value="quotes">Quote Requests</TabsTrigger>
             <TabsTrigger value="consultations">Consultations</TabsTrigger>
             <TabsTrigger value="contacts">Contact Messages</TabsTrigger>
             <TabsTrigger value="dropdowns">Dropdowns</TabsTrigger>
+            <TabsTrigger value="partners">Partners</TabsTrigger>
             <TabsTrigger value="users" className="gap-2">
               <Settings className="w-4 h-4" />
               Users
@@ -66,6 +68,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
           <TabsContent value="dropdowns" className="mt-6">
             <DropdownManagementAccordion />
+          </TabsContent>
+
+          <TabsContent value="partners" className="mt-6">
+            <PartnersManagement />
           </TabsContent>
 
           <TabsContent value="users" className="mt-6">

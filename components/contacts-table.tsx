@@ -27,10 +27,19 @@ import {
   Clock,
   CheckCircle,
   MessageSquare,
+  AlertTriangle,
 } from "lucide-react";
 import { ContactDetailDialog } from "./contact-detail-dialog";
 import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface Contact {
   id: string;
@@ -49,13 +58,28 @@ export function ContactsTable() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{
+    isOpen: boolean;
+    contactId: string | null;
+    contactName: string;
+  }>({
+    isOpen: false,
+    contactId: null,
+    contactName: "",
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     data: contacts,
     loading,
+    error,
     invalidateCache,
   } = useSubmissionsCache<Contact>("contacts", async () => {
     const response = await fetch("/api/admin/submissions?type=contacts");
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP ${response.status}`);
+    }
     const data = await response.json();
     return data.submissions || [];
   });
@@ -105,18 +129,45 @@ export function ContactsTable() {
     }
   };
 
-  const deleteContact = async (id: string) => {
+  const deleteContact = (id: string, contactName: string) => {
+    setDeleteConfirmDialog({
+      isOpen: true,
+      contactId: id,
+      contactName: contactName,
+    });
+  };
+
+  const confirmDeleteContact = async () => {
+    if (!deleteConfirmDialog.contactId) return;
+
     try {
+      setIsDeleting(true);
       const response = await fetch("/api/admin/submissions", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, type: "contacts" }),
+        body: JSON.stringify({
+          id: deleteConfirmDialog.contactId,
+          type: "contacts",
+        }),
       });
       if (response.ok) {
         invalidateCache();
+        setDeleteConfirmDialog({
+          isOpen: false,
+          contactId: null,
+          contactName: "",
+        });
+        toast.success(
+          `Contact message from ${deleteConfirmDialog.contactName} deleted successfully`
+        );
+      } else {
+        toast.error("Failed to delete contact");
       }
     } catch (error) {
       console.error("Error deleting contact:", error);
+      toast.error("Error deleting contact");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -144,6 +195,13 @@ export function ContactsTable() {
             Manage and track all contact form submissions
           </CardDescription>
         </CardHeader>
+        {error && (
+          <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-800 text-sm">
+              <strong>Error:</strong> {error.message}
+            </p>
+          </div>
+        )}
         <CardContent className="space-y-4">
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -216,7 +274,10 @@ export function ContactsTable() {
                         <div className="font-medium text-slate-900 dark:text-white">
                           {contact.name}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 font-mono" title={contact.id}>
+                        <div
+                          className="text-xs text-slate-500 dark:text-slate-400 font-mono"
+                          title={contact.id}
+                        >
                           {truncateId(contact.id)}
                         </div>
                       </td>
@@ -321,7 +382,9 @@ export function ContactsTable() {
                               Archive
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => deleteContact(contact.id)}
+                              onClick={() =>
+                                deleteContact(contact.id, contact.name)
+                              }
                               className="text-destructive"
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
@@ -356,6 +419,56 @@ export function ContactsTable() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmDialog.isOpen}
+        onOpenChange={(open) =>
+          setDeleteConfirmDialog({
+            ...deleteConfirmDialog,
+            isOpen: open,
+          })
+        }
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 text-red-600" />
+              <DialogTitle>Delete Contact Message</DialogTitle>
+            </div>
+          </DialogHeader>
+          <DialogDescription>
+            Are you sure you want to delete the contact message from{" "}
+            <strong>{deleteConfirmDialog.contactName}</strong>? This action
+            cannot be undone.
+          </DialogDescription>
+          <DialogFooter className="flex justify-end gap-2 pt-4">
+            <Button
+              variant="outline"
+              onClick={() =>
+                setDeleteConfirmDialog({
+                  isOpen: false,
+                  contactId: null,
+                  contactName: "",
+                })
+              }
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmDeleteContact}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : null}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -34,6 +34,8 @@ import EmbeddedQuoteForm from "@/components/EmbeddedQuoteForm";
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [logos, setLogos] = useState<any[]>([]);
+  const [logosLoading, setLogosLoading] = useState(true);
 
   // Logistics slideshow images
   const heroImages = [
@@ -42,7 +44,8 @@ export default function Home() {
     "https://images.pexels.com/photos/21234960/pexels-photo-21234960.jpeg", // Warehouse
   ];
 
-  const logos = [
+  // Fallback logos in case database fetch fails
+  const fallbackLogos = [
     { id: 1, name: "JCTRANS", icon: "🚚" },
     { id: 2, name: "Global Logistics", icon: "🌍" },
     { id: 3, name: "JCTRANS Orange", icon: "📦" },
@@ -53,6 +56,28 @@ export default function Home() {
     { id: 8, name: "Shipping Authority", icon: "⚓" },
     { id: 9, name: "DF Alliance", icon: "🤝" },
   ];
+
+  // Fetch partners from database
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const response = await fetch("/api/admin/partners");
+        const data = await response.json();
+        if (data.partners && data.partners.length > 0) {
+          setLogos(data.partners);
+        } else {
+          setLogos(fallbackLogos);
+        }
+      } catch (error) {
+        console.error("Error fetching partners:", error);
+        setLogos(fallbackLogos);
+      } finally {
+        setLogosLoading(false);
+      }
+    };
+
+    fetchPartners();
+  }, []);
 
   // Slideshow effect
   useEffect(() => {
@@ -115,9 +140,9 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 viewport={{ once: true }}
               >
-                From Sourcing Raw Material, Machinery, And Vehicles
-                Globally to Shipping, Dandeal Delivers Seamless Logistics And
-                Import & Export Solutions.
+                From Sourcing Raw Material, Machinery, And Vehicles Globally to
+                Shipping, Dandeal Delivers Seamless Logistics And Import &
+                Export Solutions.
               </motion.p>
 
               {/* CTA Buttons */}

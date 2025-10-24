@@ -4,11 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useDropdownOptions } from "@/hooks/use-dropdown-options";
 
 export default function EmbeddedQuoteForm() {
-  const { options: shippingMethods, loading: shippingLoading } =
-    useDropdownOptions("shipping_methods");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -228,14 +225,12 @@ export default function EmbeddedQuoteForm() {
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700"
                   required
-                  disabled={shippingLoading}
                 >
-                  <option value="">{shippingLoading ? "Loading..." : "Select Method"}</option>
-                  {shippingMethods.map((method) => (
-                    <option key={method.id} value={method.value}>
-                      {method.label}
-                    </option>
-                  ))}
+                  <option value="">Select Method</option>
+                  <option value="air">Air Freight</option>
+                  <option value="sea">Sea Freight</option>
+                  <option value="land">Land Transport</option>
+                  <option value="multimodal">Multimodal</option>
                 </select>
               </div>
               <div>

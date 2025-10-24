@@ -29,10 +29,19 @@ import {
   Zap,
   CheckCircle,
   XCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { ConsultationDetailDialog } from "./consultation-detail-dialog";
 import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface Consultation {
   id: string;
@@ -63,13 +72,28 @@ export function ConsultationsTable() {
   const [selectedConsultation, setSelectedConsultation] =
     useState<Consultation | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{
+    isOpen: boolean;
+    consultationId: string | null;
+    consultationName: string;
+  }>({
+    isOpen: false,
+    consultationId: null,
+    consultationName: "",
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     data: consultations,
     loading,
+    error,
     invalidateCache,
   } = useSubmissionsCache<Consultation>("consultations", async () => {
     const response = await fetch("/api/admin/submissions?type=consultations");
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP ${response.status}`);
+    }
     const data = await response.json();
     return data.submissions || [];
   });
@@ -124,18 +148,45 @@ export function ConsultationsTable() {
     }
   };
 
-  const deleteConsultation = async (id: string) => {
+  const deleteConsultation = (id: string, consultationName: string) => {
+    setDeleteConfirmDialog({
+      isOpen: true,
+      consultationId: id,
+      consultationName: consultationName,
+    });
+  };
+
+  const confirmDeleteConsultation = async () => {
+    if (!deleteConfirmDialog.consultationId) return;
+
     try {
+      setIsDeleting(true);
       const response = await fetch("/api/admin/submissions", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, type: "consultations" }),
+        body: JSON.stringify({
+          id: deleteConfirmDialog.consultationId,
+          type: "consultations",
+        }),
       });
       if (response.ok) {
         invalidateCache();
+        setDeleteConfirmDialog({
+          isOpen: false,
+          consultationId: null,
+          consultationName: "",
+        });
+        toast.success(
+          `Consultation from ${deleteConfirmDialog.consultationName} deleted successfully`
+        );
+      } else {
+        toast.error("Failed to delete consultation");
       }
     } catch (error) {
       console.error("Error deleting consultation:", error);
+      toast.error("Error deleting consultation");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -197,6 +248,13 @@ export function ConsultationsTable() {
             Manage and track all consultation bookings
           </CardDescription>
         </CardHeader>
+        {error && (
+          <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-800 text-sm">
+              <strong>Error:</strong> {error.message}
+            </p>
+          </div>
+        )}
         <CardContent className="space-y-4">
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -294,7 +352,10 @@ export function ConsultationsTable() {
                         <div className="font-medium text-slate-900 dark:text-white">
                           {consultation.name}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 font-mono" title={consultation.id}>
+                        <div
+                          className="text-xs text-slate-500 dark:text-slate-400 font-mono"
+                          title={consultation.id}
+                        >
                           {truncateId(consultation.id)}
                         </div>
                       </td>
@@ -422,7 +483,10 @@ export function ConsultationsTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                deleteConsultation(consultation.id)
+                                deleteConsultation(
+                                  consultation.id,
+                                  consultation.name
+                                )
                               }
                               className="text-destructive"
                             >
@@ -459,6 +523,56 @@ export function ConsultationsTable() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmDialog.isOpen}
+        onOpenChange={(open) =>
+          setDeleteConfirmDialog({
+            ...deleteConfirmDialog,
+            isOpen: open,
+          })
+        }
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 text-red-600" />
+              <DialogTitle>Delete Consultation</DialogTitle>
+            </div>
+          </DialogHeader>
+          <DialogDescription>
+            Are you sure you want to delete the consultation from{" "}
+            <strong>{deleteConfirmDialog.consultationName}</strong>? This action
+            cannot be undone.
+          </DialogDescription>
+          <DialogFooter className="flex justify-end gap-2 pt-4">
+            <Button
+              variant="outline"
+              onClick={() =>
+                setDeleteConfirmDialog({
+                  isOpen: false,
+                  consultationId: null,
+                  consultationName: "",
+                })
+              }
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmDeleteConsultation}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : null}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

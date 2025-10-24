@@ -1,0 +1,124 @@
+{
+  "id": "0003_partners",
+  "prevId": "0002_married_triton",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.partners": {
+      "name": "partners",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "typeSchema": "pg_catalog",
+          "isArray": false,
+          "columnType": "uuid",
+          "isNullable": false,
+          "isPrimaryKey": true,
+          "identity": null,
+          "default": "gen_random_uuid()",
+          "isUpdatable": true,
+          "isSortable": true,
+          "isSearchable": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "typeSchema": "pg_catalog",
+          "isArray": false,
+          "columnType": "text",
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "identity": null,
+          "default": null,
+          "isUpdatable": true,
+          "isSortable": true,
+          "isSearchable": true
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "typeSchema": "pg_catalog",
+          "isArray": false,
+          "columnType": "text",
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "identity": null,
+          "default": null,
+          "isUpdatable": true,
+          "isSortable": true,
+          "isSearchable": true
+        },
+        "order": {
+          "name": "order",
+          "type": "text",
+          "typeSchema": "pg_catalog",
+          "isArray": false,
+          "columnType": "text",
+          "isNullable": true,
+          "isPrimaryKey": false,
+          "identity": null,
+          "default": "'0'",
+          "isUpdatable": true,
+          "isSortable": true,
+          "isSearchable": true
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "typeSchema": "pg_catalog",
+          "isArray": false,
+          "columnType": "boolean",
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "identity": null,
+          "default": "true",
+          "isUpdatable": true,
+          "isSortable": true,
+          "isSearchable": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "typeSchema": "pg_catalog",
+          "isArray": false,
+          "columnType": "timestamp",
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "identity": null,
+          "default": "now()",
+          "isUpdatable": true,
+          "isSortable": true,
+          "isSearchable": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "typeSchema": "pg_catalog",
+          "isArray": false,
+          "columnType": "timestamp",
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "identity": null,
+          "default": "now()",
+          "isUpdatable": true,
+          "isSortable": true,
+          "isSearchable": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
+

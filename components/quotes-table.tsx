@@ -29,10 +29,19 @@ import {
   XCircle,
   FileText,
   CheckCheck,
+  AlertTriangle,
 } from "lucide-react";
 import { QuoteDetailDialog } from "./quote-detail-dialog";
 import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface Quote {
   id: string;
@@ -66,13 +75,28 @@ export function QuotesTable() {
   const [methodFilter, setMethodFilter] = useState<string>("all");
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{
+    isOpen: boolean;
+    quoteId: string | null;
+    quoteName: string;
+  }>({
+    isOpen: false,
+    quoteId: null,
+    quoteName: "",
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     data: quotes,
     loading,
+    error,
     invalidateCache,
   } = useSubmissionsCache<Quote>("quotes", async () => {
     const response = await fetch("/api/admin/submissions?type=quotes");
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP ${response.status}`);
+    }
     const data = await response.json();
     return data.submissions || [];
   });
@@ -127,18 +151,41 @@ export function QuotesTable() {
     }
   };
 
-  const deleteQuote = async (id: string) => {
+  const deleteQuote = (id: string, quoteName: string) => {
+    setDeleteConfirmDialog({
+      isOpen: true,
+      quoteId: id,
+      quoteName: quoteName,
+    });
+  };
+
+  const confirmDeleteQuote = async () => {
+    if (!deleteConfirmDialog.quoteId) return;
+
     try {
+      setIsDeleting(true);
       const response = await fetch("/api/admin/submissions", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, type: "quotes" }),
+        body: JSON.stringify({
+          id: deleteConfirmDialog.quoteId,
+          type: "quotes",
+        }),
       });
       if (response.ok) {
         invalidateCache();
+        setDeleteConfirmDialog({ isOpen: false, quoteId: null, quoteName: "" });
+        toast.success(
+          `Quote from ${deleteConfirmDialog.quoteName} deleted successfully`
+        );
+      } else {
+        toast.error("Failed to delete quote");
       }
     } catch (error) {
       console.error("Error deleting quote:", error);
+      toast.error("Error deleting quote");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -210,6 +257,13 @@ export function QuotesTable() {
             Manage and track all quote submissions
           </CardDescription>
         </CardHeader>
+        {error && (
+          <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-800 text-sm">
+              <strong>Error:</strong> {error.message}
+            </p>
+          </div>
+        )}
         <CardContent className="space-y-4">
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -307,7 +361,10 @@ export function QuotesTable() {
                         <div className="font-medium text-slate-900 dark:text-white">
                           {quote.firstName} {quote.lastName}
                         </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 font-mono" title={quote.id}>
+                        <div
+                          className="text-xs text-slate-500 dark:text-slate-400 font-mono"
+                          title={quote.id}
+                        >
                           {truncateId(quote.id)}
                         </div>
                       </td>
@@ -431,7 +488,12 @@ export function QuotesTable() {
                               Mark Completed
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => deleteQuote(quote.id)}
+                              onClick={() =>
+                                deleteQuote(
+                                  quote.id,
+                                  `${quote.firstName} ${quote.lastName}`
+                                )
+                              }
                               className="text-destructive"
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
@@ -466,6 +528,56 @@ export function QuotesTable() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmDialog.isOpen}
+        onOpenChange={(open) =>
+          setDeleteConfirmDialog({
+            ...deleteConfirmDialog,
+            isOpen: open,
+          })
+        }
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 text-red-600" />
+              <DialogTitle>Delete Quote</DialogTitle>
+            </div>
+          </DialogHeader>
+          <DialogDescription>
+            Are you sure you want to delete the quote from{" "}
+            <strong>{deleteConfirmDialog.quoteName}</strong>? This action cannot
+            be undone.
+          </DialogDescription>
+          <DialogFooter className="flex justify-end gap-2 pt-4">
+            <Button
+              variant="outline"
+              onClick={() =>
+                setDeleteConfirmDialog({
+                  isOpen: false,
+                  quoteId: null,
+                  quoteName: "",
+                })
+              }
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmDeleteQuote}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : null}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

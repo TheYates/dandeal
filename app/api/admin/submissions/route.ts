@@ -30,11 +30,14 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
+      console.error("No user found in session");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    console.log("User ID:", user.id);
     const admin = await checkAdminRole(user.id);
     if (!admin) {
+      console.error("User is not an admin:", user.id);
       return NextResponse.json(
         { error: "Forbidden - Admin access required" },
         { status: 403 }
