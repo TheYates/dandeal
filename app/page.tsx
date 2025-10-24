@@ -37,6 +37,17 @@ export default function Home() {
   const [logos, setLogos] = useState<any[]>([]);
   const [logosLoading, setLogosLoading] = useState(true);
 
+  // Redirect to /invite if this is an invite link
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash;
+      if (hash.includes("access_token") && hash.includes("type=invite")) {
+        console.log("Detected invite token on homepage, redirecting to /invite");
+        window.location.href = `/invite${hash}`;
+      }
+    }
+  }, []);
+
   // Logistics slideshow images
   const heroImages = [
     "https://images.pexels.com/photos/906494/pexels-photo-906494.jpeg", // Container ship
