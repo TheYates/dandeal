@@ -3,8 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     // This route handles the invite token from Supabase email
-    // The email sends users to /api/invite-redirect?token=XXX
-    // We need to redirect them to /invite with the token in the URL hash
+    // IMPORTANT: The email template should use {{ .ConfirmationURL }}
+    // which automatically generates the correct verification URL
+    //
+    // If the email template is still using the old format with ?token=XXX,
+    // this route will redirect to Supabase's verify endpoint
 
     const searchParams = request.nextUrl.searchParams;
     const token = searchParams.get("token");
@@ -34,15 +37,20 @@ export async function GET(request: NextRequest) {
     // If we have a token, redirect to Supabase verify endpoint
     // This will verify the token and redirect back with access_token
     if (token) {
-      console.log("Redirecting to Supabase verify endpoint");
+      console.log("Redirecting to Supabase verify endpoint with token");
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dandeal.vercel.app';
 
+      if (!supabaseUrl) {
+        console.error("Missing NEXT_PUBLIC_SUPABASE_URL environment variable");
+        return NextResponse.redirect(new URL("/sign-in", request.url));
+      }
+
       // Redirect to Supabase verify endpoint
       // Supabase will verify the token and redirect back to /invite with access_token in hash
-      const verifyUrl = `${supabaseUrl}/auth/v1/verify?token=${token}&type=invite&redirect_to=${encodeURIComponent(`${appUrl}/invite`)}`;
+      const verifyUrl = `${supabaseUrl}/auth/v1/verify?token=${encodeURIComponent(token)}&type=invite&redirect_to=${encodeURIComponent(`${appUrl}/invite`)}`;
 
-      console.log("Verify URL:", verifyUrl);
+      console.log("Verify URL constructed (token hidden for security)");
       return NextResponse.redirect(verifyUrl);
     }
 
