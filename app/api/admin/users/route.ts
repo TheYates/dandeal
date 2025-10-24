@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email if requested
     if (sendEmail) {
-      const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin`;
+      const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite`;
       const { error: emailError } = await adminClient.auth.admin.inviteUserByEmail(email, {
         redirectTo: redirectUrl,
         data: {
