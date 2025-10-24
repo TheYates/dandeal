@@ -27,54 +27,72 @@ export default function InvitePage() {
       try {
         // Get the token from URL hash
         const hash = window.location.hash;
-        console.log("URL Hash:", hash);
+        console.log("Invite Page - Current URL:", window.location.href);
+        console.log("Invite Page - URL Hash:", hash);
+        console.log("Invite Page - URL Search:", window.location.search);
 
         // Supabase puts the token in the URL hash
         if (hash.includes("access_token")) {
           // Parse the hash to extract the access token
           const params = new URLSearchParams(hash.substring(1));
           const accessToken = params.get("access_token");
+          const refreshToken = params.get("refresh_token");
           const type = params.get("type");
 
-          console.log("Access Token:", accessToken?.substring(0, 50) + "...");
+          console.log("Access Token present:", !!accessToken);
+          console.log("Refresh Token present:", !!refreshToken);
           console.log("Type:", type);
 
-          if (!accessToken || type !== "invite") {
-            console.error("Invalid token or type");
-            setError("Invalid invitation link");
+          if (!accessToken) {
+            console.error("Missing access token");
+            setError("Invalid invitation link - missing access token");
+            return;
+          }
+
+          if (type !== "invite") {
+            console.error("Invalid type, expected 'invite' but got:", type);
+            setError("Invalid invitation link - incorrect link type");
             return;
           }
 
           // Set the session directly with the token from the URL
+          console.log("Setting session with tokens...");
           const { data, error: setSessionError } =
             await supabase.auth.setSession({
               access_token: accessToken,
-              refresh_token: params.get("refresh_token") || "",
+              refresh_token: refreshToken || "",
             });
 
-          console.log("Set Session Data:", data);
-          console.log("Set Session Error:", setSessionError);
+          console.log("Set Session Data:", data?.user?.email || "No user");
+          console.log("Set Session Error:", setSessionError?.message || "No error");
 
           if (setSessionError) {
             console.error("Set session error:", setSessionError);
-            setError("Failed to authenticate invitation link");
+            setError(`Failed to authenticate invitation link: ${setSessionError.message}`);
             return;
           }
 
           if (data?.user?.email) {
             console.log("Email found:", data.user.email);
             setEmail(data.user.email);
+            // Clear the hash from URL for cleaner UI (optional)
+            window.history.replaceState(null, "", window.location.pathname);
           } else {
             console.error("No email in user data");
             setError("Could not retrieve email from invitation link");
           }
         } else {
           console.error("No access_token in hash");
-          setError("Invalid invitation link - missing token");
+          console.log("Full URL:", window.location.href);
+          setError("Invalid invitation link - missing token. Please use the link from your invitation email.");
         }
       } catch (err) {
         console.error("Error handling invitation:", err);
-        setError("An error occurred while processing your invitation");
+        setError(
+          `An error occurred while processing your invitation: ${
+            err instanceof Error ? err.message : "Unknown error"
+          }`
+        );
       }
     };
 

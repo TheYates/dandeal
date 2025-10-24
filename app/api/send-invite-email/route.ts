@@ -98,7 +98,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Send invitation email
-    const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite`;
+    // Use explicit full URL with proper path to ensure redirect works in production
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const redirectUrl = `${baseUrl}/invite`;
 
     console.log("Sending invitation email to:", email, "with redirect URL:", redirectUrl);
 
