@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { UserPlus, Trash2, Eye, EyeOff } from "lucide-react"
+import { UserPlus, Trash2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -14,8 +14,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
+  DialogFooter,
 } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
+import { AlertCircle, CheckCircle } from "lucide-react"
 
 interface User {
   id: string
@@ -57,16 +60,65 @@ export function UserManagement() {
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
-    password: "",
     role: "Viewer" as const,
     sendEmail: true,
   })
-  const [showPassword, setShowPassword] = useState(false)
   const [editingRole, setEditingRole] = useState<string | null>(null)
   const [selectedRole, setSelectedRole] = useState<"Super Admin" | "Admin" | "Viewer">("Viewer")
+  const [messageDialog, setMessageDialog] = useState<{
+    isOpen: boolean
+    type: "success" | "error"
+    title: string
+    message: string
+  }>({
+    isOpen: false,
+    type: "success",
+    title: "",
+    message: "",
+  })
 
-  const addUser = () => {
-    if (newUser.name.trim() && newUser.email.trim() && newUser.password.trim()) {
+  const addUser = async () => {
+    if (!newUser.name.trim() || !newUser.email.trim()) {
+      setMessageDialog({
+        isOpen: true,
+        type: "error",
+        title: "Missing Fields",
+        message: "Please fill in all required fields (Name and Email)",
+      });
+      return;
+    }
+
+    try {
+      // Send confirmation email if checkbox is checked
+      if (newUser.sendEmail) {
+        console.log("Sending invite email for:", newUser.email);
+        const response = await fetch("/api/send-invite-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+          }),
+        });
+
+        const data = await response.json();
+        console.log("API Response:", data);
+
+        if (!response.ok) {
+          const errorMessage = data.error || data.message || "Unknown error";
+          console.error("API Error:", errorMessage);
+          setMessageDialog({
+            isOpen: true,
+            type: "error",
+            title: "Failed to Create User",
+            message: errorMessage,
+          });
+          return;
+        }
+      }
+
+      // Only add to local state after successful API call
       const user: User = {
         id: `user_${Date.now()}`,
         name: newUser.name,
@@ -81,12 +133,26 @@ export function UserManagement() {
           minute: "2-digit",
           second: "2-digit",
         }),
-      }
-      setUsers([...users, user])
-      setNewUser({ name: "", email: "", password: "", role: "Viewer", sendEmail: true })
-      setIsDialogOpen(false)
+      };
+      setUsers([...users, user]);
+      setNewUser({ name: "", email: "", role: "Viewer", sendEmail: true });
+      setIsDialogOpen(false);
+      setMessageDialog({
+        isOpen: true,
+        type: "success",
+        title: "User Created Successfully",
+        message: `${newUser.name} has been invited. They will receive an email with instructions to set their password.`,
+      });
+    } catch (error) {
+      console.error("Error creating user:", error);
+      setMessageDialog({
+        isOpen: true,
+        type: "error",
+        title: "Error Creating User",
+        message: error instanceof Error ? error.message : "An unknown error occurred",
+      });
     }
-  }
+  };
 
   const deleteUser = (id: string) => {
     setUsers(users.filter((u) => u.id !== id))
@@ -109,7 +175,7 @@ export function UserManagement() {
           <div>
             <CardTitle>Admin Users</CardTitle>
             <CardDescription>
-              Manage user roles and permissions. Only super admins can modify user roles.
+              Manage user roles and permissions. 
             </CardDescription>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -121,9 +187,9 @@ export function UserManagement() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Invite New Admin User</DialogTitle>
+                <DialogTitle>Invite New User</DialogTitle>
                 <DialogDescription>
-                  Create a new admin user account. Choose to send a confirmation email or activate immediately.
+                  Create a new user account. Choose to send a confirmation email or activate immediately.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
@@ -147,23 +213,6 @@ export function UserManagement() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-900 dark:text-slate-100">Password</label>
-                  <div className="relative mt-1">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Min. 6 characters"
-                      value={newUser.password}
-                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                    />
-                    <button
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                <div>
                   <label className="text-sm font-medium text-slate-900 dark:text-slate-100">Role</label>
                   <Select value={newUser.role} onValueChange={(value: any) => setNewUser({ ...newUser, role: value })}>
                     <SelectTrigger className="mt-1">
@@ -182,8 +231,13 @@ export function UserManagement() {
                     onCheckedChange={(checked) => setNewUser({ ...newUser, sendEmail: checked as boolean })}
                   />
                   <label htmlFor="sendEmail" className="text-sm text-slate-700 dark:text-slate-100 cursor-pointer">
-                    Send confirmation email (user must verify before signing in)
+                    Send confirmation email (user must verify and change password before signing in)
                   </label>
+                </div>
+                <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md p-3">
+                  <p className="text-xs text-blue-900 dark:text-blue-100">
+                    <strong>Note:</strong> New users will be required to change their password on first login for security purposes.
+                  </p>
                 </div>
                 <div className="flex gap-2 justify-end pt-4">
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -305,6 +359,31 @@ export function UserManagement() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Message Dialog */}
+      <Dialog open={messageDialog.isOpen} onOpenChange={(open) => setMessageDialog({ ...messageDialog, isOpen: open })}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              {messageDialog.type === "success" ? (
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              ) : (
+                <AlertCircle className="w-6 h-6 text-red-600" />
+              )}
+              <DialogTitle>{messageDialog.title}</DialogTitle>
+            </div>
+          </DialogHeader>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{messageDialog.message}</p>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              onClick={() => setMessageDialog({ ...messageDialog, isOpen: false })}
+              className={messageDialog.type === "success" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}
+            >
+              {messageDialog.type === "success" ? "Great!" : "Close"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
