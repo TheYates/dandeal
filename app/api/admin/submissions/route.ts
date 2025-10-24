@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     if (!admin) {
       console.error("User is not an admin:", user.id);
       return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
+        { error: "Access denied" },
         { status: 403 }
       );
     }
@@ -101,7 +101,7 @@ export async function PATCH(request: NextRequest) {
     const admin = await checkAdminRole(user.id);
     if (!admin) {
       return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
+        { error: "Access denied" },
         { status: 403 }
       );
     }
@@ -109,7 +109,7 @@ export async function PATCH(request: NextRequest) {
     // Viewers cannot modify
     if (admin.role === "viewer") {
       return NextResponse.json(
-        { error: "Forbidden - Modification not allowed" },
+        { error: "Access denied" },
         { status: 403 }
       );
     }
@@ -178,7 +178,7 @@ export async function DELETE(request: NextRequest) {
     const admin = await checkAdminRole(user.id);
     if (!admin) {
       return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
+        { error: "Access denied" },
         { status: 403 }
       );
     }
@@ -186,7 +186,7 @@ export async function DELETE(request: NextRequest) {
     // Only super_admin can delete
     if (admin.role !== "super_admin") {
       return NextResponse.json(
-        { error: "Forbidden - Super admin access required" },
+        { error: "Access denied" },
         { status: 403 }
       );
     }

@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const isSuperAdmin = await checkSuperAdminRole(user.id);
     if (!isSuperAdmin) {
       return NextResponse.json(
-        { error: "Forbidden - Super admin access required" },
+        { error: "Access denied" },
         { status: 403 }
       );
     }
@@ -64,7 +64,7 @@ export async function PATCH(request: NextRequest) {
     const isSuperAdmin = await checkSuperAdminRole(user.id);
     if (!isSuperAdmin) {
       return NextResponse.json(
-        { error: "Forbidden - Super admin access required" },
+        { error: "Access denied" },
         { status: 403 }
       );
     }
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
     const isSuperAdmin = await checkSuperAdminRole(user.id);
     if (!isSuperAdmin) {
       return NextResponse.json(
-        { error: "Forbidden - Super admin access required" },
+        { error: "Access denied" },
         { status: 403 }
       );
     }
@@ -206,7 +206,7 @@ export async function DELETE(request: NextRequest) {
     const isSuperAdmin = await checkSuperAdminRole(user.id);
     if (!isSuperAdmin) {
       return NextResponse.json(
-        { error: "Forbidden - Super admin access required" },
+        { error: "Access denied" },
         { status: 403 }
       );
     }
