@@ -1,6 +1,10 @@
 "use client";
 
+import { useSiteSettings } from "@/hooks/use-site-settings";
+
 export default function Footer() {
+  const { settings } = useSiteSettings();
+
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -99,19 +103,19 @@ export default function Footer() {
             <div className="space-y-2 text-sm">
               <div>
                 <p className="font-semibold text-gray-900">Call Us:</p>
-                <p className="text-gray-600"> +233 25 608 8845</p>
-                <p className="text-gray-600"> +233 25 608 8846</p>
-                <p className="text-gray-600">WhatsApp: +49 15212203183</p>
+                <p className="text-gray-600"> {settings.phonePrimary || "+233 25 608 8845"}</p>
+                <p className="text-gray-600"> {settings.phoneSecondary || "+233 25 608 8846"}</p>
+                <p className="text-gray-600">WhatsApp: {settings.whatsapp || "+49 15212203183"}</p>
               
               </div>
               <div>
                 <p className="font-semibold text-gray-900">Email:</p>
                 <p className="text-gray-600">
                   <a
-                    href="mailto:info@alsshipping.com"
+                    href={`mailto:${settings.emailPrimary || "info@dandealimportation.com"}`}
                     className="hover:text-orange-600"
                   >
-                    info@dandealimportation.com
+                    {settings.emailPrimary || "info@dandealimportation.com"}
                   </a>
                 </p>
               </div>
@@ -126,17 +130,17 @@ export default function Footer() {
             <div className="space-y-2 text-sm">
               <div>
                 <p className="font-semibold text-gray-900">Kumasi - Ghana:</p>
-                <p className="text-gray-600">Santasi</p>
+                <p className="text-gray-600">{settings.officeKumasi || "Santasi"}</p>
               </div>
               <div>
                 <p className="font-semibold text-gray-900">
                   Obuasi - Ashanti Region:
                 </p>
-                <p className="text-gray-600">Mangoase</p>
+                <p className="text-gray-600">{settings.officeObuasi || "Mangoase"}</p>
               </div>
               <div>
                 <p className="font-semibold text-gray-900">China Office:</p>
-                <p className="text-gray-600">Gunagzhou</p>
+                <p className="text-gray-600">{settings.officeChina || "Guangzhou"}</p>
               </div>
             </div>
           </div>

@@ -31,11 +31,13 @@ import ConsultationForm from "@/components/ConsultationForm";
 import EmbeddedConsultationForm from "@/components/EmbeddedConsultationForm";
 import QuoteForm from "@/components/QuoteForm";
 import EmbeddedQuoteForm from "@/components/EmbeddedQuoteForm";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [logos, setLogos] = useState<any[]>([]);
   const [logosLoading, setLogosLoading] = useState(true);
+  const { settings } = useSiteSettings();
 
   // Redirect to /invite if this is an invite link
   useEffect(() => {
@@ -848,24 +850,36 @@ export default function Home() {
 
           {/* Social Media Icons */}
           <div className="flex justify-center gap-4">
-            <a
-              href="#"
-              className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center hover:bg-blue-700 transition"
-            >
-              <Facebook className="text-white text-xl" />
-            </a>
-            <a
-              href="#"
-              className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center hover:bg-pink-600 transition"
-            >
-              <Instagram className="text-white text-xl" />
-            </a>
-            <a
-              href="#"
-              className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition"
-            >
-              <Linkedin className="text-white text-xl" />
-            </a>
+            {settings.facebookUrl && (
+              <a
+                href={settings.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center hover:bg-blue-700 transition"
+              >
+                <Facebook className="text-white text-xl" />
+              </a>
+            )}
+            {settings.instagramUrl && (
+              <a
+                href={settings.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center hover:bg-pink-600 transition"
+              >
+                <Instagram className="text-white text-xl" />
+              </a>
+            )}
+            {settings.linkedinUrl && (
+              <a
+                href={settings.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition"
+              >
+                <Linkedin className="text-white text-xl" />
+              </a>
+            )}
           </div>
         </div>
       </section>

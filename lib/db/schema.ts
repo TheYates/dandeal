@@ -120,6 +120,30 @@ export const partners = pgTable("partners", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const siteSettings = pgTable("site_settings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  // Contact Information
+  phonePrimary: text("phone_primary"),
+  phoneSecondary: text("phone_secondary"),
+  whatsapp: text("whatsapp"),
+  emailPrimary: text("email_primary"),
+  emailSupport: text("email_support"),
+  // Social Media Links
+  facebookUrl: text("facebook_url"),
+  instagramUrl: text("instagram_url"),
+  linkedinUrl: text("linkedin_url"),
+  twitterUrl: text("twitter_url"),
+  // Office Locations
+  officeKumasi: text("office_kumasi"),
+  officeObuasi: text("office_obuasi"),
+  officeChina: text("office_china"),
+  // Business Hours
+  businessHours: text("business_hours"),
+  // Metadata
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  updatedBy: text("updated_by"),
+});
+
 // Types
 export type ConsultationSubmission =
   typeof consultationSubmissions.$inferSelect;
@@ -137,3 +161,6 @@ export type NewDropdownOption = typeof dropdownOptions.$inferInsert;
 
 export type Partner = typeof partners.$inferSelect;
 export type NewPartner = typeof partners.$inferInsert;
+
+export type SiteSettings = typeof siteSettings.$inferSelect;
+export type NewSiteSettings = typeof siteSettings.$inferInsert;

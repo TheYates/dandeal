@@ -7,8 +7,9 @@ import { ContactsTable } from "@/components/contacts-table";
 import { DropdownManagementAccordion } from "@/components/dropdown-management-accordion";
 import { UserManagement } from "@/components/user-management";
 import { PartnersManagement } from "@/components/partners-management";
+import { SettingsManagement } from "@/components/settings-management";
 import { ModeToggle } from "@/components/ui/modetoggle";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Settings, Users } from "lucide-react";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -42,15 +43,19 @@ export function Dashboard({ onLogout }: DashboardProps) {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="quotes" className="w-full">
-          <TabsList className="grid w-full max-w-6xl grid-cols-6">
+          <TabsList className="grid w-full max-w-7xl grid-cols-7">
             <TabsTrigger value="quotes">Quote Requests</TabsTrigger>
             <TabsTrigger value="consultations">Consultations</TabsTrigger>
             <TabsTrigger value="contacts">Contact Messages</TabsTrigger>
             <TabsTrigger value="dropdowns">Dropdowns</TabsTrigger>
             <TabsTrigger value="partners">Partners</TabsTrigger>
             <TabsTrigger value="users" className="gap-2">
-              <Settings className="w-4 h-4" />
+              <Users className="w-4 h-4" />
               Users
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="gap-2">
+              <Settings className="w-4 h-4" />
+              Settings
             </TabsTrigger>
           </TabsList>
 
@@ -76,6 +81,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
           <TabsContent value="users" className="mt-6">
             <UserManagement />
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-6">
+            <SettingsManagement />
           </TabsContent>
         </Tabs>
       </main>

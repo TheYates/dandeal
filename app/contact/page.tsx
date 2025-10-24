@@ -8,8 +8,11 @@ import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export default function Contact() {
+  const { settings } = useSiteSettings();
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -81,26 +84,32 @@ export default function Contact() {
     {
       icon: Phone,
       title: "Call Us",
-      details: ["+233 25 608 8845", "+233 25 608 8846"],
+      details: [
+        settings.phonePrimary || "+233 25 608 8845",
+        settings.phoneSecondary || "+233 25 608 8846"
+      ].filter(Boolean),
     },
     {
       icon: Mail,
       title: "Email Us",
-      details: ["info@alsshipping.com", "support@alsshipping.com"],
+      details: [
+        settings.emailPrimary || "info@dandealimportation.com",
+        settings.emailSupport || "support@dandealimportation.com"
+      ].filter(Boolean),
     },
     {
       icon: MapPin,
       title: "Visit Us",
       details: [
-        "Kumasi - Ghana: Santasi",
-        "Obuasi - Ashanti Region: Mangoase",
-        "China Office: Gunagzhou",
+        `Kumasi - Ghana: ${settings.officeKumasi || "Santasi"}`,
+        `Obuasi - Ashanti Region: ${settings.officeObuasi || "Mangoase"}`,
+        `China Office: ${settings.officeChina || "Guangzhou"}`,
       ],
     },
     {
       icon: MessageCircle,
       title: "Message Us",
-      details: ["+233 25 608 8845", "+233 25 608 8846"],
+      details: [settings.whatsapp || "+49 15212203183"],
     },
   ];
 
@@ -117,20 +126,20 @@ export default function Contact() {
       {/* Contact Form Section with Map */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch mb-20">
             {/* Left - Map */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 h-96"
+              className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200"
             >
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.7432123456!2d-0.2!3d5.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwMzYnMDAuMCJOIDAiwrAxMicwMC4wIlc!5e0!3m2!1sen!2sgh!4v1234567890"
                 width="100%"
                 height="100%"
-                style={{ border: 0 }}
+                style={{ border: 0, display: "block" }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"

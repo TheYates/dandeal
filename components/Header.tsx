@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["700"] });
 
 export default function Header() {
+  const { settings } = useSiteSettings();
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xs h-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
@@ -90,7 +93,7 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <div className="hidden lg:block text-right">
               <div className="text-white text-xs">
-                <div>+49 15212203183</div>
+                <div>{settings.whatsapp || "+49 15212203183"}</div>
               </div>
             </div>
             <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-6">
