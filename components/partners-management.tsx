@@ -28,18 +28,18 @@ export function PartnersManagement() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState<any>(null);
-  const [newPartner, setNewPartner] = useState({ name: "", icon: "" });
+  const [newPartner, setNewPartner] = useState({ name: "", icon: "", image: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddPartner = async () => {
-    if (!newPartner.name || !newPartner.icon) {
+    if (!newPartner.name || (!newPartner.icon && !newPartner.image)) {
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await addPartner(newPartner.name, newPartner.icon);
-      setNewPartner({ name: "", icon: "" });
+      await addPartner(newPartner.name, newPartner.icon, newPartner.image);
+      setNewPartner({ name: "", icon: "", image: "" });
       setIsAddDialogOpen(false);
     } finally {
       setIsSubmitting(false);
@@ -47,7 +47,7 @@ export function PartnersManagement() {
   };
 
   const handleUpdatePartner = async () => {
-    if (!editingPartner.name || !editingPartner.icon) {
+    if (!editingPartner.name || (!editingPartner.icon && !editingPartner.image)) {
       return;
     }
 
@@ -56,6 +56,7 @@ export function PartnersManagement() {
       await updatePartner(editingPartner.id, {
         name: editingPartner.name,
         icon: editingPartner.icon,
+        image: editingPartner.image,
       });
       setIsEditDialogOpen(false);
       setEditingPartner(null);
@@ -117,7 +118,7 @@ export function PartnersManagement() {
                 />
               </div>
               <div>
-                <Label htmlFor="partner-icon">Icon (Emoji)</Label>
+                <Label htmlFor="partner-icon">Icon (Emoji) - Optional</Label>
                 <Input
                   id="partner-icon"
                   placeholder="e.g., 🚚, ✈️, 📦"
@@ -129,9 +130,21 @@ export function PartnersManagement() {
                   maxLength={2}
                 />
               </div>
+              <div>
+                <Label htmlFor="partner-image">Image URL - Optional</Label>
+                <Input
+                  id="partner-image"
+                  placeholder="e.g., https://example.com/logo.png"
+                  value={newPartner.image}
+                  onChange={(e) =>
+                    setNewPartner({ ...newPartner, image: e.target.value })
+                  }
+                  className="mt-2"
+                />
+              </div>
               <Button
                 onClick={handleAddPartner}
-                disabled={isSubmitting || !newPartner.name || !newPartner.icon}
+                disabled={isSubmitting || !newPartner.name || (!newPartner.icon && !newPartner.image)}
                 className="w-full bg-orange-600 hover:bg-orange-700"
               >
                 {isSubmitting ? (
@@ -161,7 +174,15 @@ export function PartnersManagement() {
                 className="border border-slate-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition"
               >
                 <div className="flex items-center gap-3">
-                  <div className="text-4xl">{partner.icon}</div>
+                  {partner.image ? (
+                    <img
+                      src={partner.image}
+                      alt={partner.name}
+                      className="w-12 h-12 object-contain"
+                    />
+                  ) : (
+                    <div className="text-4xl">{partner.icon}</div>
+                  )}
                   <div>
                     <p className="font-semibold text-slate-900">
                       {partner.name}
@@ -207,7 +228,7 @@ export function PartnersManagement() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="edit-icon">Icon (Emoji)</Label>
+                          <Label htmlFor="edit-icon">Icon (Emoji) - Optional</Label>
                           <Input
                             id="edit-icon"
                             value={editingPartner?.icon || ""}
@@ -219,6 +240,21 @@ export function PartnersManagement() {
                             }
                             className="mt-2"
                             maxLength={2}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="edit-image">Image URL - Optional</Label>
+                          <Input
+                            id="edit-image"
+                            value={editingPartner?.image || ""}
+                            onChange={(e) =>
+                              setEditingPartner({
+                                ...editingPartner,
+                                image: e.target.value,
+                              })
+                            }
+                            className="mt-2"
+                            placeholder="https://example.com/logo.png"
                           />
                         </div>
                         <Button

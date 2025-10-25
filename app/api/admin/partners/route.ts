@@ -24,11 +24,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, icon } = body;
+    const { name, icon, image } = body;
 
-    if (!name || !icon) {
+    if (!name || (!icon && !image)) {
       return NextResponse.json(
-        { error: "Name and icon are required" },
+        { error: "Name and either icon or image are required" },
         { status: 400 }
       );
     }
@@ -48,7 +48,8 @@ export async function POST(request: NextRequest) {
       .insert(partners)
       .values({
         name,
-        icon,
+        icon: icon || null,
+        image: image || null,
         order: nextOrder,
         isActive: true,
       })
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, name, icon, isActive } = body;
+    const { id, name, icon, image, isActive } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -82,6 +83,7 @@ export async function PATCH(request: NextRequest) {
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
     if (icon !== undefined) updateData.icon = icon;
+    if (image !== undefined) updateData.image = image;
     if (isActive !== undefined) updateData.isActive = isActive;
     updateData.updatedAt = new Date();
 

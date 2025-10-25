@@ -113,7 +113,8 @@ export const dropdownOptions = pgTable("dropdown_options", {
 export const partners = pgTable("partners", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
-  icon: text("icon").notNull(),
+  icon: text("icon"), // Deprecated - kept for backwards compatibility
+  image: text("image"), // New field for image URL
   order: text("order").default("0"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),

@@ -27,12 +27,12 @@ export function usePartners() {
     }
   };
 
-  const addPartner = async (name: string, icon: string) => {
+  const addPartner = async (name: string, icon?: string, image?: string) => {
     try {
       const response = await fetch("/api/admin/partners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, icon }),
+        body: JSON.stringify({ name, icon, image }),
       });
 
       if (!response.ok) {
@@ -53,7 +53,7 @@ export function usePartners() {
 
   const updatePartner = async (
     id: string,
-    updates: { name?: string; icon?: string; isActive?: boolean }
+    updates: { name?: string; icon?: string; image?: string; isActive?: boolean }
   ) => {
     try {
       const response = await fetch("/api/admin/partners", {
