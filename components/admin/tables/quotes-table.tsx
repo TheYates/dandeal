@@ -31,10 +31,10 @@ import {
   CheckCheck,
   AlertTriangle,
 } from "lucide-react";
-import { QuoteDetailDialog } from "./quote-detail-dialog";
+import { QuoteDetailDialog } from "@/components/admin/dialogs/quote-detail-dialog";
 import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
 import { toast } from "sonner";
-import { TableSkeleton } from "./table-skeleton";
+import { TableSkeleton } from "@/components/admin/management/table-skeleton";
 import {
   Dialog,
   DialogContent,

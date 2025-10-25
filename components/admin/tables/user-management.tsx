@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserPlus, Trash2, Loader2, AlertTriangle } from "lucide-react";
-import { TableSkeleton } from "./table-skeleton";
+import { TableSkeleton } from "@/components/admin/management/table-skeleton";
 import {
   Dialog,
   DialogContent,

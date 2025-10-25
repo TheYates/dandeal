@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TableSkeleton } from "./table-skeleton";
+import { TableSkeleton } from "@/components/admin/management/table-skeleton";
 import {
   Card,
   CardContent,
@@ -30,7 +30,7 @@ import {
   MessageSquare,
   AlertTriangle,
 } from "lucide-react";
-import { ContactDetailDialog } from "./contact-detail-dialog";
+import { ContactDetailDialog } from "@/components/admin/dialogs/contact-detail-dialog";
 import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
 import { toast } from "sonner";
 import {

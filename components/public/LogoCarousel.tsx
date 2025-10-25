@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 interface Logo {
-  id: number;
+  id: string;
   name: string;
-  icon: string;
+  icon?: string;
+  image?: string;
 }
 
 interface LogoCarouselProps {
@@ -55,12 +57,26 @@ export default function LogoCarousel({ logos, speed = 30 }: LogoCarouselProps) {
           onMouseLeave={() => setIsHovered(false)}
         >
           {duplicatedLogos.map((logo, index) => (
-            <div
-              key={`${logo.id}-${index}`}
-              className="shrink-0 w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center text-5xl hover:shadow-lg transition hover:scale-105"
-            >
-              {logo.icon}
-            </div>
+            <Tooltip key={`${logo.id}-${index}`}>
+              <TooltipTrigger asChild>
+                <div
+                  className="shrink-0 w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center hover:shadow-lg transition hover:scale-105 cursor-pointer"
+                >
+                  {logo.image ? (
+                    <img
+                      src={logo.image}
+                      alt={logo.name}
+                      className="w-full h-full object-contain p-2"
+                    />
+                  ) : (
+                    <div className="text-5xl">{logo.icon}</div>
+                  )}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{logo.name}</p>
+              </TooltipContent>
+            </Tooltip>
           ))}
         </div>
       </div>

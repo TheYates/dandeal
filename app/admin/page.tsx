@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Dashboard } from "@/components/dashboard";
+import { Dashboard } from "@/components/admin/dashboard";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function AdminPage() {

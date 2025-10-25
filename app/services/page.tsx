@@ -3,11 +3,11 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import HeroSection from "@/components/HeroSection";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import HeroSection from "@/components/public/HeroSection";
 import { Button } from "@/components/ui/button";
-import ConsultationForm from "@/components/ConsultationForm";
+import ConsultationForm from "@/components/forms/ConsultationForm";
 
 export default function Services() {
   return (

@@ -18,6 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Trash2, Plus, Edit2, Loader2 } from "lucide-react";
 import { usePartners } from "@/hooks/use-partners";
@@ -28,7 +30,9 @@ export function PartnersManagement() {
     usePartners();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState<any>(null);
+  const [deletingPartner, setDeletingPartner] = useState<any>(null);
   const [newPartner, setNewPartner] = useState({ name: "", icon: "", image: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,9 +70,16 @@ export function PartnersManagement() {
     }
   };
 
-  const handleDeletePartner = async (id: string) => {
-    if (confirm("Are you sure you want to delete this partner?")) {
-      await deletePartner(id);
+  const handleDeletePartner = async () => {
+    if (!deletingPartner) return;
+    
+    setIsSubmitting(true);
+    try {
+      await deletePartner(deletingPartner.id);
+      setIsDeleteDialogOpen(false);
+      setDeletingPartner(null);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -166,7 +177,7 @@ export function PartnersManagement() {
             {partners.map((partner) => (
               <div
                 key={partner.id}
-                className="border border-slate-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition"
+                className="border border-slate-700 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition"
               >
                 <div className="flex items-center gap-3">
                   {partner.image ? (
@@ -179,11 +190,8 @@ export function PartnersManagement() {
                     <div className="text-4xl">{partner.icon}</div>
                   )}
                   <div>
-                    <p className="font-semibold text-slate-900">
+                    <p className="font-semibold text-slate-900 dark:text-white">
                       {partner.name}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      Order: {partner.order}
                     </p>
                   </div>
                 </div>
@@ -272,7 +280,10 @@ export function PartnersManagement() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDeletePartner(partner.id)}
+                    onClick={() => {
+                      setDeletingPartner(partner);
+                      setIsDeleteDialogOpen(true);
+                    }}
                   >
                     <Trash2 className="w-4 h-4 text-red-600" />
                   </Button>
@@ -282,6 +293,44 @@ export function PartnersManagement() {
           </div>
         )}
       </CardContent>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={(open) => {
+        if (!open) {
+          setDeletingPartner(null);
+        }
+        setIsDeleteDialogOpen(open);
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Partner</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete "{deletingPartner?.name}"? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <DialogClose asChild>
+              <Button variant="outline" disabled={isSubmitting}>
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={handleDeletePartner}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

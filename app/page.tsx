@@ -24,13 +24,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import LogoCarousel from "@/components/LogoCarousel";
-import ConsultationForm from "@/components/ConsultationForm";
-import EmbeddedConsultationForm from "@/components/EmbeddedConsultationForm";
-import QuoteForm from "@/components/QuoteForm";
-import EmbeddedQuoteForm from "@/components/EmbeddedQuoteForm";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import LogoCarousel from "@/components/public/LogoCarousel";
+import ConsultationForm from "@/components/forms/ConsultationForm";
+import EmbeddedConsultationForm from "@/components/forms/EmbeddedConsultationForm";
+import QuoteForm from "@/components/forms/QuoteForm";
+import EmbeddedQuoteForm from "@/components/forms/EmbeddedQuoteForm";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export default function Home() {

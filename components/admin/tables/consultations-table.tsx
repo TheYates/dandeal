@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TableSkeleton } from "./table-skeleton";
+import { TableSkeleton } from "@/components/admin/management/table-skeleton";
 import {
   Card,
   CardContent,
@@ -32,7 +32,7 @@ import {
   XCircle,
   AlertTriangle,
 } from "lucide-react";
-import { ConsultationDetailDialog } from "./consultation-detail-dialog";
+import { ConsultationDetailDialog } from "@/components/admin/dialogs/consultation-detail-dialog";
 import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
 import { toast } from "sonner";
 import {

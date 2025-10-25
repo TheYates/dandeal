@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import HeroSection from "@/components/HeroSection";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import HeroSection from "@/components/public/HeroSection";
 
 export default function TermsAndConditions() {
   return (

@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { DropdownManagement } from "@/components/dropdown-management";
+import { DropdownManagement } from "@/components/admin/management/dropdown-management";
 
 export function DropdownManagementAccordion() {
   return (
