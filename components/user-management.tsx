@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserPlus, Trash2, Loader2, AlertTriangle } from "lucide-react";
+import { TableSkeleton } from "./table-skeleton";
 import {
   Dialog,
   DialogContent,
@@ -557,9 +558,7 @@ export function UserManagement() {
         )}
         <CardContent>
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
-            </div>
+            <TableSkeleton rows={5} columns={6} />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TableSkeleton } from "./table-skeleton";
 import {
   Card,
   CardContent,
@@ -304,9 +305,7 @@ export function ConsultationsTable() {
 
           {/* Table */}
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
-            </div>
+            <TableSkeleton rows={5} columns={8} />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

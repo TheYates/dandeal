@@ -34,6 +34,7 @@ import {
 import { QuoteDetailDialog } from "./quote-detail-dialog";
 import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
 import { toast } from "sonner";
+import { TableSkeleton } from "./table-skeleton";
 import {
   Dialog,
   DialogContent,
@@ -313,9 +314,7 @@ export function QuotesTable() {
 
           {/* Table */}
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
-            </div>
+            <TableSkeleton rows={5} columns={8} />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

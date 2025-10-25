@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ListSkeleton } from "./table-skeleton";
 import {
   Card,
   CardContent,
@@ -121,9 +122,7 @@ export function DropdownManagement({
         {/* Options List */}
         <div className="space-y-2">
           {loading ? (
-            <div className="text-center py-6">
-              <Loader2 className="w-6 h-6 animate-spin mx-auto text-orange-600" />
-            </div>
+            <ListSkeleton items={4} />
           ) : options.length === 0 ? (
             <div className="text-center py-6 text-slate-500 dark:text-slate-400">
               No options added yet

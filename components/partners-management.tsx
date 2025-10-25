@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Trash2, Plus, Edit2, Loader2 } from "lucide-react";
 import { usePartners } from "@/hooks/use-partners";
+import { CardSkeleton } from "./table-skeleton";
 
 export function PartnersManagement() {
   const { partners, loading, addPartner, updatePartner, deletePartner } =
@@ -72,13 +73,7 @@ export function PartnersManagement() {
   };
 
   if (loading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-orange-600" />
-        </CardContent>
-      </Card>
-    );
+    return <CardSkeleton />;
   }
 
   return (
