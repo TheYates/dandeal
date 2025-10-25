@@ -1,6 +1,6 @@
 {
-  "id": "0003_partners",
-  "prevId": "0002_married_triton",
+  "id": "0004_add_partner_image",
+  "prevId": "0003_partners",
   "version": "7",
   "dialect": "postgresql",
   "tables": {

@@ -29,6 +29,13 @@
       "when": 1761250000000,
       "tag": "0003_partners",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1729880600000,
+      "tag": "0004_add_partner_image",
+      "breakpoints": true
     }
   ]
 }
