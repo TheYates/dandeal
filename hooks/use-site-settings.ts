@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export interface SiteSettings {
   phonePrimary: string | null;
@@ -32,36 +32,55 @@ const defaultSettings: SiteSettings = {
   businessHours: "Monday - Friday: 9:00 AM - 6:00 PM",
 };
 
-export function useSiteSettings() {
-  const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/settings");
-        
-        if (!response.ok) {
-          throw new Error("Failed to fetch settings");
-        }
-
-        const data = await response.json();
-        setSettings(data.settings || defaultSettings);
-      } catch (err) {
-        console.error("Error fetching site settings:", err);
-        setError(err instanceof Error ? err.message : "Unknown error");
-        // Keep default settings on error
-        setSettings(defaultSettings);
-      } finally {
-        setLoading(false);
-      }
+// Helper function to normalize settings from API response
+function normalizeSettings(data: any): SiteSettings {
+  // If data has officeLocations array, convert to individual fields
+  if (data.officeLocations && Array.isArray(data.officeLocations)) {
+    return {
+      phonePrimary: data.phonePrimary || null,
+      phoneSecondary: data.phoneSecondary || null,
+      whatsapp: data.whatsapp || null,
+      emailPrimary: data.emailPrimary || null,
+      emailSupport: data.emailSupport || null,
+      facebookUrl: data.facebookUrl || null,
+      instagramUrl: data.instagramUrl || null,
+      linkedinUrl: data.linkedinUrl || null,
+      twitterUrl: data.twitterUrl || null,
+      officeKumasi: data.officeLocations[0]?.city || null,
+      officeObuasi: data.officeLocations[1]?.city || null,
+      officeChina: data.officeLocations[2]?.city || null,
+      businessHours: data.businessHours || null,
     };
+  }
+  // Otherwise return as-is (old format)
+  return data;
+}
 
-    fetchSettings();
-  }, []);
+async function fetchSettings(): Promise<SiteSettings> {
+  const response = await fetch("/api/settings");
 
-  return { settings, loading, error };
+  if (!response.ok) {
+    throw new Error("Failed to fetch settings");
+  }
+
+  const data = await response.json();
+  return normalizeSettings(data.settings || defaultSettings);
+}
+
+export function useSiteSettings() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: fetchSettings,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: 2,
+    placeholderData: defaultSettings,
+  });
+
+  return { 
+    settings: data || defaultSettings, 
+    loading: isLoading, 
+    error: error?.message || null 
+  };
 }
 

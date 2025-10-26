@@ -4,6 +4,27 @@ import { db } from "@/lib/db";
 import { siteSettings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
+// Helper function to convert database format to API format
+function formatSettingsResponse(dbSettings: any) {
+  return {
+    phonePrimary: dbSettings.phonePrimary,
+    phoneSecondary: dbSettings.phoneSecondary,
+    whatsapp: dbSettings.whatsapp,
+    emailPrimary: dbSettings.emailPrimary,
+    emailSupport: dbSettings.emailSupport,
+    facebookUrl: dbSettings.facebookUrl,
+    instagramUrl: dbSettings.instagramUrl,
+    linkedinUrl: dbSettings.linkedinUrl,
+    twitterUrl: dbSettings.twitterUrl,
+    officeLocations: [
+      { city: dbSettings.officeKumasi || "", region: "Kumasi", country: "Ghana" },
+      { city: dbSettings.officeObuasi || "", region: "Obuasi - Ashanti Region", country: "Ghana" },
+      { city: dbSettings.officeChina || "", region: "China Office", country: "China" },
+    ],
+    businessHours: dbSettings.businessHours,
+  };
+}
+
 // GET - Fetch site settings
 export async function GET(request: NextRequest) {
   try {
@@ -32,15 +53,17 @@ export async function GET(request: NextRequest) {
           instagramUrl: "",
           linkedinUrl: "",
           twitterUrl: "",
-          officeKumasi: "Santasi",
-          officeObuasi: "Mangoase",
-          officeChina: "Guangzhou",
+          officeLocations: [
+            { city: "Santasi", region: "Kumasi", country: "Ghana" },
+            { city: "Mangoase", region: "Obuasi - Ashanti Region", country: "Ghana" },
+            { city: "Guangzhou", region: "China Office", country: "China" },
+          ],
           businessHours: "Monday - Friday: 9:00 AM - 6:00 PM",
         },
       });
     }
 
-    return NextResponse.json({ settings });
+    return NextResponse.json({ settings: formatSettingsResponse(settings) });
   } catch (error) {
     console.error("Error fetching settings:", error);
     return NextResponse.json(
@@ -72,6 +95,15 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // Convert officeLocations array back to individual fields
+    const dbUpdates = { ...updates };
+    if (updates.officeLocations && Array.isArray(updates.officeLocations)) {
+      dbUpdates.officeKumasi = updates.officeLocations[0]?.city || "";
+      dbUpdates.officeObuasi = updates.officeLocations[1]?.city || "";
+      dbUpdates.officeChina = updates.officeLocations[2]?.city || "";
+      delete dbUpdates.officeLocations;
+    }
+
     // Check if settings exist
     const existing = await db.query.siteSettings.findFirst();
 
@@ -81,7 +113,7 @@ export async function PATCH(request: NextRequest) {
       result = await db
         .update(siteSettings)
         .set({
-          ...updates,
+          ...dbUpdates,
           updatedAt: new Date(),
           updatedBy: user.email,
         })
@@ -92,7 +124,7 @@ export async function PATCH(request: NextRequest) {
       result = await db
         .insert(siteSettings)
         .values({
-          ...updates,
+          ...dbUpdates,
           updatedBy: user.email,
         })
         .returning();
@@ -100,7 +132,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({
       message: "Settings updated successfully",
-      settings: result[0],
+      settings: formatSettingsResponse(result[0]),
     });
   } catch (error) {
     console.error("Error updating settings:", error);

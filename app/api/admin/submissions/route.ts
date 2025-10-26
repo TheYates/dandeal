@@ -46,24 +46,41 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
+    const limitParam = searchParams.get("limit");
+    const limit = limitParam ? parseInt(limitParam, 10) : 50; // Default 50 items
 
     if (type === "consultations") {
       const submissions = await db.query.consultationSubmissions.findMany({
         orderBy: [desc(consultationSubmissions.createdAt)],
+        limit,
       });
-      return NextResponse.json({ submissions });
+      return NextResponse.json({ 
+        submissions,
+        total: submissions.length,
+        limit,
+      });
     } else if (type === "quotes") {
       const submissions = await db.query.quoteSubmissions.findMany({
         orderBy: [desc(quoteSubmissions.createdAt)],
+        limit,
       });
-      return NextResponse.json({ submissions });
+      return NextResponse.json({ 
+        submissions,
+        total: submissions.length,
+        limit,
+      });
     } else if (type === "contacts") {
       const submissions = await db.query.contactSubmissions.findMany({
         orderBy: [desc(contactSubmissions.createdAt)],
+        limit,
       });
-      return NextResponse.json({ submissions });
+      return NextResponse.json({ 
+        submissions,
+        total: submissions.length,
+        limit,
+      });
     } else {
-      // Return all types
+      // Return all types with pagination
       const consultations = await db.query.consultationSubmissions.findMany({
         orderBy: [desc(consultationSubmissions.createdAt)],
         limit: 10,

@@ -2,16 +2,37 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { partners } from "@/lib/db/schema";
 import { eq, asc } from "drizzle-orm";
+import { rateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 
-export async function GET() {
+// Enable ISR with 5 minute revalidation for GET requests
+export const revalidate = 300;
+
+export async function GET(request: NextRequest) {
   try {
+    // Select only needed fields for optimization
     const allPartners = await db
-      .select()
+      .select({
+        id: partners.id,
+        name: partners.name,
+        icon: partners.icon,
+        image: partners.image,
+        order: partners.order,
+        isActive: partners.isActive,
+      })
       .from(partners)
       .where(eq(partners.isActive, true))
       .orderBy(asc(partners.order));
 
-    return NextResponse.json({ partners: allPartners });
+    return NextResponse.json(
+      { partners: allPartners },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+          "CDN-Cache-Control": "public, s-maxage=3600",
+          "Vary": "Accept-Encoding",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching partners:", error);
     return NextResponse.json(

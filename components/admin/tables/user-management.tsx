@@ -174,6 +174,7 @@ export function UserManagement() {
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const addUser = async () => {
     if (!newUser.name.trim() || !newUser.email.trim()) {
@@ -187,6 +188,7 @@ export function UserManagement() {
     }
 
     try {
+      setIsCreating(true);
       // Send confirmation email if checkbox is checked
       if (newUser.sendEmail) {
         console.log("Sending invite email for:", newUser.email);
@@ -250,6 +252,8 @@ export function UserManagement() {
         message:
           error instanceof Error ? error.message : "An unknown error occurred",
       });
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -474,6 +478,7 @@ export function UserManagement() {
                       setNewUser({ ...newUser, name: e.target.value })
                     }
                     className="mt-1"
+                    disabled={isCreating}
                   />
                 </div>
                 <div>
@@ -488,6 +493,7 @@ export function UserManagement() {
                       setNewUser({ ...newUser, email: e.target.value })
                     }
                     className="mt-1"
+                    disabled={isCreating}
                   />
                 </div>
                 <div>
@@ -499,6 +505,7 @@ export function UserManagement() {
                     onValueChange={(value: any) =>
                       setNewUser({ ...newUser, role: value })
                     }
+                    disabled={isCreating}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue />
@@ -516,6 +523,7 @@ export function UserManagement() {
                     onCheckedChange={(checked) =>
                       setNewUser({ ...newUser, sendEmail: checked as boolean })
                     }
+                    disabled={isCreating}
                   />
                   <label
                     htmlFor="sendEmail"
@@ -535,14 +543,23 @@ export function UserManagement() {
                   <Button
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
+                    disabled={isCreating}
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={addUser}
                     className="bg-orange-500 hover:bg-orange-600"
+                    disabled={isCreating}
                   >
-                    Create User
+                    {isCreating ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Creating...
+                      </>
+                    ) : (
+                      "Create User"
+                    )}
                   </Button>
                 </div>
               </div>

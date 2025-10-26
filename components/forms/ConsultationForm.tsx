@@ -35,8 +35,6 @@ export default function ConsultationForm({
   open,
   onOpenChange,
 }: ConsultationFormProps) {
-  console.log("ConsultationForm component rendered");
-
   const { options: services, loading: servicesLoading } =
     useDropdownOptions("services");
 
@@ -63,7 +61,6 @@ export default function ConsultationForm({
 
   const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
-    console.log("Form submitted, data:", formData);
 
     // Validate required fields
     if (
@@ -79,7 +76,6 @@ export default function ConsultationForm({
     setIsLoading(true);
 
     try {
-      console.log("Sending request to /api/consultation");
       const response = await fetch("/api/consultation", {
         method: "POST",
         headers: {
@@ -88,9 +84,7 @@ export default function ConsultationForm({
         body: JSON.stringify(formData),
       });
 
-      console.log("Response status:", response.status);
       const data = await response.json();
-      console.log("Response data:", data);
 
       if (response.ok) {
         // Show success message
@@ -117,7 +111,6 @@ export default function ConsultationForm({
         toast.error(data.error || "Failed to submit consultation request");
       }
     } catch (error) {
-      console.error("Error submitting consultation:", error);
       toast.error("An error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
@@ -231,9 +224,16 @@ export default function ConsultationForm({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center font-medium disabled:opacity-50 disabled:cursor-not-allowed gap-2"
           >
-            {isLoading ? "Submitting..." : "Book Free Consultation"}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              "Book Free Consultation"
+            )}
           </button>
         </form>
       </DialogContent>

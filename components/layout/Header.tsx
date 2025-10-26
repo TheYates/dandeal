@@ -1,16 +1,20 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import QuoteForm from "@/components/forms/QuoteForm";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["700"] });
 
 export default function Header() {
-  const { settings } = useSiteSettings();
+  const { settings, loading } = useSiteSettings();
+  const [quoteFormOpen, setQuoteFormOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xs h-20">
@@ -50,7 +54,7 @@ export default function Header() {
               </button>
               <div className="absolute left-0 mt-0 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <a
-                  href="/why-als"
+                  href="/why-dandeal"
                   className="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-orange-600 text-sm first:rounded-t-lg"
                 >
                   Why Dandeal
@@ -93,15 +97,100 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <div className="hidden lg:block text-right">
               <div className="text-white text-xs">
-                <div>{settings.whatsapp || "+49 15212203183"}</div>
+                {!loading && <div>{settings.whatsapp}</div>}
               </div>
             </div>
-            <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-6">
+            <Button
+              onClick={() => setQuoteFormOpen(true)}
+              className="hidden sm:block bg-orange-600 hover:bg-red-700 text-white rounded-full px-6"
+            >
               Get a Free Quote
             </Button>
+
+            {/* Hamburger Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden text-white hover:text-orange-600 transition"
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <nav className="md:hidden bg-black/80 backdrop-blur-sm border-t border-white/10">
+            <div className="px-4 py-4 space-y-3">
+              <a
+                href="/"
+                className="block text-white hover:text-orange-600 transition text-sm py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </a>
+              <a
+                href="/why-dandeal"
+                className="block text-white hover:text-orange-600 transition text-sm py-2 pl-4"
+              >
+                Why Dandeal
+              </a>
+              <a
+                href="/terms-and-conditions"
+                className="block text-white hover:text-orange-600 transition text-sm py-2 pl-4"
+              >
+                Terms and Conditions
+              </a>
+              <a
+                href="/services"
+                className="block text-white hover:text-orange-600 transition text-sm py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Services
+              </a>
+              <a
+                href="/news"
+                className="block text-white hover:text-orange-600 transition text-sm py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                News
+              </a>
+              <a
+                href="/faq"
+                className="block text-white hover:text-orange-600 transition text-sm py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                FAQ's
+              </a>
+              <a
+                href="/contact"
+                className="block text-white hover:text-orange-600 transition text-sm py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Contact
+              </a>
+              <Button
+                onClick={() => {
+                  setQuoteFormOpen(true);
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-full mt-2"
+              >
+                Get a Free Quote
+              </Button>
+            </div>
+          </nav>
+        )}
       </div>
+
+      {/* Quote Form Dialog */}
+      <QuoteForm
+        open={quoteFormOpen}
+        onOpenChange={setQuoteFormOpen}
+      />
     </header>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, MessageCircle, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Header from "@/components/layout/Header";
@@ -289,6 +289,73 @@ export default function Contact() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* Social Media Section */}
+      <section className="relative py-20 bg-white dark:bg-black overflow-hidden">
+        {/* Decorative Red Triangle */}
+        <div className="absolute right-0 top-0 bottom-0 w-3/12 bg-red-600 clip-triangle"></div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold text-gray-900 mb-8"
+          >
+            Follow Us On Our Social Media Platforms
+          </motion.h2>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="flex justify-center gap-6"
+          >
+            {settings.facebookUrl && (
+              <a
+                href={settings.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-16 h-16 rounded-full flex items-center justify-center hover:opacity-90  transition transform hover:scale-120"
+              >
+                <Facebook className="text-blue-500 w-8 h-8" />
+              </a>
+            )}
+            {settings.instagramUrl && (
+              <a
+                href={settings.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-16 h-16 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
+              >
+                <Instagram className="text-pink-500 w-8 h-8" />
+              </a>
+            )}
+            {settings.linkedinUrl && (
+              <a
+                href={settings.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-16 h-16 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
+              >
+                <Linkedin className="text-blue-500 w-8 h-8" />
+              </a>
+            )}
+            {settings.twitterUrl && (
+              <a
+                href={settings.twitterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-16 h-16 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
+              >
+                <Twitter className="text-sky-400 w-8 h-8" />
+              </a>
+            )}
+          </motion.div>
         </div>
       </section>
 

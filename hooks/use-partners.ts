@@ -1,115 +1,116 @@
-import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Partner } from "@/lib/db/schema";
 import { toast } from "sonner";
 
+// API functions
+async function fetchPartners(): Promise<Partner[]> {
+  const response = await fetch("/api/admin/partners");
+  const data = await response.json();
+  return data.partners || [];
+}
+
+async function createPartner({ name, icon, image }: { name: string; icon?: string; image?: string }): Promise<Partner> {
+  const response = await fetch("/api/admin/partners", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, icon, image }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error || "Failed to add partner");
+  }
+
+  const data = await response.json();
+  return data.partner;
+}
+
+async function patchPartner({ id, updates }: { id: string; updates: { name?: string; icon?: string; image?: string; isActive?: boolean } }): Promise<Partner> {
+  const response = await fetch("/api/admin/partners", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, ...updates }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error || "Failed to update partner");
+  }
+
+  const data = await response.json();
+  return data.partner;
+}
+
+async function removePartner(id: string): Promise<void> {
+  const response = await fetch("/api/admin/partners", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error || "Failed to delete partner");
+  }
+}
+
 export function usePartners() {
-  const [partners, setPartners] = useState<Partner[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetchPartners();
-  }, []);
+  // Fetch partners
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["partners"],
+    queryFn: fetchPartners,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-  const fetchPartners = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/admin/partners");
-      const data = await response.json();
-      setPartners(data.partners || []);
-      setError(null);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch partners";
-      setError(errorMessage);
-      console.error("Error fetching partners:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const addPartner = async (name: string, icon?: string, image?: string) => {
-    try {
-      const response = await fetch("/api/admin/partners", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, icon, image }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to add partner");
-      }
-
-      const data = await response.json();
-      setPartners([...partners, data.partner]);
+  // Add partner mutation
+  const addMutation = useMutation({
+    mutationFn: createPartner,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["partners"] });
       toast.success("Partner added successfully");
-      return data.partner;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to add partner";
-      toast.error(errorMessage);
-      throw err;
-    }
-  };
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to add partner");
+    },
+  });
 
-  const updatePartner = async (
-    id: string,
-    updates: { name?: string; icon?: string; image?: string; isActive?: boolean }
-  ) => {
-    try {
-      const response = await fetch("/api/admin/partners", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...updates }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to update partner");
-      }
-
-      const data = await response.json();
-      setPartners(
-        partners.map((p) => (p.id === id ? data.partner : p))
-      );
+  // Update partner mutation
+  const updateMutation = useMutation({
+    mutationFn: patchPartner,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["partners"] });
       toast.success("Partner updated successfully");
-      return data.partner;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to update partner";
-      toast.error(errorMessage);
-      throw err;
-    }
-  };
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to update partner");
+    },
+  });
 
-  const deletePartner = async (id: string) => {
-    try {
-      const response = await fetch("/api/admin/partners", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to delete partner");
-      }
-
-      setPartners(partners.filter((p) => p.id !== id));
+  // Delete partner mutation
+  const deleteMutation = useMutation({
+    mutationFn: removePartner,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["partners"] });
       toast.success("Partner deleted successfully");
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to delete partner";
-      toast.error(errorMessage);
-      throw err;
-    }
-  };
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to delete partner");
+    },
+  });
 
   return {
-    partners,
-    loading,
-    error,
-    addPartner,
-    updatePartner,
-    deletePartner,
-    refetch: fetchPartners,
+    partners: data || [],
+    loading: isLoading,
+    error: error?.message || null,
+    addPartner: (name: string, icon?: string, image?: string) => 
+      addMutation.mutateAsync({ name, icon, image }),
+    updatePartner: (id: string, updates: { name?: string; icon?: string; image?: string; isActive?: boolean }) =>
+      updateMutation.mutateAsync({ id, updates }),
+    deletePartner: (id: string) => deleteMutation.mutateAsync(id),
+    refetch: () => queryClient.invalidateQueries({ queryKey: ["partners"] }),
   };
 }
 

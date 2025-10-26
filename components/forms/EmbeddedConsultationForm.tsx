@@ -181,10 +181,16 @@ export default function EmbeddedConsultationForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-orange-600 hover:bg-red-700 text-white rounded-md py-2 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed gap-2"
         >
-          {isLoading ? "Submitting..." : "Book Free Consultation"}
-
+          {isLoading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            "Book Free Consultation"
+          )}
         </Button>
       </form>
     </div>

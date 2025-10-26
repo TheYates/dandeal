@@ -16,6 +16,12 @@ import {
 import { Loader2, Save, Phone, Mail, MapPin, Clock, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
+interface OfficeLocation {
+  city: string;
+  region: string;
+  country: string;
+}
+
 interface Settings {
   phonePrimary: string;
   phoneSecondary: string;
@@ -26,9 +32,7 @@ interface Settings {
   instagramUrl: string;
   linkedinUrl: string;
   twitterUrl: string;
-  officeKumasi: string;
-  officeObuasi: string;
-  officeChina: string;
+  officeLocations: OfficeLocation[];
   businessHours: string;
 }
 
@@ -45,9 +49,11 @@ export function SettingsManagement() {
     instagramUrl: "",
     linkedinUrl: "",
     twitterUrl: "",
-    officeKumasi: "",
-    officeObuasi: "",
-    officeChina: "",
+    officeLocations: [
+      { city: "", region: "Kumasi", country: "Ghana" },
+      { city: "", region: "Obuasi - Ashanti Region", country: "Ghana" },
+      { city: "", region: "China Office", country: "China" },
+    ],
     businessHours: "",
   });
 
@@ -81,6 +87,14 @@ export function SettingsManagement() {
     setSettings((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleOfficeLocationChange = (index: number, city: string) => {
+    setSettings((prev) => {
+      const updatedLocations = [...prev.officeLocations];
+      updatedLocations[index] = { ...updatedLocations[index], city };
+      return { ...prev, officeLocations: updatedLocations };
+    });
+  };
+
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -109,102 +123,105 @@ export function SettingsManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Contact Information */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Phone className="w-5 h-5 text-orange-600" />
-            <div>
-              <CardTitle>Contact Information</CardTitle>
-              <CardDescription>
-                Manage phone numbers and WhatsApp contact
-              </CardDescription>
+      {/* Top Row - Contact & Email */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Contact Information */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Phone className="w-5 h-5 text-orange-600" />
+              <div>
+                <CardTitle>Contact Information</CardTitle>
+                <CardDescription>
+                  Manage phone numbers and WhatsApp contact
+                </CardDescription>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="phonePrimary">Primary Phone</Label>
-              <Input
-                id="phonePrimary"
-                name="phonePrimary"
-                value={settings.phonePrimary || ""}
-                onChange={handleInputChange}
-                placeholder="+233 25 608 8845"
-                className="mt-1"
-              />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <Label htmlFor="phonePrimary">Primary Phone</Label>
+                <Input
+                  id="phonePrimary"
+                  name="phonePrimary"
+                  value={settings.phonePrimary || ""}
+                  onChange={handleInputChange}
+                  placeholder="+233 25 608 8845"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="phoneSecondary">Secondary Phone</Label>
+                <Input
+                  id="phoneSecondary"
+                  name="phoneSecondary"
+                  value={settings.phoneSecondary || ""}
+                  onChange={handleInputChange}
+                  placeholder="+233 25 608 8846"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                <Input
+                  id="whatsapp"
+                  name="whatsapp"
+                  value={settings.whatsapp || ""}
+                  onChange={handleInputChange}
+                  placeholder="+49 15212203183"
+                  className="mt-1"
+                />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="phoneSecondary">Secondary Phone</Label>
-              <Input
-                id="phoneSecondary"
-                name="phoneSecondary"
-                value={settings.phoneSecondary || ""}
-                onChange={handleInputChange}
-                placeholder="+233 25 608 8846"
-                className="mt-1"
-              />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="whatsapp">WhatsApp Number</Label>
-            <Input
-              id="whatsapp"
-              name="whatsapp"
-              value={settings.whatsapp || ""}
-              onChange={handleInputChange}
-              placeholder="+49 15212203183"
-              className="mt-1"
-            />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Email Addresses */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Mail className="w-5 h-5 text-orange-600" />
-            <div>
-              <CardTitle>Email Addresses</CardTitle>
-              <CardDescription>
-                Manage primary and support email addresses
-              </CardDescription>
+        {/* Email Addresses */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-orange-600" />
+              <div>
+                <CardTitle>Email Addresses</CardTitle>
+                <CardDescription>
+                  Manage primary and support email addresses
+                </CardDescription>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="emailPrimary">Primary Email</Label>
-              <Input
-                id="emailPrimary"
-                name="emailPrimary"
-                type="email"
-                value={settings.emailPrimary || ""}
-                onChange={handleInputChange}
-                placeholder="info@dandealimportation.com"
-                className="mt-1"
-              />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <Label htmlFor="emailPrimary">Primary Email</Label>
+                <Input
+                  id="emailPrimary"
+                  name="emailPrimary"
+                  type="email"
+                  value={settings.emailPrimary || ""}
+                  onChange={handleInputChange}
+                  placeholder="info@dandealimportation.com"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="emailSupport">Support Email</Label>
+                <Input
+                  id="emailSupport"
+                  name="emailSupport"
+                  type="email"
+                  value={settings.emailSupport || ""}
+                  onChange={handleInputChange}
+                  placeholder="support@dandealimportation.com"
+                  className="mt-1"
+                />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="emailSupport">Support Email</Label>
-              <Input
-                id="emailSupport"
-                name="emailSupport"
-                type="email"
-                value={settings.emailSupport || ""}
-                onChange={handleInputChange}
-                placeholder="support@dandealimportation.com"
-                className="mt-1"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Social Media Links */}
+      {/* Social Media Links - Full Width */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
@@ -218,7 +235,7 @@ export function SettingsManagement() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <Label htmlFor="facebookUrl">Facebook URL</Label>
               <Input
@@ -271,84 +288,74 @@ export function SettingsManagement() {
         </CardContent>
       </Card>
 
-      {/* Office Locations */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-orange-600" />
-            <div>
-              <CardTitle>Office Locations</CardTitle>
-              <CardDescription>
-                Manage office addresses and locations
-              </CardDescription>
+      {/* Bottom Row - Office Locations & Business Hours */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Office Locations */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-orange-600" />
+              <div>
+                <CardTitle>Office Locations</CardTitle>
+                <CardDescription>
+                  Manage office addresses and locations
+                </CardDescription>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="officeKumasi">Kumasi - Ghana</Label>
-              <Input
-                id="officeKumasi"
-                name="officeKumasi"
-                value={settings.officeKumasi || ""}
-                onChange={handleInputChange}
-                placeholder="Santasi"
-                className="mt-1"
-              />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              {settings.officeLocations.map((location, index) => (
+                <div key={index}>
+                  <Label htmlFor={`office-${index}`}>
+                    {location.region} - {location.country}
+                  </Label>
+                  <Input
+                    id={`office-${index}`}
+                    value={location.city}
+                    onChange={(e) => handleOfficeLocationChange(index, e.target.value)}
+                    placeholder={
+                      index === 0
+                        ? "Santasi"
+                        : index === 1
+                        ? "Mangoase"
+                        : "Guangzhou"
+                    }
+                    className="mt-1"
+                  />
+                </div>
+              ))}
             </div>
-            <div>
-              <Label htmlFor="officeObuasi">Obuasi - Ashanti Region</Label>
-              <Input
-                id="officeObuasi"
-                name="officeObuasi"
-                value={settings.officeObuasi || ""}
-                onChange={handleInputChange}
-                placeholder="Mangoase"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label htmlFor="officeChina">China Office</Label>
-              <Input
-                id="officeChina"
-                name="officeChina"
-                value={settings.officeChina || ""}
-                onChange={handleInputChange}
-                placeholder="Guangzhou"
-                className="mt-1"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Business Hours */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-orange-600" />
-            <div>
-              <CardTitle>Business Hours</CardTitle>
-              <CardDescription>
-                Set your business operating hours
-              </CardDescription>
+        {/* Business Hours */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-orange-600" />
+              <div>
+                <CardTitle>Business Hours</CardTitle>
+                <CardDescription>
+                  Set your business operating hours
+                </CardDescription>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Label htmlFor="businessHours">Business Hours</Label>
-          <Textarea
-            id="businessHours"
-            name="businessHours"
-            value={settings.businessHours || ""}
-            onChange={handleInputChange}
-            placeholder="Monday - Friday: 9:00 AM - 6:00 PM"
-            rows={3}
-            className="mt-1"
-          />
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <Label htmlFor="businessHours">Business Hours</Label>
+            <Textarea
+              id="businessHours"
+              name="businessHours"
+              value={settings.businessHours || ""}
+              onChange={handleInputChange}
+              placeholder="Monday - Friday: 9:00 AM - 6:00 PM"
+              rows={3}
+              className="mt-1"
+            />
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Save Button */}
       <div className="flex justify-end">

@@ -150,4 +150,9 @@
   .dark .overflow-x-auto::-webkit-scrollbar-thumb:hover {
     background: oklch(0.439 0 0 / 0.5);
   }
+
+  /* Diagonal triangle clip for social media section */
+  .clip-triangle {
+    clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
+  }
 }

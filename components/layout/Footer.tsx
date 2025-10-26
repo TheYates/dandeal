@@ -1,9 +1,10 @@
 "use client";
 
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 
 export default function Footer() {
-  const { settings } = useSiteSettings();
+  const { settings, loading } = useSiteSettings();
 
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
@@ -100,26 +101,78 @@ export default function Footer() {
             <h3 className="text-base font-bold text-orange-600 mb-3">
               Contact Us
             </h3>
-            <div className="space-y-2 text-sm">
-              <div>
-                <p className="font-semibold text-gray-900">Call Us:</p>
-                <p className="text-gray-600"> {settings.phonePrimary || "+233 25 608 8845"}</p>
-                <p className="text-gray-600"> {settings.phoneSecondary || "+233 25 608 8846"}</p>
-                <p className="text-gray-600">WhatsApp: {settings.whatsapp || "+49 15212203183"}</p>
-              
+            {!loading ? (
+              <div className="space-y-2 text-sm">
+                <div>
+                  <p className="font-semibold text-gray-900">Call Us:</p>
+                  <p className="text-gray-600"> {settings.phonePrimary}</p>
+                  <p className="text-gray-600"> {settings.phoneSecondary}</p>
+                  <p className="text-gray-600">WhatsApp: {settings.whatsapp}</p>
+
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Email:</p>
+                  <p className="text-gray-600">
+                    <a
+                      href={`mailto:${settings.emailPrimary}`}
+                      className="hover:text-orange-600"
+                    >
+                      {settings.emailPrimary}
+                    </a>
+                  </p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Follow Us:</p>
+                  <div className="flex gap-3 mt-2">
+                    {settings.facebookUrl && (
+                      <a
+                        href={settings.facebookUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:scale-110 transition"
+                      >
+                        <Facebook className="text-blue-600 w-6 h-6" />
+                      </a>
+                    )}
+                    {settings.instagramUrl && (
+                      <a
+                        href={settings.instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:scale-110 transition"
+                      >
+                        <Instagram className="text-pink-600 w-6 h-6" />
+                      </a>
+                    )}
+                    {settings.linkedinUrl && (
+                      <a
+                        href={settings.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:scale-110 transition"
+                      >
+                        <Linkedin className="text-blue-800 w-6 h-6" />
+                      </a>
+                    )}
+                    {settings.twitterUrl && (
+                      <a
+                        href={settings.twitterUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:scale-110 transition"
+                      >
+                        <Twitter className="text-sky-500 w-6 h-6" />
+                      </a>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">Email:</p>
-                <p className="text-gray-600">
-                  <a
-                    href={`mailto:${settings.emailPrimary || "info@dandealimportation.com"}`}
-                    className="hover:text-orange-600"
-                  >
-                    {settings.emailPrimary || "info@dandealimportation.com"}
-                  </a>
-                </p>
+            ) : (
+              <div className="space-y-2 text-sm">
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Locate Us */}
@@ -127,22 +180,30 @@ export default function Footer() {
             <h3 className="text-base font-bold text-orange-600 mb-3">
               Locate Us
             </h3>
-            <div className="space-y-2 text-sm">
-              <div>
-                <p className="font-semibold text-gray-900">Kumasi - Ghana:</p>
-                <p className="text-gray-600">{settings.officeKumasi || "Santasi"}</p>
+            {!loading ? (
+              <div className="space-y-2 text-sm">
+                <div>
+                  <p className="font-semibold text-gray-900">Kumasi - Ghana:</p>
+                  <p className="text-gray-600">{settings.officeKumasi}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">
+                    Obuasi - Ashanti Region:
+                  </p>
+                  <p className="text-gray-600">{settings.officeObuasi}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">China Office:</p>
+                    <p className="text-gray-600">{settings.officeChina}</p>
+                </div>
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">
-                  Obuasi - Ashanti Region:
-                </p>
-                <p className="text-gray-600">{settings.officeObuasi || "Mangoase"}</p>
+            ) : (
+              <div className="space-y-2 text-sm">
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">China Office:</p>
-                <p className="text-gray-600">{settings.officeChina || "Guangzhou"}</p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 

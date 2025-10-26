@@ -21,6 +21,7 @@ import {
   Facebook,
   Instagram,
   Linkedin,
+  Twitter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -254,7 +255,7 @@ export default function Home() {
       {/* Trusted Shipping Agents Section */}
       <section className="relative overflow-hidden min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen lg:min-h-auto">
             {/* Left Content */}
             <div className="bg-white flex flex-col justify-center px-6 sm:px-8 lg:px-12 py-16 lg:py-20">
               <div className="max-w-lg">
@@ -288,16 +289,16 @@ export default function Home() {
             </div>
 
             {/* Right Image */}
-            <div className="relative bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden min-h-[400px] lg:min-h-screen">
+            <div className="relative bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-visible min-h-[400px] h-full">
               {/* Diagonal shape background */}
               <div className="absolute inset-0 bg-linear-to-br from-white via-gray-50 to-gray-100"></div>
 
               {/* Shipping image */}
-              <div className="relative z-10 w-full h-full flex items-center justify-center px-8 py-12">
+              <div className="relative z-10 w-full h-full flex items-center justify-center px-4 py-12">
                 <img
                   src="/trusted shipping.png"
                   alt="Global Shipping Services"
-                  className="max-w-2xl w-auto h-auto object-contain"
+                  className="w-auto h-full object-contain max-w-full"
                 />
               </div>
             </div>
@@ -855,9 +856,9 @@ export default function Home() {
                 href={settings.facebookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center hover:bg-blue-700 transition"
+                className="w-12 h-12 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
               >
-                <Facebook className="text-white text-xl" />
+                <Facebook className="text-blue-500 text-xl" />
               </a>
             )}
             {settings.instagramUrl && (
@@ -865,9 +866,9 @@ export default function Home() {
                 href={settings.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center hover:bg-pink-600 transition"
+                className="w-12 h-12 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
               >
-                <Instagram className="text-white text-xl" />
+                <Instagram className="text-pink-500 text-xl" />
               </a>
             )}
             {settings.linkedinUrl && (
@@ -875,9 +876,19 @@ export default function Home() {
                 href={settings.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition"
+                className="w-12 h-12 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
               >
-                <Linkedin className="text-white text-xl" />
+                <Linkedin className="text-blue-500 text-xl" />
+              </a>
+            )}
+            {settings.twitterUrl && (
+              <a
+                href={settings.twitterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
+              >
+                <Twitter className="text-sky-500 text-xl" />
               </a>
             )}
           </div>
