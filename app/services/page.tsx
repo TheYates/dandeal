@@ -519,8 +519,8 @@ export default function Services() {
               locally and internationally, ensuring quality and timely supply.
             </h2>
             <ConsultationForm
-            trigger={
-              <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-10 py-4 text-lg font-semibold">
+              trigger={
+                <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-10 py-4 text-lg font-semibold">
                   Book A Free Consultation
                 </Button>
               }
@@ -660,7 +660,7 @@ export default function Services() {
                   </h4>
                   <p className="text-gray-600">
                     Offer eco-friendly shipping alternatives, carbon reporting,
-                    and offsetting partnerships—positioning ALS as a green
+                    and offsetting partnerships—positioning Dandeal as a green
                     logistics advocate.
                   </p>
                 </div>
@@ -722,8 +722,8 @@ export default function Services() {
               </span>{" "}
               - For enterprise clients, offer strategic consulting on supply
               chain redesign, cost reduction, and efficiency improvements. This
-              positions ALS as a trusted logistics partner, not just a service
-              provider.
+              positions Dandeal as a trusted logistics partner, not just a
+              service provider.
             </p>
           </motion.div>
         </div>

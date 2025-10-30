@@ -9,6 +9,9 @@ CREATE TABLE IF NOT EXISTS site_settings (
   whatsapp TEXT,
   email_primary TEXT,
   email_support TEXT,
+  -- Phone Display Settings
+  display_phone_primary BOOLEAN DEFAULT true,
+  display_phone_secondary BOOLEAN DEFAULT false,
   -- Social Media Links
   facebook_url TEXT,
   instagram_url TEXT,

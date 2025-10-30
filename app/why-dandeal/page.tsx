@@ -5,14 +5,14 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/public/HeroSection";
 
-export default function WhyALS() {
+export default function WhyDandeal() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
 
       <HeroSection
-        title="WHY ALS Global Shipping & Logistics"
-        subtitle="Discover why ALS is the trusted partner for global shipping and logistics solutions"
+        title="Why Dandeal Logistics & Importation"
+        subtitle="Discover why Dandeal is the trusted partner for global shipping and logistics solutions"
       />
 
       {/* Content Section */}

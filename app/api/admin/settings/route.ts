@@ -12,14 +12,28 @@ function formatSettingsResponse(dbSettings: any) {
     whatsapp: dbSettings.whatsapp,
     emailPrimary: dbSettings.emailPrimary,
     emailSupport: dbSettings.emailSupport,
+    displayPhonePrimary: dbSettings.displayPhonePrimary ?? true,
+    displayPhoneSecondary: dbSettings.displayPhoneSecondary ?? false,
     facebookUrl: dbSettings.facebookUrl,
     instagramUrl: dbSettings.instagramUrl,
     linkedinUrl: dbSettings.linkedinUrl,
     twitterUrl: dbSettings.twitterUrl,
     officeLocations: [
-      { city: dbSettings.officeKumasi || "", region: "Kumasi", country: "Ghana" },
-      { city: dbSettings.officeObuasi || "", region: "Obuasi - Ashanti Region", country: "Ghana" },
-      { city: dbSettings.officeChina || "", region: "China Office", country: "China" },
+      {
+        city: dbSettings.officeKumasi || "",
+        region: "Kumasi",
+        country: "Ghana",
+      },
+      {
+        city: dbSettings.officeObuasi || "",
+        region: "Obuasi - Ashanti Region",
+        country: "Ghana",
+      },
+      {
+        city: dbSettings.officeChina || "",
+        region: "China Office",
+        country: "China",
+      },
     ],
     businessHours: dbSettings.businessHours,
   };
@@ -49,13 +63,19 @@ export async function GET(request: NextRequest) {
           whatsapp: "+49 15212203183",
           emailPrimary: "info@dandealimportation.com",
           emailSupport: "support@dandealimportation.com",
+          displayPhonePrimary: true,
+          displayPhoneSecondary: false,
           facebookUrl: "",
           instagramUrl: "",
           linkedinUrl: "",
           twitterUrl: "",
           officeLocations: [
             { city: "Santasi", region: "Kumasi", country: "Ghana" },
-            { city: "Mangoase", region: "Obuasi - Ashanti Region", country: "Ghana" },
+            {
+              city: "Mangoase",
+              region: "Obuasi - Ashanti Region",
+              country: "Ghana",
+            },
             { city: "Guangzhou", region: "China Office", country: "China" },
           ],
           businessHours: "Monday - Friday: 9:00 AM - 6:00 PM",
@@ -142,4 +162,3 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
-

@@ -96,8 +96,18 @@ export default function Header() {
           {/* Contact Info & CTA */}
           <div className="flex items-center space-x-4">
             <div className="hidden lg:block text-right">
-              <div className="text-white text-xs">
-                {!loading && <div>{settings.whatsapp}</div>}
+              <div className="text-white text-xs space-y-1">
+                {!loading && (
+                  <>
+                    {settings.displayPhonePrimary && settings.phonePrimary && (
+                      <div>{settings.phonePrimary}</div>
+                    )}
+                    {settings.displayPhoneSecondary &&
+                      settings.phoneSecondary && (
+                        <div>{settings.phoneSecondary}</div>
+                      )}
+                  </>
+                )}
               </div>
             </div>
             <Button
@@ -187,10 +197,7 @@ export default function Header() {
       </div>
 
       {/* Quote Form Dialog */}
-      <QuoteForm
-        open={quoteFormOpen}
-        onOpenChange={setQuoteFormOpen}
-      />
+      <QuoteForm open={quoteFormOpen} onOpenChange={setQuoteFormOpen} />
     </header>
   );
 }

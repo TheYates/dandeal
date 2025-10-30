@@ -45,7 +45,9 @@ export default function Home() {
     if (typeof window !== "undefined") {
       const hash = window.location.hash;
       if (hash.includes("access_token") && hash.includes("type=invite")) {
-        console.log("Detected invite token on homepage, redirecting to /invite");
+        console.log(
+          "Detected invite token on homepage, redirecting to /invite"
+        );
         window.location.href = `/invite${hash}`;
       }
     }
@@ -187,13 +189,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Search, Tabs & Partners Section */}
+      {/* Search, Tabs & Partners Section - COMMENTED OUT
       <section className="bg-gray-50 min-h-screen flex items-center py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex flex-col gap-12 justify-center">
-            {/* Tabs */}
             <div>
-              {/* Tabs Header */}
               <div className="text-center mb-8">
                 <motion.h2
                   className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3"
@@ -217,7 +217,6 @@ export default function Home() {
                 </motion.p>
               </div>
 
-              {/* Searates Logistics Explorer Iframe */}
               <div className="w-full bg-white rounded-lg shadow-lg overflow-hidden">
                 <iframe
                   src="https://www.searates.com/logistics-explorer/"
@@ -230,7 +229,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Partners & Accreditations */}
             <div>
               <div className="text-center mb-8">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
@@ -244,13 +242,12 @@ export default function Home() {
                   supporting us anytime.
                 </p>
               </div>
-
-              {/* Infinite Scrolling Logo Carousel */}
               <LogoCarousel logos={logos} speed={30} />
             </div>
           </div>
         </div>
       </section>
+      */}
 
       {/* Trusted Shipping Agents Section */}
       <section className="relative overflow-hidden min-h-screen flex items-center">

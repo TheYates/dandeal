@@ -6,6 +6,8 @@ export interface SiteSettings {
   whatsapp: string | null;
   emailPrimary: string | null;
   emailSupport: string | null;
+  displayPhonePrimary?: boolean;
+  displayPhoneSecondary?: boolean;
   facebookUrl: string | null;
   instagramUrl: string | null;
   linkedinUrl: string | null;
@@ -22,6 +24,8 @@ const defaultSettings: SiteSettings = {
   whatsapp: "+49 15212203183",
   emailPrimary: "info@dandealimportation.com",
   emailSupport: "support@dandealimportation.com",
+  displayPhonePrimary: true,
+  displayPhoneSecondary: false,
   facebookUrl: "",
   instagramUrl: "",
   linkedinUrl: "",
@@ -42,6 +46,8 @@ function normalizeSettings(data: any): SiteSettings {
       whatsapp: data.whatsapp || null,
       emailPrimary: data.emailPrimary || null,
       emailSupport: data.emailSupport || null,
+      displayPhonePrimary: data.displayPhonePrimary ?? true,
+      displayPhoneSecondary: data.displayPhoneSecondary ?? false,
       facebookUrl: data.facebookUrl || null,
       instagramUrl: data.instagramUrl || null,
       linkedinUrl: data.linkedinUrl || null,
@@ -77,10 +83,9 @@ export function useSiteSettings() {
     placeholderData: defaultSettings,
   });
 
-  return { 
-    settings: data || defaultSettings, 
-    loading: isLoading, 
-    error: error?.message || null 
+  return {
+    settings: data || defaultSettings,
+    loading: isLoading,
+    error: error?.message || null,
   };
 }
-

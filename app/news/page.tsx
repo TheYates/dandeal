@@ -14,7 +14,7 @@ export default function News() {
       image:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=300&fit=crop",
       title:
-        "ALS Global Shipping And Logistics CEO, Madam Evelyn Tetteh Honored At The Maiden Edition Ladies In Leadership Award",
+        "Dandeal Global Shipping And Logistics CEO, Madam Evelyn Tetteh Honored At The Maiden Edition Ladies In Leadership Award",
       excerpt:
         "Our CEO receives recognition for her outstanding leadership in the logistics industry...",
       link: "#",
@@ -24,7 +24,7 @@ export default function News() {
       image:
         "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop",
       title:
-        "ALS Global Shipping & Logistics Ltd Is A Proud Member Of The International Federation Of Freight Forwarders Associations (FIATA)",
+        "Dandeal Global Shipping & Logistics Ltd Is A Proud Member Of The International Federation Of Freight Forwarders Associations (FIATA)",
       excerpt:
         "We join the global community of freight forwarders committed to excellence...",
       link: "#",
@@ -34,7 +34,7 @@ export default function News() {
       image:
         "https://images.unsplash.com/photo-1586528116039-c48148d8e98f?w=400&h=300&fit=crop",
       title:
-        "ALS Global Shipping And Logistics Acquires A New Warehouse In China As Well As In Kumasi",
+        "Dandeal Global Shipping And Logistics Acquires A New Warehouse In China As Well As In Kumasi",
       excerpt:
         "Expanding our warehouse network to better serve our clients across key regions...",
       link: "#",
@@ -44,7 +44,7 @@ export default function News() {
       image:
         "https://images.unsplash.com/photo-1578575437980-63e9f3c3ee8f?w=400&h=300&fit=crop",
       title:
-        "New Partnership Announcement: ALS Expands Services Across West Africa",
+        "New Partnership Announcement: Dandeal Expands Services Across West Africa",
       excerpt:
         "Strategic expansion to bring better logistics solutions to more clients...",
       link: "#",
@@ -57,8 +57,8 @@ export default function News() {
 
       <HeroSection
         title="Latest News & Updates"
-        subtitle="Stay informed about ALS Global Shipping & Logistics"
-        description="Discover the latest developments, achievements, and industry insights from ALS Global Shipping & Logistics"
+        subtitle="Stay informed about Dandeal Global Shipping & Logistics"
+        description="Discover the latest developments, achievements, and industry insights from Dandeal Global Shipping & Logistics"
       />
 
       {/* News Grid Section */}

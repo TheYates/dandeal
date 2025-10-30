@@ -13,7 +13,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Save, Phone, Mail, MapPin, Clock, Share2 } from "lucide-react";
+import {
+  Loader2,
+  Save,
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  Share2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface OfficeLocation {
@@ -28,6 +36,8 @@ interface Settings {
   whatsapp: string;
   emailPrimary: string;
   emailSupport: string;
+  displayPhonePrimary: boolean;
+  displayPhoneSecondary: boolean;
   facebookUrl: string;
   instagramUrl: string;
   linkedinUrl: string;
@@ -45,6 +55,8 @@ export function SettingsManagement() {
     whatsapp: "",
     emailPrimary: "",
     emailSupport: "",
+    displayPhonePrimary: true,
+    displayPhoneSecondary: false,
     facebookUrl: "",
     instagramUrl: "",
     linkedinUrl: "",
@@ -65,7 +77,7 @@ export function SettingsManagement() {
     try {
       setLoading(true);
       const response = await fetch("/api/admin/settings");
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch settings");
       }
@@ -85,6 +97,11 @@ export function SettingsManagement() {
   ) => {
     const { name, value } = e.target;
     setSettings((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setSettings((prev) => ({ ...prev, [name]: checked }));
   };
 
   const handleOfficeLocationChange = (index: number, city: string) => {
@@ -150,6 +167,22 @@ export function SettingsManagement() {
                   placeholder="+233 25 608 8845"
                   className="mt-1"
                 />
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="checkbox"
+                    id="displayPhonePrimary"
+                    name="displayPhonePrimary"
+                    checked={settings.displayPhonePrimary}
+                    onChange={handleCheckboxChange}
+                    className="w-4 h-4 rounded border-gray-300"
+                  />
+                  <Label
+                    htmlFor="displayPhonePrimary"
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    Display on header
+                  </Label>
+                </div>
               </div>
               <div>
                 <Label htmlFor="phoneSecondary">Secondary Phone</Label>
@@ -161,6 +194,22 @@ export function SettingsManagement() {
                   placeholder="+233 25 608 8846"
                   className="mt-1"
                 />
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="checkbox"
+                    id="displayPhoneSecondary"
+                    name="displayPhoneSecondary"
+                    checked={settings.displayPhoneSecondary}
+                    onChange={handleCheckboxChange}
+                    className="w-4 h-4 rounded border-gray-300"
+                  />
+                  <Label
+                    htmlFor="displayPhoneSecondary"
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    Display on header
+                  </Label>
+                </div>
               </div>
               <div>
                 <Label htmlFor="whatsapp">WhatsApp Number</Label>
@@ -313,7 +362,9 @@ export function SettingsManagement() {
                   <Input
                     id={`office-${index}`}
                     value={location.city}
-                    onChange={(e) => handleOfficeLocationChange(index, e.target.value)}
+                    onChange={(e) =>
+                      handleOfficeLocationChange(index, e.target.value)
+                    }
                     placeholder={
                       index === 0
                         ? "Santasi"
@@ -380,4 +431,3 @@ export function SettingsManagement() {
     </div>
   );
 }
-

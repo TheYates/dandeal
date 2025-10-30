@@ -129,6 +129,9 @@ export const siteSettings = pgTable("site_settings", {
   whatsapp: text("whatsapp"),
   emailPrimary: text("email_primary"),
   emailSupport: text("email_support"),
+  // Phone Display Settings
+  displayPhonePrimary: boolean("display_phone_primary").default(true),
+  displayPhoneSecondary: boolean("display_phone_secondary").default(false),
   // Social Media Links
   facebookUrl: text("facebook_url"),
   instagramUrl: text("instagram_url"),
@@ -143,6 +146,20 @@ export const siteSettings = pgTable("site_settings", {
   // Metadata
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   updatedBy: text("updated_by"),
+});
+
+export const testimonials = pgTable("testimonials", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientName: text("client_name").notNull(),
+  clientTitle: text("client_title"), // e.g., "CEO", "Manager"
+  clientCompany: text("client_company"),
+  content: text("content").notNull(),
+  rating: text("rating").default("5"), // 1-5 stars
+  image: text("image"), // Client photo URL
+  order: text("order").default("0"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // Types

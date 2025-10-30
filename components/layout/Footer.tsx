@@ -13,9 +13,11 @@ export default function Footer() {
           {/* Logo and Description */}
           <div>
             <div className="mb-2">
-              <div className="text-2xl font-bold"> <span className="text-whitel">Dan</span>
-              <span className="text-[#AF7E37]">deal</span></div>
-              
+              <div className="text-2xl font-bold">
+                {" "}
+                <span className="text-whitel">Dan</span>
+                <span className="text-[#AF7E37]">deal</span>
+              </div>
             </div>
             <p className="text-sm text-gray-600 leading-relaxed">
               Dandeal Logistics & Importation - Moving Africa, Middle East &
@@ -47,7 +49,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/why-als"
+                  href="/why-Dandeal"
                   className="text-gray-700 hover:text-orange-600 text-sm"
                 >
                   Why Dandeal
@@ -108,7 +110,6 @@ export default function Footer() {
                   <p className="text-gray-600"> {settings.phonePrimary}</p>
                   <p className="text-gray-600"> {settings.phoneSecondary}</p>
                   <p className="text-gray-600">WhatsApp: {settings.whatsapp}</p>
-
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Email:</p>
@@ -194,7 +195,7 @@ export default function Footer() {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">China Office:</p>
-                    <p className="text-gray-600">{settings.officeChina}</p>
+                  <p className="text-gray-600">{settings.officeChina}</p>
                 </div>
               </div>
             ) : (
@@ -210,7 +211,8 @@ export default function Footer() {
         {/* Bottom Footer */}
         <div className="border-t border-gray-200 pt-3">
           <p className="text-sm text-gray-600 text-center">
-            Copyright © {new Date().getFullYear()} Dandeal Logistics & Importation. All rights reserved
+            Copyright © {new Date().getFullYear()} Dandeal Logistics &
+            Importation. All rights reserved
           </p>
         </div>
       </div>
