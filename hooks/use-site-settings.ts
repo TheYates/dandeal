@@ -4,6 +4,8 @@ export interface SiteSettings {
   phonePrimary: string | null;
   phoneSecondary: string | null;
   whatsapp: string | null;
+  whatsappLabel: string | null;
+  showWhatsappInHeader?: boolean;
   emailPrimary: string | null;
   emailSupport: string | null;
   displayPhonePrimary?: boolean;

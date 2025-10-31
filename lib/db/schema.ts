@@ -127,6 +127,8 @@ export const siteSettings = pgTable("site_settings", {
   phonePrimary: text("phone_primary"),
   phoneSecondary: text("phone_secondary"),
   whatsapp: text("whatsapp"),
+  whatsappLabel: text("whatsapp_label").default("WhatsApp Us"),
+  showWhatsappInHeader: boolean("show_whatsapp_in_header").default(false),
   emailPrimary: text("email_primary"),
   emailSupport: text("email_support"),
   // Phone Display Settings
@@ -162,6 +164,32 @@ export const testimonials = pgTable("testimonials", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const emailNotificationSettings = pgTable(
+  "email_notification_settings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    formType: text("form_type").notNull().unique(), // 'quote', 'consultation', 'contact'
+    recipientEmails: text("recipient_emails").notNull().default("[]"), // JSON array stored as text
+    enabled: boolean("enabled").notNull().default(true),
+    subjectTemplate: text("subject_template"),
+    includeFormData: boolean("include_form_data").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  }
+);
+
+export const emailLogs = pgTable("email_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  formType: text("form_type").notNull(), // 'quote', 'consultation', 'contact'
+  submissionId: uuid("submission_id"), // Reference to the form submission
+  recipientEmail: text("recipient_email").notNull(),
+  subject: text("subject").notNull(),
+  status: text("status").notNull(), // 'sent', 'failed', 'pending'
+  errorMessage: text("error_message"),
+  sentAt: timestamp("sent_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // Types
 export type ConsultationSubmission =
   typeof consultationSubmissions.$inferSelect;
@@ -182,3 +210,11 @@ export type NewPartner = typeof partners.$inferInsert;
 
 export type SiteSettings = typeof siteSettings.$inferSelect;
 export type NewSiteSettings = typeof siteSettings.$inferInsert;
+
+export type EmailNotificationSettings =
+  typeof emailNotificationSettings.$inferSelect;
+export type NewEmailNotificationSettings =
+  typeof emailNotificationSettings.$inferInsert;
+
+export type EmailLog = typeof emailLogs.$inferSelect;
+export type NewEmailLog = typeof emailLogs.$inferInsert;

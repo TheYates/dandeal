@@ -34,6 +34,8 @@ interface Settings {
   phonePrimary: string;
   phoneSecondary: string;
   whatsapp: string;
+  whatsappLabel: string;
+  showWhatsappInHeader: boolean;
   emailPrimary: string;
   emailSupport: string;
   displayPhonePrimary: boolean;
@@ -53,6 +55,8 @@ export function SettingsManagement() {
     phonePrimary: "",
     phoneSecondary: "",
     whatsapp: "",
+    whatsappLabel: "WhatsApp Us",
+    showWhatsappInHeader: false,
     emailPrimary: "",
     emailSupport: "",
     displayPhonePrimary: true,
@@ -221,6 +225,39 @@ export function SettingsManagement() {
                   placeholder="+49 15212203183"
                   className="mt-1"
                 />
+              </div>
+              <div>
+                <Label htmlFor="whatsappLabel">WhatsApp Label</Label>
+                <Input
+                  id="whatsappLabel"
+                  name="whatsappLabel"
+                  value={settings.whatsappLabel || ""}
+                  onChange={handleInputChange}
+                  placeholder="e.g., WhatsApp Us, Chat on WhatsApp, Message Us"
+                  className="mt-1"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  This label will be displayed next to the WhatsApp number in
+                  the header
+                </p>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="checkbox"
+                    id="showWhatsappInHeader"
+                    name="showWhatsappInHeader"
+                    checked={settings.showWhatsappInHeader}
+                    onChange={handleCheckboxChange}
+                    className="w-4 h-4 rounded border-gray-300"
+                  />
+                  <Label
+                    htmlFor="showWhatsappInHeader"
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    Display WhatsApp in header
+                  </Label>
+                </div>
               </div>
             </div>
           </CardContent>

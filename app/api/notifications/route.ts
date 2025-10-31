@@ -1,77 +1,92 @@
 import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { emailNotificationSettings, emailLogs } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { sendEmail } from "@/lib/email/resend";
+import { getEmailTemplate } from "@/lib/email/templates";
 
 export async function POST(request: NextRequest) {
   try {
     const { type, submission } = await request.json();
 
-    const adminEmails = process.env.ADMIN_NOTIFICATION_EMAILS?.split(",") || [];
+    if (!type || !submission) {
+      return NextResponse.json(
+        { error: "Missing type or submission" },
+        { status: 400 }
+      );
+    }
 
-    if (adminEmails.length === 0) {
-      console.warn("No admin emails configured for notifications");
+    // Get email settings for this form type
+    const settings = await db.query.emailNotificationSettings.findFirst({
+      where: eq(emailNotificationSettings.formType, type),
+    });
+
+    if (!settings || !settings.enabled) {
+      console.warn(`Email notifications disabled for form type: ${type}`);
+      return NextResponse.json({
+        success: true,
+        message: "Notifications disabled for this form type",
+      });
+    }
+
+    // Parse recipient emails
+    let recipientEmails: string[] = [];
+    try {
+      recipientEmails = JSON.parse(settings.recipientEmails || "[]");
+    } catch (e) {
+      console.error("Failed to parse recipient emails:", e);
+      recipientEmails = [];
+    }
+
+    if (recipientEmails.length === 0) {
+      console.warn(`No recipient emails configured for form type: ${type}`);
       return NextResponse.json({
         success: true,
         message: "No recipients configured",
       });
     }
 
-    let subject = "";
-    let html = "";
+    // Get email template
+    const emailData = {
+      ...submission,
+      name: submission.name || `${submission.firstName} ${submission.lastName}`,
+    };
 
-    if (type === "consultation") {
-      subject = `New Consultation Request from ${submission.name}`;
-      html = `
-        <h2>New Consultation Request</h2>
-        <p><strong>Name:</strong> ${submission.name}</p>
-        <p><strong>Email:</strong> ${submission.email}</p>
-        <p><strong>Phone:</strong> ${submission.phone}</p>
-        <p><strong>Service:</strong> ${submission.service}</p>
-        <p><strong>Message:</strong> ${submission.message || "N/A"}</p>
-        <p><strong>Submitted:</strong> ${new Date(
-          submission.createdAt
-        ).toLocaleString()}</p>
-        <br />
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/consultations/${
-        submission.id
-      }"
-           style="background-color: #ea580c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
-          View in Dashboard
-        </a>
-      `;
-    } else if (type === "quote") {
-      subject = `New Quote Request from ${submission.firstName} ${submission.lastName}`;
-      html = `
-        <h2>New Quote Request</h2>
-        <p><strong>Name:</strong> ${submission.firstName} ${
-        submission.lastName
-      }</p>
-        <p><strong>Email:</strong> ${submission.email}</p>
-        <p><strong>Phone:</strong> ${submission.phone}</p>
-        <p><strong>Origin:</strong> ${submission.origin}</p>
-        <p><strong>Destination:</strong> ${submission.destination}</p>
-        <p><strong>Shipping Method:</strong> ${submission.shippingMethod}</p>
-        <p><strong>Cargo Type:</strong> ${submission.cargoType}</p>
-        <p><strong>Weight/Volume:</strong> ${submission.weight || "N/A"}</p>
-        <p><strong>Preferred Date:</strong> ${
-          submission.preferredDate || "N/A"
-        }</p>
-        <p><strong>Notes:</strong> ${submission.notes || "N/A"}</p>
-        <p><strong>Submitted:</strong> ${new Date(
-          submission.createdAt
-        ).toLocaleString()}</p>
-        <br />
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/quotes/${
-        submission.id
-      }"
-           style="background-color: #ea580c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
-          View in Dashboard
-        </a>
-      `;
-    }
+    const { subject, html, text } = getEmailTemplate(
+      type as "quote" | "consultation" | "contact",
+      emailData,
+      true
+    );
 
-    // Log notification instead of sending (email service not configured)
-    console.log(`Notification: ${subject}`, { html, recipients: adminEmails });
+    // Send emails to all recipients
+    const emailPromises = recipientEmails.map(async (email) => {
+      const result = await sendEmail(email, subject, html, text);
 
-    return NextResponse.json({ success: true, message: "Notification logged" });
+      // Log the email attempt
+      await db
+        .insert(emailLogs)
+        .values({
+          formType: type,
+          submissionId: submission.id,
+          recipientEmail: email,
+          subject,
+          status: result.success ? "sent" : "failed",
+          errorMessage: result.error || null,
+          sentAt: result.success ? new Date() : null,
+        })
+        .catch((err) => console.error("Failed to log email:", err));
+
+      return result;
+    });
+
+    const results = await Promise.all(emailPromises);
+    const successCount = results.filter((r) => r.success).length;
+
+    return NextResponse.json({
+      success: true,
+      message: `Emails sent to ${successCount}/${recipientEmails.length} recipients`,
+      details: results,
+    });
   } catch (error) {
     console.error("Error processing notification:", error);
     return NextResponse.json(

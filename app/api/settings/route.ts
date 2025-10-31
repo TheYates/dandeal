@@ -11,6 +11,8 @@ function formatPublicSettings(dbSettings: any) {
     phonePrimary: dbSettings.phonePrimary,
     phoneSecondary: dbSettings.phoneSecondary,
     whatsapp: dbSettings.whatsapp,
+    whatsappLabel: dbSettings.whatsappLabel ?? "WhatsApp Us",
+    showWhatsappInHeader: dbSettings.showWhatsappInHeader ?? false,
     emailPrimary: dbSettings.emailPrimary,
     emailSupport: dbSettings.emailSupport,
     facebookUrl: dbSettings.facebookUrl,
@@ -34,6 +36,8 @@ export async function GET(request: NextRequest) {
       phonePrimary: "+233 25 608 8845",
       phoneSecondary: "+233 25 608 8846",
       whatsapp: "+49 15212203183",
+      whatsappLabel: "WhatsApp Us",
+      showWhatsappInHeader: false,
       emailPrimary: "info@dandealimportation.com",
       emailSupport: "support@dandealimportation.com",
       facebookUrl: "",
@@ -52,7 +56,7 @@ export async function GET(request: NextRequest) {
         headers: {
           "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
           "CDN-Cache-Control": "public, s-maxage=3600",
-          "Vary": "Accept-Encoding",
+          Vary: "Accept-Encoding",
         },
       }
     );
@@ -64,4 +68,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

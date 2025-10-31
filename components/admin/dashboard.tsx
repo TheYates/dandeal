@@ -9,8 +9,9 @@ import { UserManagement } from "@/components/admin/tables/user-management";
 import { PartnersGalleryView } from "@/components/admin/management/partners-gallery-view";
 import { SettingsManagement } from "@/components/admin/management/settings-management";
 import { TestimonialsManagement } from "@/components/admin/management/testimonials-management";
+import { EmailManagement } from "@/components/admin/management/email-management";
 import { ModeToggle } from "@/components/ui/modetoggle";
-import { LogOut, Settings, Users } from "lucide-react";
+import { LogOut, Settings, Users, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface DashboardProps {
@@ -70,7 +71,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
         >
           {/* Tabs wrapper with horizontal scroll on mobile */}
           <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-            <TabsList className="inline-flex lg:grid w-full lg:max-w-7xl lg:grid-cols-8 h-auto p-1 min-w-max lg:min-w-0">
+            <TabsList className="inline-flex lg:grid w-full lg:max-w-7xl lg:grid-cols-9 h-auto p-1 min-w-max lg:min-w-0">
               <TabsTrigger value="quotes" className="whitespace-nowrap">
                 <span className="hidden sm:inline">Quote Requests</span>
                 <span className="sm:hidden">Quotes</span>
@@ -98,6 +99,13 @@ export function Dashboard({ onLogout }: DashboardProps) {
               >
                 <Users className="w-4 h-4" />
                 Users
+              </TabsTrigger>
+              <TabsTrigger
+                value="email"
+                className="gap-1 sm:gap-2 whitespace-nowrap"
+              >
+                <Mail className="w-4 h-4" />
+                <span className="hidden sm:inline">Email</span>
               </TabsTrigger>
               <TabsTrigger
                 value="settings"
@@ -135,6 +143,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
           <TabsContent value="users" className="mt-6">
             <UserManagement />
+          </TabsContent>
+
+          <TabsContent value="email" className="mt-6">
+            <EmailManagement />
           </TabsContent>
 
           <TabsContent value="settings" className="mt-6">

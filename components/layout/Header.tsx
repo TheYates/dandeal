@@ -18,7 +18,7 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xs h-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
           {/* Logo */}
           <Link
@@ -106,6 +106,21 @@ export default function Header() {
                       settings.phoneSecondary && (
                         <div>{settings.phoneSecondary}</div>
                       )}
+                    {settings.showWhatsappInHeader && settings.whatsapp && (
+                      <div>
+                        <a
+                          href={`https://wa.me/${settings.whatsapp.replace(
+                            /\D/g,
+                            ""
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-orange-600 transition"
+                        >
+                          {settings.whatsappLabel}: {settings.whatsapp}
+                        </a>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
