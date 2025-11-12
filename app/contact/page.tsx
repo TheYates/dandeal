@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, MessageCircle, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { FaTiktok } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Header from "@/components/layout/Header";
@@ -315,7 +316,7 @@ export default function Contact() {
             viewport={{ once: true }}
             className="flex justify-center gap-6"
           >
-            {settings.facebookUrl && (
+            {settings.facebookUrl && settings.displayFacebook && (
               <a
                 href={settings.facebookUrl}
                 target="_blank"
@@ -325,7 +326,7 @@ export default function Contact() {
                 <Facebook className="text-blue-500 w-8 h-8" />
               </a>
             )}
-            {settings.instagramUrl && (
+            {settings.instagramUrl && settings.displayInstagram && (
               <a
                 href={settings.instagramUrl}
                 target="_blank"
@@ -335,7 +336,7 @@ export default function Contact() {
                 <Instagram className="text-pink-500 w-8 h-8" />
               </a>
             )}
-            {settings.linkedinUrl && (
+            {settings.linkedinUrl && settings.displayLinkedin && (
               <a
                 href={settings.linkedinUrl}
                 target="_blank"
@@ -345,7 +346,7 @@ export default function Contact() {
                 <Linkedin className="text-blue-500 w-8 h-8" />
               </a>
             )}
-            {settings.twitterUrl && (
+            {settings.twitterUrl && settings.displayTwitter && (
               <a
                 href={settings.twitterUrl}
                 target="_blank"
@@ -353,6 +354,16 @@ export default function Contact() {
                 className="w-16 h-16 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
               >
                 <Twitter className="text-sky-400 w-8 h-8" />
+              </a>
+            )}
+            {settings.tiktokUrl && settings.displayTiktok && (
+              <a
+                href={settings.tiktokUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-16 h-16 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
+              >
+                <FaTiktok className="text-black w-8 h-8" />
               </a>
             )}
           </motion.div>

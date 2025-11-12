@@ -20,6 +20,12 @@ function formatSettingsResponse(dbSettings: any) {
     instagramUrl: dbSettings.instagramUrl,
     linkedinUrl: dbSettings.linkedinUrl,
     twitterUrl: dbSettings.twitterUrl,
+    tiktokUrl: dbSettings.tiktokUrl,
+    displayFacebook: dbSettings.displayFacebook ?? true,
+    displayInstagram: dbSettings.displayInstagram ?? true,
+    displayLinkedin: dbSettings.displayLinkedin ?? true,
+    displayTwitter: dbSettings.displayTwitter ?? true,
+    displayTiktok: dbSettings.displayTiktok ?? true,
     officeLocations: [
       {
         city: dbSettings.officeKumasi || "",
@@ -73,6 +79,12 @@ export async function GET(request: NextRequest) {
           instagramUrl: "",
           linkedinUrl: "",
           twitterUrl: "",
+          tiktokUrl: "",
+          displayFacebook: true,
+          displayInstagram: true,
+          displayLinkedin: true,
+          displayTwitter: true,
+          displayTiktok: true,
           officeLocations: [
             { city: "Santasi", region: "Kumasi", country: "Ghana" },
             {

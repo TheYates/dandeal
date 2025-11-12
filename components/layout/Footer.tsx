@@ -2,6 +2,7 @@
 
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { FaTiktok } from "react-icons/fa";
 
 export default function Footer() {
   const { settings, loading } = useSiteSettings();
@@ -125,7 +126,7 @@ export default function Footer() {
                 <div>
                   <p className="font-semibold text-gray-900">Follow Us:</p>
                   <div className="flex gap-3 mt-2">
-                    {settings.facebookUrl && (
+                    {settings.facebookUrl && settings.displayFacebook && (
                       <a
                         href={settings.facebookUrl}
                         target="_blank"
@@ -135,7 +136,7 @@ export default function Footer() {
                         <Facebook className="text-blue-600 w-6 h-6" />
                       </a>
                     )}
-                    {settings.instagramUrl && (
+                    {settings.instagramUrl && settings.displayInstagram && (
                       <a
                         href={settings.instagramUrl}
                         target="_blank"
@@ -145,7 +146,7 @@ export default function Footer() {
                         <Instagram className="text-pink-600 w-6 h-6" />
                       </a>
                     )}
-                    {settings.linkedinUrl && (
+                    {settings.linkedinUrl && settings.displayLinkedin && (
                       <a
                         href={settings.linkedinUrl}
                         target="_blank"
@@ -155,7 +156,7 @@ export default function Footer() {
                         <Linkedin className="text-blue-800 w-6 h-6" />
                       </a>
                     )}
-                    {settings.twitterUrl && (
+                    {settings.twitterUrl && settings.displayTwitter && (
                       <a
                         href={settings.twitterUrl}
                         target="_blank"
@@ -163,6 +164,16 @@ export default function Footer() {
                         className="hover:scale-110 transition"
                       >
                         <Twitter className="text-sky-500 w-6 h-6" />
+                      </a>
+                    )}
+                    {settings.tiktokUrl && settings.displayTiktok && (
+                      <a
+                        href={settings.tiktokUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:scale-110 transition"
+                      >
+                        <FaTiktok className="text-black w-6 h-6" />
                       </a>
                     )}
                   </div>

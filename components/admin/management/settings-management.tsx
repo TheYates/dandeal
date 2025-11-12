@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { FormSkeleton } from "./table-skeleton";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import {
   Card,
   CardContent,
@@ -174,57 +175,67 @@ export function SettingsManagement() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <Label htmlFor="phonePrimary">Primary Phone</Label>
-                <Input
-                  id="phonePrimary"
-                  name="phonePrimary"
-                  value={settings.phonePrimary || ""}
-                  onChange={handleInputChange}
-                  placeholder="+233 25 608 8845"
-                  className="mt-1"
-                />
-                <div className="flex items-center gap-2 mt-2">
-                  <input
-                    type="checkbox"
-                    id="displayPhonePrimary"
-                    name="displayPhonePrimary"
-                    checked={settings.displayPhonePrimary}
-                    onChange={handleCheckboxChange}
-                    className="w-4 h-4 rounded border-gray-300"
+                <Label htmlFor="phonePrimary" className="mb-2 block">Primary Phone</Label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    id="phonePrimary"
+                    name="phonePrimary"
+                    value={settings.phonePrimary || ""}
+                    onChange={handleInputChange}
+                    placeholder="+233 25 608 8845"
+                    className="flex-1"
                   />
-                  <Label
-                    htmlFor="displayPhonePrimary"
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    Display on header
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="displayPhonePrimary"
+                      checked={settings.displayPhonePrimary}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          displayPhonePrimary: checked,
+                        }))
+                      }
+                      className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+                    />
+                    <Label
+                      htmlFor="displayPhonePrimary"
+                      className="text-sm font-normal cursor-pointer whitespace-nowrap"
+                    >
+                      Display
+                    </Label>
+                  </div>
                 </div>
               </div>
               <div>
-                <Label htmlFor="phoneSecondary">Secondary Phone</Label>
-                <Input
-                  id="phoneSecondary"
-                  name="phoneSecondary"
-                  value={settings.phoneSecondary || ""}
-                  onChange={handleInputChange}
-                  placeholder="+233 25 608 8846"
-                  className="mt-1"
-                />
-                <div className="flex items-center gap-2 mt-2">
-                  <input
-                    type="checkbox"
-                    id="displayPhoneSecondary"
-                    name="displayPhoneSecondary"
-                    checked={settings.displayPhoneSecondary}
-                    onChange={handleCheckboxChange}
-                    className="w-4 h-4 rounded border-gray-300"
+                <Label htmlFor="phoneSecondary" className="mb-2 block">Secondary Phone</Label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    id="phoneSecondary"
+                    name="phoneSecondary"
+                    value={settings.phoneSecondary || ""}
+                    onChange={handleInputChange}
+                    placeholder="+233 25 608 8846"
+                    className="flex-1"
                   />
-                  <Label
-                    htmlFor="displayPhoneSecondary"
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    Display on header
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="displayPhoneSecondary"
+                      checked={settings.displayPhoneSecondary}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          displayPhoneSecondary: checked,
+                        }))
+                      }
+                      className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+                    />
+                    <Label
+                      htmlFor="displayPhoneSecondary"
+                      className="text-sm font-normal cursor-pointer whitespace-nowrap"
+                    >
+                      Display
+                    </Label>
+                  </div>
                 </div>
               </div>
               <div>
@@ -253,23 +264,24 @@ export function SettingsManagement() {
                   the header
                 </p>
               </div>
-              <div>
-                <div className="flex items-center gap-2 mt-2">
-                  <input
-                    type="checkbox"
-                    id="showWhatsappInHeader"
-                    name="showWhatsappInHeader"
-                    checked={settings.showWhatsappInHeader}
-                    onChange={handleCheckboxChange}
-                    className="w-4 h-4 rounded border-gray-300"
-                  />
-                  <Label
-                    htmlFor="showWhatsappInHeader"
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    Display WhatsApp in header
-                  </Label>
-                </div>
+              <div className="flex items-center gap-2 pt-2">
+                <Switch
+                  id="showWhatsappInHeader"
+                  checked={settings.showWhatsappInHeader}
+                  onCheckedChange={(checked) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      showWhatsappInHeader: checked,
+                    }))
+                  }
+                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+                />
+                <Label
+                  htmlFor="showWhatsappInHeader"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  Display WhatsApp in header
+                </Label>
               </div>
             </div>
           </CardContent>
@@ -346,13 +358,16 @@ export function SettingsManagement() {
                 className="mt-1"
               />
               <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="checkbox"
+                <Switch
                   id="displayFacebook"
-                  name="displayFacebook"
                   checked={settings.displayFacebook}
-                  onChange={handleCheckboxChange}
-                  className="w-4 h-4 rounded border-gray-300"
+                  onCheckedChange={(checked) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      displayFacebook: checked,
+                    }))
+                  }
+                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
                 />
                 <Label
                   htmlFor="displayFacebook"
@@ -374,13 +389,16 @@ export function SettingsManagement() {
                 className="mt-1"
               />
               <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="checkbox"
+                <Switch
                   id="displayInstagram"
-                  name="displayInstagram"
                   checked={settings.displayInstagram}
-                  onChange={handleCheckboxChange}
-                  className="w-4 h-4 rounded border-gray-300"
+                  onCheckedChange={(checked) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      displayInstagram: checked,
+                    }))
+                  }
+                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
                 />
                 <Label
                   htmlFor="displayInstagram"
@@ -402,13 +420,16 @@ export function SettingsManagement() {
                 className="mt-1"
               />
               <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="checkbox"
+                <Switch
                   id="displayLinkedin"
-                  name="displayLinkedin"
                   checked={settings.displayLinkedin}
-                  onChange={handleCheckboxChange}
-                  className="w-4 h-4 rounded border-gray-300"
+                  onCheckedChange={(checked) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      displayLinkedin: checked,
+                    }))
+                  }
+                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
                 />
                 <Label
                   htmlFor="displayLinkedin"
@@ -430,13 +451,16 @@ export function SettingsManagement() {
                 className="mt-1"
               />
               <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="checkbox"
+                <Switch
                   id="displayTwitter"
-                  name="displayTwitter"
                   checked={settings.displayTwitter}
-                  onChange={handleCheckboxChange}
-                  className="w-4 h-4 rounded border-gray-300"
+                  onCheckedChange={(checked) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      displayTwitter: checked,
+                    }))
+                  }
+                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
                 />
                 <Label
                   htmlFor="displayTwitter"
@@ -458,13 +482,16 @@ export function SettingsManagement() {
                 className="mt-1"
               />
               <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="checkbox"
+                <Switch
                   id="displayTiktok"
-                  name="displayTiktok"
                   checked={settings.displayTiktok}
-                  onChange={handleCheckboxChange}
-                  className="w-4 h-4 rounded border-gray-300"
+                  onCheckedChange={(checked) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      displayTiktok: checked,
+                    }))
+                  }
+                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
                 />
                 <Label
                   htmlFor="displayTiktok"
