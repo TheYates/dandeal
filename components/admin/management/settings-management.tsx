@@ -44,6 +44,12 @@ interface Settings {
   instagramUrl: string;
   linkedinUrl: string;
   twitterUrl: string;
+  tiktokUrl: string;
+  displayFacebook: boolean;
+  displayInstagram: boolean;
+  displayLinkedin: boolean;
+  displayTwitter: boolean;
+  displayTiktok: boolean;
   officeLocations: OfficeLocation[];
   businessHours: string;
 }
@@ -65,6 +71,12 @@ export function SettingsManagement() {
     instagramUrl: "",
     linkedinUrl: "",
     twitterUrl: "",
+    tiktokUrl: "",
+    displayFacebook: true,
+    displayInstagram: true,
+    displayLinkedin: true,
+    displayTwitter: true,
+    displayTiktok: true,
     officeLocations: [
       { city: "", region: "Kumasi", country: "Ghana" },
       { city: "", region: "Obuasi - Ashanti Region", country: "Ghana" },
@@ -321,7 +333,7 @@ export function SettingsManagement() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="facebookUrl">Facebook URL</Label>
               <Input
@@ -333,6 +345,22 @@ export function SettingsManagement() {
                 placeholder="https://facebook.com/dandeal"
                 className="mt-1"
               />
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  id="displayFacebook"
+                  name="displayFacebook"
+                  checked={settings.displayFacebook}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <Label
+                  htmlFor="displayFacebook"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  Display on website
+                </Label>
+              </div>
             </div>
             <div>
               <Label htmlFor="instagramUrl">Instagram URL</Label>
@@ -345,6 +373,22 @@ export function SettingsManagement() {
                 placeholder="https://instagram.com/dandeal"
                 className="mt-1"
               />
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  id="displayInstagram"
+                  name="displayInstagram"
+                  checked={settings.displayInstagram}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <Label
+                  htmlFor="displayInstagram"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  Display on website
+                </Label>
+              </div>
             </div>
             <div>
               <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
@@ -357,6 +401,22 @@ export function SettingsManagement() {
                 placeholder="https://linkedin.com/company/dandeal"
                 className="mt-1"
               />
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  id="displayLinkedin"
+                  name="displayLinkedin"
+                  checked={settings.displayLinkedin}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <Label
+                  htmlFor="displayLinkedin"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  Display on website
+                </Label>
+              </div>
             </div>
             <div>
               <Label htmlFor="twitterUrl">Twitter URL</Label>
@@ -369,6 +429,50 @@ export function SettingsManagement() {
                 placeholder="https://twitter.com/dandeal"
                 className="mt-1"
               />
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  id="displayTwitter"
+                  name="displayTwitter"
+                  checked={settings.displayTwitter}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <Label
+                  htmlFor="displayTwitter"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  Display on website
+                </Label>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="tiktokUrl">TikTok URL</Label>
+              <Input
+                id="tiktokUrl"
+                name="tiktokUrl"
+                type="url"
+                value={settings.tiktokUrl || ""}
+                onChange={handleInputChange}
+                placeholder="https://tiktok.com/@dandeal"
+                className="mt-1"
+              />
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  id="displayTiktok"
+                  name="displayTiktok"
+                  checked={settings.displayTiktok}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <Label
+                  htmlFor="displayTiktok"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  Display on website
+                </Label>
+              </div>
             </div>
           </div>
         </CardContent>

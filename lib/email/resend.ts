@@ -24,8 +24,15 @@ export async function sendEmail(
       };
     }
 
+    // Use Resend's test email for dev mode (no domain verification needed)
+    // For production, update to your verified domain after verification
+    const fromEmail =
+      process.env.NODE_ENV === "production"
+        ? "noreply@dandeal.com"
+        : "onboarding@resend.dev"; // Always use test email in dev mode
+
     const result = await resend.emails.send({
-      from: "Dandeal <noreply@dandeal.com>",
+      from: `Dandeal <${fromEmail}>`,
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
@@ -55,4 +62,3 @@ export async function sendEmail(
     };
   }
 }
-

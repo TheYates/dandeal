@@ -139,6 +139,13 @@ export const siteSettings = pgTable("site_settings", {
   instagramUrl: text("instagram_url"),
   linkedinUrl: text("linkedin_url"),
   twitterUrl: text("twitter_url"),
+  tiktokUrl: text("tiktok_url"),
+  // Social Media Display Settings
+  displayFacebook: boolean("display_facebook").default(true),
+  displayInstagram: boolean("display_instagram").default(true),
+  displayLinkedin: boolean("display_linkedin").default(true),
+  displayTwitter: boolean("display_twitter").default(true),
+  displayTiktok: boolean("display_tiktok").default(true),
   // Office Locations
   officeKumasi: text("office_kumasi"),
   officeObuasi: text("office_obuasi"),

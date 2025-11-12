@@ -14,6 +14,12 @@ export interface SiteSettings {
   instagramUrl: string | null;
   linkedinUrl: string | null;
   twitterUrl: string | null;
+  tiktokUrl: string | null;
+  displayFacebook?: boolean;
+  displayInstagram?: boolean;
+  displayLinkedin?: boolean;
+  displayTwitter?: boolean;
+  displayTiktok?: boolean;
   officeKumasi: string | null;
   officeObuasi: string | null;
   officeChina: string | null;
@@ -32,6 +38,12 @@ const defaultSettings: SiteSettings = {
   instagramUrl: "",
   linkedinUrl: "",
   twitterUrl: "",
+  tiktokUrl: "",
+  displayFacebook: true,
+  displayInstagram: true,
+  displayLinkedin: true,
+  displayTwitter: true,
+  displayTiktok: true,
   officeKumasi: "Santasi",
   officeObuasi: "Mangoase",
   officeChina: "Guangzhou",
@@ -46,6 +58,8 @@ function normalizeSettings(data: any): SiteSettings {
       phonePrimary: data.phonePrimary || null,
       phoneSecondary: data.phoneSecondary || null,
       whatsapp: data.whatsapp || null,
+      whatsappLabel: data.whatsappLabel || null,
+      showWhatsappInHeader: data.showWhatsappInHeader ?? false,
       emailPrimary: data.emailPrimary || null,
       emailSupport: data.emailSupport || null,
       displayPhonePrimary: data.displayPhonePrimary ?? true,
@@ -54,6 +68,12 @@ function normalizeSettings(data: any): SiteSettings {
       instagramUrl: data.instagramUrl || null,
       linkedinUrl: data.linkedinUrl || null,
       twitterUrl: data.twitterUrl || null,
+      tiktokUrl: data.tiktokUrl || null,
+      displayFacebook: data.displayFacebook ?? true,
+      displayInstagram: data.displayInstagram ?? true,
+      displayLinkedin: data.displayLinkedin ?? true,
+      displayTwitter: data.displayTwitter ?? true,
+      displayTiktok: data.displayTiktok ?? true,
       officeKumasi: data.officeLocations[0]?.city || null,
       officeObuasi: data.officeLocations[1]?.city || null,
       officeChina: data.officeLocations[2]?.city || null,

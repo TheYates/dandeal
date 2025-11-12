@@ -71,7 +71,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
         >
           {/* Tabs wrapper with horizontal scroll on mobile */}
           <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-            <TabsList className="inline-flex lg:grid w-full lg:max-w-7xl lg:grid-cols-9 h-auto p-1 min-w-max lg:min-w-0">
+            <TabsList className="inline-flex lg:grid w-full lg:max-w-7xl lg:grid-cols-8 h-auto p-1 min-w-max lg:min-w-0">
               <TabsTrigger value="quotes" className="whitespace-nowrap">
                 <span className="hidden sm:inline">Quote Requests</span>
                 <span className="sm:hidden">Quotes</span>
@@ -87,9 +87,9 @@ export function Dashboard({ onLogout }: DashboardProps) {
               <TabsTrigger value="dropdowns" className="whitespace-nowrap">
                 Dropdowns
               </TabsTrigger>
-              <TabsTrigger value="partners" className="whitespace-nowrap">
+              {/* <TabsTrigger value="partners" className="whitespace-nowrap">
                 Partners
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger value="testimonials" className="whitespace-nowrap">
                 Testimonials
               </TabsTrigger>

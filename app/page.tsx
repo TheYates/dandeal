@@ -849,7 +849,7 @@ export default function Home() {
 
           {/* Social Media Icons */}
           <div className="flex justify-center gap-4">
-            {settings.facebookUrl && (
+            {settings.facebookUrl && settings.displayFacebook && (
               <a
                 href={settings.facebookUrl}
                 target="_blank"
@@ -859,7 +859,7 @@ export default function Home() {
                 <Facebook className="text-blue-500 text-xl" />
               </a>
             )}
-            {settings.instagramUrl && (
+            {settings.instagramUrl && settings.displayInstagram && (
               <a
                 href={settings.instagramUrl}
                 target="_blank"
@@ -869,7 +869,7 @@ export default function Home() {
                 <Instagram className="text-pink-500 text-xl" />
               </a>
             )}
-            {settings.linkedinUrl && (
+            {settings.linkedinUrl && settings.displayLinkedin && (
               <a
                 href={settings.linkedinUrl}
                 target="_blank"
@@ -879,7 +879,7 @@ export default function Home() {
                 <Linkedin className="text-blue-500 text-xl" />
               </a>
             )}
-            {settings.twitterUrl && (
+            {settings.twitterUrl && settings.displayTwitter && (
               <a
                 href={settings.twitterUrl}
                 target="_blank"
@@ -887,6 +887,23 @@ export default function Home() {
                 className="w-12 h-12 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
               >
                 <Twitter className="text-sky-500 text-xl" />
+              </a>
+            )}
+            {settings.tiktokUrl && settings.displayTiktok && (
+              <a
+                href={settings.tiktokUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-full flex items-center justify-center hover:opacity-90 transition transform hover:scale-120"
+              >
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  style={{ color: '#00f2ea' }}
+                >
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                </svg>
               </a>
             )}
           </div>

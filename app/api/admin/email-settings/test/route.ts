@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/resend";
 import { getEmailTemplate } from "@/lib/email/templates";
+import { db } from "@/lib/db";
+import { emailLogs } from "@/lib/db/schema";
 
 export async function POST(request: NextRequest) {
   try {
@@ -57,6 +59,21 @@ export async function POST(request: NextRequest) {
     // Send test email
     const result = await sendEmail(testEmail, subject, html, text);
 
+    // Log the test email attempt
+    try {
+      await db.insert(emailLogs).values({
+        formType: formType,
+        submissionId: null,
+        recipientEmail: testEmail,
+        subject,
+        status: result.success ? "sent" : "failed",
+        errorMessage: result.error || null,
+        sentAt: result.success ? new Date() : null,
+      });
+    } catch (logError) {
+      console.error("Failed to log test email:", logError);
+    }
+
     if (result.success) {
       return NextResponse.json({
         success: true,
@@ -80,4 +97,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
