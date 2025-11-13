@@ -5,9 +5,12 @@ interface EmailTemplateData {
 }
 
 const BRAND_COLOR = "#ea580c"; // Dandeal orange
-const BRAND_NAME = "Dandeal";
+const BRAND_NAME = "Dandeal Logistics & Importation";
 
-function interpolateTemplate(template: string, data: EmailTemplateData): string {
+function interpolateTemplate(
+  template: string,
+  data: EmailTemplateData
+): string {
   return template.replace(/{(\w+)}/g, (match, key) => {
     return String(data[key] || "");
   });
@@ -76,7 +79,9 @@ function getHtmlTemplate(
       </div>
       <div class="field">
         <div class="field-label">Email:</div>
-        <div class="field-value"><a href="mailto:${data.email}">${data.email}</a></div>
+        <div class="field-value"><a href="mailto:${data.email}">${
+      data.email
+    }</a></div>
       </div>
       <div class="field">
         <div class="field-label">Phone:</div>
@@ -146,7 +151,9 @@ function getHtmlTemplate(
       </div>
       <div class="field">
         <div class="field-label">Email:</div>
-        <div class="field-value"><a href="mailto:${data.email}">${data.email}</a></div>
+        <div class="field-value"><a href="mailto:${data.email}">${
+      data.email
+    }</a></div>
       </div>
       <div class="field">
         <div class="field-label">Phone:</div>
@@ -218,4 +225,3 @@ Message: ${data.message}
 
   return { subject, html: text, text };
 }
-
