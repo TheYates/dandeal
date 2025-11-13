@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useDropdownOptions } from "@/hooks/use-dropdown-options";
@@ -150,9 +150,17 @@ export default function EmbeddedConsultationForm() {
           <Label className="text-white text-sm mb-2 block">
             Service Requested *
           </Label>
-          <Select value={formData.service} onValueChange={handleServiceChange} disabled={servicesLoading}>
+          <Select
+            value={formData.service}
+            onValueChange={handleServiceChange}
+            disabled={servicesLoading}
+          >
             <SelectTrigger className="w-full bg-white/20 border border-white/30 text-white">
-              <SelectValue placeholder={servicesLoading ? "Loading services..." : "Select a service"} />
+              <SelectValue
+                placeholder={
+                  servicesLoading ? "Loading services..." : "Select a service"
+                }
+              />
             </SelectTrigger>
             <SelectContent>
               {services.map((service) => (

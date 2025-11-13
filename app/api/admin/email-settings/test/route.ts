@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendEmail } from "@/lib/email/resend";
+import { sendEmail } from "@/lib/email/nodemailer";
 import { getEmailTemplate } from "@/lib/email/templates";
 import { db } from "@/lib/db";
 import { emailLogs } from "@/lib/db/schema";
