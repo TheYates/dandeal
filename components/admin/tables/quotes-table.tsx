@@ -32,7 +32,10 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { QuoteDetailDialog } from "@/components/admin/dialogs/quote-detail-dialog";
-import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
+import { useQuotesData } from "@/hooks/use-dashboard-data";
+import { useOptimisticStatusUpdate, useOptimisticDelete } from "@/hooks/use-optimistic-mutations";
 import { toast } from "sonner";
 import { TableSkeleton } from "@/components/admin/management/table-skeleton";
 import {
@@ -86,21 +89,26 @@ export function QuotesTable() {
     quoteName: "",
   });
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  const queryClient = useQueryClient();
+  const supabase = createClient();
 
+  // Fetch quotes using batched dashboard data
   const {
     data: quotes,
-    loading,
+    isLoading: loading,
     error,
-    invalidateCache,
-  } = useSubmissionsCache<Quote>("quotes", async () => {
-    const response = await fetch("/api/admin/submissions?type=quotes");
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP ${response.status}`);
-    }
-    const data = await response.json();
-    return data.submissions || [];
-  });
+    stats
+  } = useQuotesData();
+
+  // Optimistic mutation hooks
+  const statusUpdateMutation = useOptimisticStatusUpdate('quotes');
+  const deleteMutation = useOptimisticDelete('quotes');
+
+  // Legacy invalidateCache function for compatibility
+  const invalidateCache = () => {
+    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+  };
 
   const toTitleCase = (str: string) => {
     return str
@@ -117,12 +125,16 @@ export function QuotesTable() {
   };
 
   const filteredQuotes = useMemo(() => {
+    if (!quotes || !Array.isArray(quotes)) return [];
+    
     return quotes.filter((quote) => {
-      const matchesSearch =
-        quote.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quote.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quote.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quote.phone.includes(searchTerm);
+      if (!quote) return false;
+      
+      const matchesSearch = !searchTerm || 
+        (quote.firstName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (quote.lastName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (quote.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (quote.phone || '').includes(searchTerm);
 
       const matchesStatus =
         statusFilter === "all" || quote.status === statusFilter;
@@ -134,22 +146,7 @@ export function QuotesTable() {
   }, [quotes, searchTerm, statusFilter, methodFilter]);
 
   const updateStatus = async (id: string, newStatus: Quote["status"]) => {
-    try {
-      const response = await fetch("/api/admin/submissions", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: newStatus, type: "quotes" }),
-      });
-      if (response.ok) {
-        invalidateCache();
-        toast.success(`Status updated to ${newStatus}`);
-      } else {
-        toast.error("Failed to update status");
-      }
-    } catch (error) {
-      console.error("Error updating status:", error);
-      toast.error("Error updating status");
-    }
+    statusUpdateMutation.mutate({ id, status: newStatus });
   };
 
   const deleteQuote = (id: string, quoteName: string) => {
@@ -163,31 +160,15 @@ export function QuotesTable() {
   const confirmDeleteQuote = async () => {
     if (!deleteConfirmDialog.quoteId) return;
 
-    try {
-      setIsDeleting(true);
-      const response = await fetch("/api/admin/submissions", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: deleteConfirmDialog.quoteId,
-          type: "quotes",
-        }),
-      });
-      if (response.ok) {
-        invalidateCache();
+    setIsDeleting(true);
+    deleteMutation.mutate(deleteConfirmDialog.quoteId, {
+      onSuccess: () => {
         setDeleteConfirmDialog({ isOpen: false, quoteId: null, quoteName: "" });
-        toast.success(
-          `Quote from ${deleteConfirmDialog.quoteName} deleted successfully`
-        );
-      } else {
-        toast.error("Failed to delete quote");
+      },
+      onSettled: () => {
+        setIsDeleting(false);
       }
-    } catch (error) {
-      console.error("Error deleting quote:", error);
-      toast.error("Error deleting quote");
-    } finally {
-      setIsDeleting(false);
-    }
+    });
   };
 
   const exportData = () => {

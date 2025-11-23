@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { emailNotificationSettings, emailLogs } from "@/lib/db/schema";
+import { emailNotificationSettings, emailLogs, siteSettings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { sendEmail } from "@/lib/email/nodemailer";
 import { getEmailTemplate } from "@/lib/email/templates";
@@ -16,27 +16,57 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get email settings for this form type
-    const settings = await db.query.emailNotificationSettings.findFirst({
-      where: eq(emailNotificationSettings.formType, type),
-    });
-
-    if (!settings || !settings.enabled) {
-      console.warn(`Email notifications disabled for form type: ${type}`);
-      return NextResponse.json({
-        success: true,
-        message: "Notifications disabled for this form type",
-      });
-    }
-
-    // Parse recipient emails
+    // Check for global email settings first
+    const globalSettings = await db.query.siteSettings.findFirst();
     let recipientEmails: string[] = [];
-    try {
-      recipientEmails = JSON.parse(settings.recipientEmails || "[]");
-    } catch (e) {
-      console.error("Failed to parse recipient emails:", e);
-      recipientEmails = [];
+
+    if (globalSettings?.globalEmailEnabled && globalSettings.globalEmail) {
+      // Use global email settings
+      recipientEmails = [globalSettings.globalEmail];
+      
+      // If override is enabled, skip individual settings check
+      if (globalSettings.overrideIndividualEmailSettings) {
+        console.log(`Using global email override for form type: ${type}`);
+      } else {
+        // Add individual recipients if not overriding
+        const settings = await db.query.emailNotificationSettings.findFirst({
+          where: eq(emailNotificationSettings.formType, type),
+        });
+
+        if (settings && settings.enabled) {
+          try {
+            const individualEmails = JSON.parse(settings.recipientEmails || "[]");
+            recipientEmails = [...recipientEmails, ...individualEmails];
+          } catch (e) {
+            console.error("Failed to parse individual recipient emails:", e);
+          }
+        }
+      }
+    } else {
+      // Use individual form type settings
+      const settings = await db.query.emailNotificationSettings.findFirst({
+        where: eq(emailNotificationSettings.formType, type),
+      });
+
+      if (!settings || !settings.enabled) {
+        console.warn(`Email notifications disabled for form type: ${type}`);
+        return NextResponse.json({
+          success: true,
+          message: "Notifications disabled for this form type",
+        });
+      }
+
+      // Parse recipient emails
+      try {
+        recipientEmails = JSON.parse(settings.recipientEmails || "[]");
+      } catch (e) {
+        console.error("Failed to parse recipient emails:", e);
+        recipientEmails = [];
+      }
     }
+
+    // Remove duplicates and filter out empty emails
+    recipientEmails = [...new Set(recipientEmails.filter(email => email.trim()))];
 
     if (recipientEmails.length === 0) {
       console.warn(`No recipient emails configured for form type: ${type}`);

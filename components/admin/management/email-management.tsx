@@ -12,7 +12,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Mail, Plus, Trash2, Send, RefreshCw } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmailManagementSkeleton } from "./table-skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Mail, Plus, Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 
@@ -25,6 +35,12 @@ interface EmailSetting {
   includeFormData: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+interface GlobalEmailSettings {
+  enabled: boolean;
+  globalEmail: string;
+  overrideIndividualSettings: boolean;
 }
 
 interface EmailLog {
@@ -41,14 +57,29 @@ interface EmailLog {
 export function EmailManagement() {
   const supabase = createClient();
   const [settings, setSettings] = useState<EmailSetting[]>([]);
+  const [globalSettings, setGlobalSettings] = useState<GlobalEmailSettings>({
+    enabled: false,
+    globalEmail: "",
+    overrideIndividualSettings: false,
+  });
+  const [originalGlobalSettings, setOriginalGlobalSettings] = useState<GlobalEmailSettings>({
+    enabled: false,
+    globalEmail: "",
+    overrideIndividualSettings: false,
+  });
   const [logs, setLogs] = useState<EmailLog[]>([]);
+  const [allLogs, setAllLogs] = useState<EmailLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [testEmail, setTestEmail] = useState("");
-  const [testFormType, setTestFormType] = useState("quote");
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showLogsDialog, setShowLogsDialog] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [logsPerPage] = useState(20);
 
   useEffect(() => {
     fetchSettings();
+    fetchGlobalSettings();
     fetchLogs();
   }, []);
 
@@ -83,7 +114,7 @@ export function EmailManagement() {
     }
   };
 
-  const fetchLogs = async () => {
+  const fetchGlobalSettings = async () => {
     try {
       const {
         data: { session },
@@ -91,7 +122,31 @@ export function EmailManagement() {
 
       if (!session) return;
 
-      const response = await fetch("/api/admin/email-logs?limit=50", {
+      const response = await fetch("/api/admin/email-settings/global", {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setGlobalSettings(data);
+        setOriginalGlobalSettings(data);
+      }
+    } catch (error) {
+      console.error("Error fetching global settings:", error);
+    }
+  };
+
+  const fetchLogs = async (limit = 10) => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) return;
+
+      const response = await fetch(`/api/admin/email-logs?limit=${limit}`, {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -104,6 +159,44 @@ export function EmailManagement() {
     } catch (error) {
       console.error("Error fetching logs:", error);
     }
+  };
+
+  const fetchAllLogs = async (page = 1) => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) return;
+
+      const offset = (page - 1) * logsPerPage;
+      const response = await fetch(`/api/admin/email-logs?limit=${logsPerPage}&offset=${offset}`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAllLogs(data.logs || data);
+        if (data.total) {
+          setTotalPages(Math.ceil(data.total / logsPerPage));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching all logs:", error);
+    }
+  };
+
+  const handleShowMoreLogs = () => {
+    setCurrentPage(1);
+    fetchAllLogs(1);
+    setShowLogsDialog(true);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchAllLogs(page);
   };
 
   const handleAddEmail = (formType: string) => {
@@ -181,45 +274,170 @@ export function EmailManagement() {
     }
   };
 
-  const handleSendTestEmail = async () => {
-    if (!testEmail) {
-      toast.error("Please enter a test email address");
-      return;
-    }
+  const checkForChanges = (newSettings: GlobalEmailSettings) => {
+    const hasChanges = 
+      newSettings.enabled !== originalGlobalSettings.enabled ||
+      newSettings.globalEmail !== originalGlobalSettings.globalEmail ||
+      newSettings.overrideIndividualSettings !== originalGlobalSettings.overrideIndividualSettings;
+    setHasUnsavedChanges(hasChanges);
+  };
 
+  const handleGlobalSettingsChange = (updatedSettings: GlobalEmailSettings) => {
+    setGlobalSettings(updatedSettings);
+    checkForChanges(updatedSettings);
+  };
+
+  const saveGlobalSettings = async () => {
     setSaving(true);
     try {
-      const response = await fetch("/api/admin/email-settings/test", {
-        method: "POST",
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      const response = await fetch("/api/admin/email-settings/global", {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({
-          formType: testFormType,
-          testEmail,
-        }),
+        body: JSON.stringify(globalSettings),
       });
 
       if (response.ok) {
-        toast.success("Test email sent successfully");
-        setTestEmail("");
+        setOriginalGlobalSettings(globalSettings);
+        setHasUnsavedChanges(false);
+        toast.success("Global email settings saved successfully");
       } else {
-        toast.error("Failed to send test email");
+        toast.error("Failed to save global settings");
       }
     } catch (error) {
-      console.error("Error sending test email:", error);
-      toast.error("Error sending test email");
+      console.error("Error updating global settings:", error);
+      toast.error("Error updating global settings");
     } finally {
       setSaving(false);
     }
   };
 
+  const resetGlobalSettings = () => {
+    setGlobalSettings(originalGlobalSettings);
+    setHasUnsavedChanges(false);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "sent":
+        return "text-green-600";
+      case "failed":
+        return "text-red-600";
+      case "pending":
+        return "text-yellow-600";
+      default:
+        return "text-gray-600";
+    }
+  };
+
   if (loading) {
-    return <div className="text-center py-8">Loading email settings...</div>;
+    return <EmailManagementSkeleton />;
   }
 
   return (
     <div className="space-y-6">
+      {/* Global Email Settings */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Mail className="w-5 h-5 text-blue-600" />
+            <div>
+              <CardTitle>Global Email Settings</CardTitle>
+              <CardDescription>
+                Send all form submissions to one email address
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold">Enable Global Email</h3>
+              <p className="text-sm text-gray-500">
+                Route all form submissions to a single email address
+              </p>
+            </div>
+            <Switch
+              checked={globalSettings.enabled}
+              onCheckedChange={(checked) =>
+                handleGlobalSettingsChange({
+                  ...globalSettings,
+                  enabled: checked,
+                })
+              }
+            />
+          </div>
+          
+          {globalSettings.enabled && (
+            <div className="space-y-4 border-t pt-4">
+              <div>
+                <label className="text-sm font-medium">Global Email Address</label>
+                <Input
+                  type="email"
+                  value={globalSettings.globalEmail}
+                  onChange={(e) =>
+                    handleGlobalSettingsChange({
+                      ...globalSettings,
+                      globalEmail: e.target.value,
+                    })
+                  }
+                  placeholder="admin@example.com"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium">Override Individual Settings</h4>
+                  <p className="text-xs text-gray-500">
+                    When enabled, only the global email will receive notifications
+                  </p>
+                </div>
+                <Switch
+                  checked={globalSettings.overrideIndividualSettings}
+                  onCheckedChange={(checked) =>
+                    handleGlobalSettingsChange({
+                      ...globalSettings,
+                      overrideIndividualSettings: checked,
+                    })
+                  }
+                />
+              </div>
+            </div>
+          )}
+          
+          {hasUnsavedChanges && (
+            <div className="flex gap-2 pt-4 border-t">
+              <Button
+                onClick={saveGlobalSettings}
+                disabled={saving}
+                className="flex-1"
+              >
+                {saving ? "Saving..." : "Save Changes"}
+              </Button>
+              <Button
+                onClick={resetGlobalSettings}
+                variant="outline"
+                disabled={saving}
+              >
+                Reset
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Email Recipients Settings */}
       <Card>
         <CardHeader>
@@ -234,7 +452,22 @@ export function EmailManagement() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {settings.map((setting) => (
+          {globalSettings.enabled && (
+            <div className=" border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  Global email is active
+                </span>
+              </div>
+              <p className="text-xs  mt-1">
+                All form submissions will be sent to: {globalSettings.globalEmail}
+                {!globalSettings.overrideIndividualSettings && " (plus individual recipients)"}
+              </p>
+            </div>
+          )}
+          
+          {!globalSettings.enabled && settings.map((setting) => (
             <div
               key={setting.formType}
               className="border rounded-lg p-4 space-y-4"
@@ -317,54 +550,6 @@ export function EmailManagement() {
         </CardContent>
       </Card>
 
-      {/* Test Email */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Send className="w-5 h-5 text-orange-600" />
-            <div>
-              <CardTitle>Send Test Email</CardTitle>
-              <CardDescription>Test email configuration</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className="text-sm font-medium">Form Type</label>
-              <select
-                value={testFormType}
-                onChange={(e) => setTestFormType(e.target.value)}
-                className="w-full mt-1 px-3 py-2 border rounded-md"
-              >
-                <option value="quote">Quote</option>
-                <option value="consultation">Consultation</option>
-                <option value="contact">Contact</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium">Test Email</label>
-              <Input
-                type="email"
-                value={testEmail}
-                onChange={(e) => setTestEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="mt-1"
-              />
-            </div>
-            <div className="flex items-end">
-              <Button
-                onClick={handleSendTestEmail}
-                disabled={saving}
-                className="w-full gap-2 bg-orange-600 hover:bg-orange-700"
-              >
-                <Send className="w-4 h-4" />
-                Send Test
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Email Logs */}
       <Card>
@@ -377,7 +562,7 @@ export function EmailManagement() {
                 <CardDescription>Recent email sending history</CardDescription>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={fetchLogs}>
+            <Button variant="outline" size="sm" onClick={() => fetchLogs()}>
               <RefreshCw className="w-4 h-4" />
             </Button>
           </div>
@@ -394,33 +579,50 @@ export function EmailManagement() {
                 </tr>
               </thead>
               <tbody>
-                {logs.length === 0 ? (
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <tr key={index} className="border-b">
+                      <td className="py-2 px-2">
+                        <Skeleton className="h-4 w-16" />
+                      </td>
+                      <td className="py-2 px-2">
+                        <Skeleton className="h-4 w-32" />
+                      </td>
+                      <td className="py-2 px-2">
+                        <Skeleton className="h-4 w-12" />
+                      </td>
+                      <td className="py-2 px-2">
+                        <Skeleton className="h-4 w-24" />
+                      </td>
+                    </tr>
+                  ))
+                ) : logs.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="text-center py-4 text-gray-500">
                       No email logs yet
                     </td>
                   </tr>
                 ) : (
-                  logs.map((log) => (
-                    <tr key={log.id} className="border-b hover:bg-gray-50">
+                  logs.slice(0, 10).map((log) => (
+                    <tr key={log.id} className="border-b hover:bg-accent">
                       <td className="py-2 px-2 capitalize">{log.formType}</td>
                       <td className="py-2 px-2">{log.recipientEmail}</td>
                       <td className="py-2 px-2">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${
-                            log.status === "sent"
-                              ? "bg-green-100 text-green-800"
-                              : log.status === "failed"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
-                        >
+                        <span className={`font-medium capitalize ${getStatusColor(log.status)}`}>
                           {log.status}
                         </span>
                       </td>
                       <td className="py-2 px-2">
                         {log.sentAt
-                          ? new Date(log.sentAt).toLocaleString()
+                          ? new Date(log.sentAt).toLocaleString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit',
+                              hour12: true
+                            })
                           : "-"}
                       </td>
                     </tr>
@@ -429,8 +631,125 @@ export function EmailManagement() {
               </tbody>
             </table>
           </div>
+          {logs.length >= 10 && (
+            <div className="mt-4 text-center">
+              <Button variant="outline" onClick={handleShowMoreLogs}>
+                Show More
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      {/* Email Logs Dialog */}
+      <Dialog open={showLogsDialog} onOpenChange={setShowLogsDialog}>
+        <DialogContent className="max-w-[70vw] sm:max-w-[70vw] h-[75vh] flex flex-col p-4">
+          <DialogHeader className="flex-shrink-0 pb-2">
+            <DialogTitle className="text-lg">Email Logs</DialogTitle>
+            <DialogDescription className="text-sm">
+              Complete email history
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-hidden border rounded">
+            <div className="h-full overflow-auto">
+              <table className="w-full text-xs">
+                <thead className="bg-muted/40 sticky top-0">
+                  <tr className="border-b">
+                    <th className="text-left py-2 px-3 font-medium">Form</th>
+                    <th className="text-left py-2 px-3 font-medium">Recipient</th>
+                    <th className="text-left py-2 px-3 font-medium">Status</th>
+                    <th className="text-left py-2 px-3 font-medium">Sent At</th>
+                    <th className="text-left py-2 px-3 font-medium">Subject</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    Array.from({ length: 10 }).map((_, index) => (
+                      <tr key={index} className="border-b">
+                        <td className="py-2 px-3">
+                          <Skeleton className="h-3 w-12" />
+                        </td>
+                        <td className="py-2 px-3">
+                          <Skeleton className="h-3 w-28" />
+                        </td>
+                        <td className="py-2 px-3">
+                          <Skeleton className="h-3 w-10" />
+                        </td>
+                        <td className="py-2 px-3">
+                          <Skeleton className="h-3 w-20" />
+                        </td>
+                        <td className="py-2 px-3">
+                          <Skeleton className="h-3 w-32" />
+                        </td>
+                      </tr>
+                    ))
+                  ) : allLogs.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-6 text-muted-foreground">
+                        No logs found
+                      </td>
+                    </tr>
+                  ) : (
+                    allLogs.map((log) => (
+                      <tr key={log.id} className="border-b hover:bg-muted/20">
+                        <td className="py-2 px-3 capitalize font-medium text-xs">{log.formType}</td>
+                        <td className="py-2 px-3 text-muted-foreground text-xs">{log.recipientEmail}</td>
+                        <td className="py-2 px-3">
+                          <span className={`font-medium capitalize text-xs ${getStatusColor(log.status)}`}>
+                            {log.status}
+                          </span>
+                        </td>
+                        <td className="py-2 px-3 text-muted-foreground text-xs">
+                          {log.sentAt
+                            ? new Date(log.sentAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })
+                            : "-"}
+                        </td>
+                        <td className="py-2 px-3 text-xs max-w-xs truncate" title={log.subject}>
+                          {log.subject || "-"}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-2 flex-shrink-0">
+              <div className="text-xs text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                  className="h-7 px-2 text-xs"
+                >
+                  Prev
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= totalPages}
+                  className="h-7 px-2 text-xs"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

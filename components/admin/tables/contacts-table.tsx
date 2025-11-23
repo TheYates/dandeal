@@ -31,7 +31,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { ContactDetailDialog } from "@/components/admin/dialogs/contact-detail-dialog";
-import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
+import { useContactsData } from "@/hooks/use-dashboard-data";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -70,20 +72,21 @@ export function ContactsTable() {
   });
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+
+  // Fetch contacts using batched dashboard data
   const {
     data: contacts,
-    loading,
+    isLoading: loading,
     error,
-    invalidateCache,
-  } = useSubmissionsCache<Contact>("contacts", async () => {
-    const response = await fetch("/api/admin/submissions?type=contacts");
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP ${response.status}`);
-    }
-    const data = await response.json();
-    return data.submissions || [];
-  });
+    stats
+  } = useContactsData();
+
+  // Legacy invalidateCache function for compatibility
+  const invalidateCache = () => {
+    queryClient.invalidateQueries(['dashboard-data']);
+  };
 
   const toTitleCase = (str: string) => {
     return str
@@ -98,11 +101,15 @@ export function ContactsTable() {
   };
 
   const filteredContacts = useMemo(() => {
+    if (!contacts || !Array.isArray(contacts)) return [];
+    
     return contacts.filter((contact) => {
-      const matchesSearch =
-        contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.subject.toLowerCase().includes(searchTerm.toLowerCase());
+      if (!contact) return false;
+      
+      const matchesSearch = !searchTerm ||
+        (contact.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (contact.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (contact.subject?.toLowerCase() || '').includes(searchTerm.toLowerCase());
 
       const matchesStatus =
         statusFilter === "all" || contact.status === statusFilter;

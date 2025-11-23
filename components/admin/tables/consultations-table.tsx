@@ -33,7 +33,10 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { ConsultationDetailDialog } from "@/components/admin/dialogs/consultation-detail-dialog";
-import { useSubmissionsCache } from "@/hooks/use-submissions-cache";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
+import { useConsultationsData } from "@/hooks/use-dashboard-data";
+import { useOptimisticStatusUpdate, useOptimisticDelete } from "@/hooks/use-optimistic-mutations";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -83,21 +86,26 @@ export function ConsultationsTable() {
     consultationName: "",
   });
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  const queryClient = useQueryClient();
+  const supabase = createClient();
 
+  // Fetch consultations using batched dashboard data
   const {
     data: consultations,
-    loading,
+    isLoading: loading,
     error,
-    invalidateCache,
-  } = useSubmissionsCache<Consultation>("consultations", async () => {
-    const response = await fetch("/api/admin/submissions?type=consultations");
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP ${response.status}`);
-    }
-    const data = await response.json();
-    return data.submissions || [];
-  });
+    stats
+  } = useConsultationsData();
+
+  // Optimistic mutation hooks
+  const statusUpdateMutation = useOptimisticStatusUpdate('consultations');
+  const deleteMutation = useOptimisticDelete('consultations');
+
+  // Legacy invalidateCache function for compatibility
+  const invalidateCache = () => {
+    queryClient.invalidateQueries(['dashboard-data']);
+  };
 
   const toTitleCase = (str: string) => {
     return str
@@ -112,11 +120,15 @@ export function ConsultationsTable() {
   };
 
   const filteredConsultations = useMemo(() => {
+    if (!consultations || !Array.isArray(consultations)) return [];
+    
     return consultations.filter((consultation) => {
-      const matchesSearch =
-        consultation.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        consultation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        consultation.phone.includes(searchTerm);
+      if (!consultation) return false;
+      
+      const matchesSearch = !searchTerm ||
+        (consultation.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (consultation.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (consultation.phone || '').includes(searchTerm);
 
       const matchesStatus =
         statusFilter === "all" || consultation.status === statusFilter;
@@ -131,22 +143,7 @@ export function ConsultationsTable() {
     id: string,
     newStatus: Consultation["status"]
   ) => {
-    try {
-      const response = await fetch("/api/admin/submissions", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: newStatus, type: "consultations" }),
-      });
-      if (response.ok) {
-        invalidateCache();
-        toast.success(`Status updated to ${newStatus.replace("_", " ")}`);
-      } else {
-        toast.error("Failed to update status");
-      }
-    } catch (error) {
-      console.error("Error updating status:", error);
-      toast.error("Error updating status");
-    }
+    statusUpdateMutation.mutate({ id, status: newStatus });
   };
 
   const deleteConsultation = (id: string, consultationName: string) => {
@@ -160,35 +157,19 @@ export function ConsultationsTable() {
   const confirmDeleteConsultation = async () => {
     if (!deleteConfirmDialog.consultationId) return;
 
-    try {
-      setIsDeleting(true);
-      const response = await fetch("/api/admin/submissions", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: deleteConfirmDialog.consultationId,
-          type: "consultations",
-        }),
-      });
-      if (response.ok) {
-        invalidateCache();
+    setIsDeleting(true);
+    deleteMutation.mutate(deleteConfirmDialog.consultationId, {
+      onSuccess: () => {
         setDeleteConfirmDialog({
           isOpen: false,
           consultationId: null,
           consultationName: "",
         });
-        toast.success(
-          `Consultation from ${deleteConfirmDialog.consultationName} deleted successfully`
-        );
-      } else {
-        toast.error("Failed to delete consultation");
+      },
+      onSettled: () => {
+        setIsDeleting(false);
       }
-    } catch (error) {
-      console.error("Error deleting consultation:", error);
-      toast.error("Error deleting consultation");
-    } finally {
-      setIsDeleting(false);
-    }
+    });
   };
 
   const exportData = () => {

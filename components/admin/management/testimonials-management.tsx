@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Trash2, Plus, Edit2, Loader2, Star } from "lucide-react";
 import { useTestimonials, Testimonial } from "@/hooks/use-testimonials";
-import { CardSkeleton } from "./table-skeleton";
+import { TestimonialsManagementSkeleton } from "./table-skeleton";
 
 export function TestimonialsManagement() {
   const {
@@ -120,7 +120,7 @@ export function TestimonialsManagement() {
   };
 
   if (loading) {
-    return <CardSkeleton />;
+    return <TestimonialsManagementSkeleton />;
   }
 
   return (

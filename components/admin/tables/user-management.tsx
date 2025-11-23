@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserPlus, Trash2, Loader2, AlertTriangle } from "lucide-react";
-import { TableSkeleton } from "@/components/admin/management/table-skeleton";
+import { UserManagementSkeleton } from "@/components/admin/management/table-skeleton";
 import {
   Dialog,
   DialogContent,
@@ -440,6 +440,10 @@ export function UserManagement() {
     }
   };
 
+  if (loading) {
+    return <UserManagementSkeleton />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Admin Users Section */}
@@ -574,10 +578,7 @@ export function UserManagement() {
           </div>
         )}
         <CardContent>
-          {loading ? (
-            <TableSkeleton rows={5} columns={6} />
-          ) : (
-            <div className="overflow-x-auto">
+          <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200">
@@ -725,7 +726,6 @@ export function UserManagement() {
                 </tbody>
               </table>
             </div>
-          )}
         </CardContent>
       </Card>
 

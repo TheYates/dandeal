@@ -152,6 +152,10 @@ export const siteSettings = pgTable("site_settings", {
   officeChina: text("office_china"),
   // Business Hours
   businessHours: text("business_hours"),
+  // Global Email Settings
+  globalEmailEnabled: boolean("global_email_enabled").default(false),
+  globalEmail: text("global_email"),
+  overrideIndividualEmailSettings: boolean("override_individual_email_settings").default(false),
   // Metadata
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   updatedBy: text("updated_by"),

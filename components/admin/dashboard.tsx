@@ -13,6 +13,7 @@ import { EmailManagement } from "@/components/admin/management/email-management"
 import { ModeToggle } from "@/components/ui/modetoggle";
 import { LogOut, Settings, Users, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAdminPreloader } from "@/hooks/use-admin-preloader";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -20,6 +21,13 @@ interface DashboardProps {
 
 export function Dashboard({ onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<string>("quotes");
+  
+  // Initialize preloader for critical data fetching
+  const { prefetchForTab } = useAdminPreloader({
+    enabled: true,
+    criticalDelay: 0,     // Load critical data immediately
+    secondaryDelay: 1000  // Load secondary data after 1s
+  });
 
   // Load saved tab from localStorage on mount
   useEffect(() => {
@@ -29,10 +37,13 @@ export function Dashboard({ onLogout }: DashboardProps) {
     }
   }, []);
 
-  // Save tab to localStorage whenever it changes
+  // Save tab to localStorage and trigger predictive preloading
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     localStorage.setItem("dashboard-active-tab", value);
+    
+    // Predictively preload likely next tabs
+    prefetchForTab(value);
   };
   return (
     <div className="min-h-screen ">
