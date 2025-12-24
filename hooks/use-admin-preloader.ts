@@ -9,7 +9,7 @@ import { useDashboardDataPrefetch } from "./use-dashboard-data";
 const CRITICAL_TABS = ['quotes', 'consultations', 'contacts'];
 
 // Secondary tabs that should be preloaded after a delay
-const SECONDARY_TABS = ['email', 'dropdowns', 'testimonials'];
+const SECONDARY_TABS = ['users', 'email', 'dropdowns', 'testimonials'];
 
 // Tab sequence patterns for predictive preloading
 const TAB_SEQUENCE_PATTERNS: Record<string, string[]> = {
@@ -155,7 +155,7 @@ export function useAdminPreloader(options: AdminPreloaderOptions = {}) {
   // Preload testimonials
   const prefetchTestimonials = async () => {
     const queryKey = ['testimonials'];
-    
+
     // Check if already cached
     const existingData = queryClient.getQueryData(queryKey);
     if (existingData) return;
@@ -176,6 +176,47 @@ export function useAdminPreloader(options: AdminPreloaderOptions = {}) {
       });
     } catch (error) {
       console.warn("Failed to prefetch testimonials:", error);
+    }
+  };
+
+  // Preload users data
+  const prefetchUsers = async () => {
+    const queryKey = ['users'];
+
+    // Check if already cached
+    const existingData = queryClient.getQueryData(queryKey);
+    if (existingData) return;
+
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("Not authenticated");
+      }
+
+      await queryClient.prefetchQuery({
+        queryKey,
+        queryFn: async () => {
+          const response = await fetch("/api/admin/users", {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch users");
+          }
+
+          const data = await response.json();
+          return data.users || [];
+        },
+        staleTime: 2 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+      });
+    } catch (error) {
+      console.warn("Failed to prefetch users:", error);
     }
   };
 
@@ -210,6 +251,9 @@ export function useAdminPreloader(options: AdminPreloaderOptions = {}) {
         prefetchDashboardData(['testimonials']),
         prefetchDashboardData(['settings']),
       ]);
+
+      // Also preload users specifically
+      await prefetchUsers();
 
       console.log('✅ Secondary admin data preloaded (batch)');
     };
@@ -263,5 +307,6 @@ export function useAdminPreloader(options: AdminPreloaderOptions = {}) {
     prefetchDropdowns,
     prefetchEmailSettings,
     prefetchTestimonials,
+    prefetchUsers,
   };
 }

@@ -52,8 +52,8 @@ interface Contact {
   subject: string;
   message: string;
   status: "new" | "read" | "responded" | "archived";
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export function ContactsTable() {
@@ -85,7 +85,7 @@ export function ContactsTable() {
 
   // Legacy invalidateCache function for compatibility
   const invalidateCache = () => {
-    queryClient.invalidateQueries(['dashboard-data']);
+    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
   };
 
   const toTitleCase = (str: string) => {
@@ -302,7 +302,7 @@ export function ContactsTable() {
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(contact.createdAt).toLocaleDateString(
+                          {new Date(contact.created_at).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -312,7 +312,7 @@ export function ContactsTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(contact.createdAt).toLocaleTimeString(
+                          {new Date(contact.created_at).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",
@@ -323,7 +323,7 @@ export function ContactsTable() {
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(contact.updatedAt).toLocaleDateString(
+                          {new Date(contact.updated_at).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -333,7 +333,7 @@ export function ContactsTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(contact.updatedAt).toLocaleTimeString(
+                          {new Date(contact.updated_at).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",

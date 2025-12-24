@@ -16,8 +16,8 @@ interface Consultation {
   service: string;
   message: string | null;
   status: "new" | "contacted" | "in_progress" | "completed" | "cancelled";
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface ConsultationDetailDialogProps {
@@ -146,13 +146,13 @@ export function ConsultationDetailDialog({
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Submitted:</span>
               <span className="text-slate-700 font-medium">
-                {formatDate(consultation.createdAt)}
+                {formatDate(consultation.created_at)}
               </span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Last Updated:</span>
               <span className="text-slate-700 font-medium">
-                {formatDate(consultation.updatedAt)}
+                {formatDate(consultation.updated_at)}
               </span>
             </div>
           </div>

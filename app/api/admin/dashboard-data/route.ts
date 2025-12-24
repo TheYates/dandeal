@@ -31,30 +31,30 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('submissions') || shouldInclude('quotes')) {
       dataKeys.push('quotes');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('quote_submissions')
           .select('*')
-          .order('created_at', { ascending: false })
+          .order('created_at', { ascending: false }))()
       );
     }
 
     if (shouldInclude('submissions') || shouldInclude('consultations')) {
       dataKeys.push('consultations');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('consultation_submissions')
           .select('*')
-          .order('created_at', { ascending: false })
+          .order('created_at', { ascending: false }))()
       );
     }
 
     if (shouldInclude('submissions') || shouldInclude('contacts')) {
       dataKeys.push('contacts');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('contact_submissions')
           .select('*')
-          .order('created_at', { ascending: false })
+          .order('created_at', { ascending: false }))()
       );
     }
 
@@ -62,29 +62,29 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('dropdowns')) {
       dataKeys.push('services');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('dropdown_options')
           .select('*')
           .eq('type', 'services')
-          .order('display_order', { ascending: true })
+          .order('created_at', { ascending: false }))()
       );
 
       dataKeys.push('shipping_methods');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('dropdown_options')
           .select('*')
           .eq('type', 'shipping_methods')
-          .order('display_order', { ascending: true })
+          .order('created_at', { ascending: false }))()
       );
 
       dataKeys.push('cargo_types');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('dropdown_options')
           .select('*')
           .eq('type', 'cargo_types')
-          .order('display_order', { ascending: true })
+          .order('created_at', { ascending: false }))()
       );
     }
 
@@ -92,19 +92,19 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('email')) {
       dataKeys.push('email_settings');
       dataPromises.push(
-        supabase
-          .from('global_email_settings')
+        (async () => await supabase
+          .from('email_notification_settings')
           .select('*')
-          .single()
+          .order('created_at', { ascending: false }))()
       );
 
       dataKeys.push('email_logs');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('email_logs')
           .select('*')
           .order('created_at', { ascending: false })
-          .limit(50)
+          .limit(50))()
       );
     }
 
@@ -112,10 +112,10 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('testimonials')) {
       dataKeys.push('testimonials');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('testimonials')
           .select('*')
-          .order('created_at', { ascending: false })
+          .order('created_at', { ascending: false }))()
       );
     }
 
@@ -123,17 +123,17 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('settings')) {
       dataKeys.push('site_settings');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('site_settings')
-          .select('*')
+          .select('*'))()
       );
 
       dataKeys.push('partners');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('partners')
           .select('*')
-          .order('created_at', { ascending: false })
+          .order('created_at', { ascending: false }))()
       );
     }
 
@@ -141,10 +141,10 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('users')) {
       dataKeys.push('users');
       dataPromises.push(
-        supabase
+        (async () => await supabase
           .from('users')
           .select('*')
-          .order('created_at', { ascending: false })
+          .order('created_at', { ascending: false }))()
       );
     }
 

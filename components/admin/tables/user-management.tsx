@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,6 +43,37 @@ interface User {
   joined: string;
 }
 
+// API function to fetch users
+const fetchUsers = async (): Promise<User[]> => {
+  const response = await fetch("/api/admin/users");
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch users");
+  }
+
+  const data = await response.json();
+  return (data.users || []).map((user: any) => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role:
+      user.role === "super_admin"
+        ? "Super Admin"
+        : user.role === "admin"
+        ? "Admin"
+        : "Viewer",
+    status: user.isActive ? "Active" : "Inactive",
+    joined: new Date(user.createdAt).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }),
+  }));
+};
+
 const ROLE_PERMISSIONS = {
   // "Super Admin": {
   //   title: "Full Access",
@@ -59,62 +91,16 @@ const ROLE_PERMISSIONS = {
 };
 
 export function UserManagement() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  // Fetch users from API
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch("/api/admin/users");
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || `HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Transform API data to UI format
-        const transformedUsers: User[] = (data.users || []).map(
-          (user: any) => ({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role:
-              user.role === "super_admin"
-                ? "Super Admin"
-                : user.role === "admin"
-                ? "Admin"
-                : "Viewer",
-            status: user.is_active ? "Active" : "Inactive",
-            joined: new Date(user.created_at).toLocaleString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-            }),
-          })
-        );
-
-        setUsers(transformedUsers);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to fetch users";
-        setError(errorMessage);
-        console.error("Error fetching users:", errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+  const { data: users, isLoading, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000,   // 10 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newUser, setNewUser] = useState({
@@ -234,7 +220,8 @@ export function UserManagement() {
           second: "2-digit",
         }),
       };
-      setUsers([...users, user]);
+      // Invalidate and refetch users query
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       setNewUser({ name: "", email: "", role: "Viewer", sendEmail: true });
       setIsDialogOpen(false);
       setMessageDialog({
@@ -282,7 +269,8 @@ export function UserManagement() {
         throw new Error(errorData.error || "Failed to delete user");
       }
 
-      setUsers(users.filter((u) => u.id !== deleteConfirmDialog.userId));
+      // Invalidate and refetch users query
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       setDeleteConfirmDialog({ isOpen: false, userId: null, userName: "" });
       setMessageDialog({
         isOpen: true,
@@ -341,13 +329,8 @@ export function UserManagement() {
         throw new Error(errorData.error || "Failed to update role");
       }
 
-      setUsers(
-        users.map((u) =>
-          u.id === roleConfirmDialog.userId
-            ? { ...u, role: roleConfirmDialog.newRole! }
-            : u
-        )
-      );
+      // Invalidate and refetch users query
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       setRoleConfirmDialog({ isOpen: false, userId: null, newRole: null });
       setEditingRole(null);
       setMessageDialog({
@@ -404,13 +387,8 @@ export function UserManagement() {
         throw new Error(errorData.error || "Failed to update status");
       }
 
-      setUsers(
-        users.map((u) =>
-          u.id === statusConfirmDialog.userId
-            ? { ...u, status: statusConfirmDialog.newStatus! }
-            : u
-        )
-      );
+      // Invalidate and refetch users query
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       setStatusConfirmDialog({
         isOpen: false,
         userId: null,
@@ -440,7 +418,7 @@ export function UserManagement() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return <UserManagementSkeleton />;
   }
 

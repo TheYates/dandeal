@@ -61,8 +61,8 @@ interface Quote {
   preferredDate: string | null;
   notes: string | null;
   status: "new" | "quoted" | "accepted" | "declined" | "completed";
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const shippingMethods = [
@@ -201,7 +201,7 @@ export function QuotesTable() {
         q.preferredDate || "",
         q.notes || "",
         q.status,
-        new Date(q.createdAt).toLocaleString(),
+        new Date(q.created_at).toLocaleString(),
       ]),
     ]
       .map((row) => row.map((cell) => `"${cell}"`).join(","))
@@ -369,7 +369,7 @@ export function QuotesTable() {
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(quote.createdAt).toLocaleDateString(
+                          {new Date(quote.created_at).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -379,7 +379,7 @@ export function QuotesTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(quote.createdAt).toLocaleTimeString(
+                          {new Date(quote.created_at).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",
@@ -390,7 +390,7 @@ export function QuotesTable() {
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(quote.updatedAt).toLocaleDateString(
+                          {new Date(quote.updated_at).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -400,7 +400,7 @@ export function QuotesTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(quote.updatedAt).toLocaleTimeString(
+                          {new Date(quote.updated_at).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",

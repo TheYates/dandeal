@@ -13,8 +13,8 @@ interface Contact {
   subject: string
   message: string
   status: "new" | "read" | "responded" | "archived"
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 interface ContactDetailDialogProps {
@@ -107,11 +107,11 @@ export function ContactDetailDialog({ contact, open, onOpenChange }: ContactDeta
           <div className="pt-4 border-t space-y-2">
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Submitted:</span>
-              <span className="text-slate-700 font-medium">{formatDate(contact.createdAt)}</span>
+              <span className="text-slate-700 font-medium">{formatDate(contact.created_at)}</span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Last Updated:</span>
-              <span className="text-slate-700 font-medium">{formatDate(contact.updatedAt)}</span>
+              <span className="text-slate-700 font-medium">{formatDate(contact.updated_at)}</span>
             </div>
           </div>
         </div>

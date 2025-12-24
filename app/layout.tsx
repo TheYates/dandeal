@@ -28,9 +28,9 @@ export default function RootLayout({
       <body className={`font-sans antialiased`}>
         <QueryProvider>
           {children}
-          <Analytics />
-          <Toaster />
         </QueryProvider>
+        <Analytics />
+        <Toaster />
       </body>
     </html>
   );

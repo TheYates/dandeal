@@ -23,8 +23,8 @@ interface Quote {
   preferredDate: string | null;
   notes: string | null;
   status: "new" | "quoted" | "accepted" | "declined" | "completed";
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface QuoteDetailDialogProps {
@@ -224,13 +224,13 @@ export function QuoteDetailDialog({
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Submitted:</span>
               <span className="text-slate-700 font-medium">
-                {formatDate(quote.createdAt)}
+                {formatDate(quote.created_at)}
               </span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Last Updated:</span>
               <span className="text-slate-700 font-medium">
-                {formatDate(quote.updatedAt)}
+                {formatDate(quote.updated_at)}
               </span>
             </div>
           </div>
