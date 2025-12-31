@@ -13,6 +13,8 @@ const nextConfig = {
   // Optimize server rendering
   experimental: {
     optimizePackageImports: ['@tanstack/react-query', 'lucide-react', 'framer-motion'],
+    // Disable Turbopack to use stable webpack
+    turbo: false,
   },
 }
 
