@@ -1,33 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { emailLogs } from "@/lib/db/schema";
-import { desc, eq } from "drizzle-orm";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { desc, eq, and } from "drizzle-orm";
 
 // GET email logs with optional filtering
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
+    // Check authentication with NextAuth
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -40,17 +22,14 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "100");
     const offset = parseInt(searchParams.get("offset") || "0");
 
-    let query = db.select().from(emailLogs);
-
-    if (formType) {
-      query = query.where(eq(emailLogs.formType, formType));
-    }
-
-    if (status) {
-      query = query.where(eq(emailLogs.status, status));
-    }
+    const query = db.select().from(emailLogs).$dynamic();
+    
+    const conditions = [];
+    if (formType) conditions.push(eq(emailLogs.formType, formType));
+    if (status) conditions.push(eq(emailLogs.status, status));
 
     const logs = await query
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(emailLogs.createdAt))
       .limit(limit)
       .offset(offset);
@@ -68,22 +47,9 @@ export async function GET(request: NextRequest) {
 // POST create email log entry
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
+    // Check authentication with NextAuth
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }

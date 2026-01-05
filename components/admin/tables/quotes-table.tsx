@@ -34,7 +34,6 @@ import {
 } from "lucide-react";
 import { QuoteDetailDialog } from "@/components/admin/dialogs/quote-detail-dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 import { useQuotesData } from "@/hooks/use-dashboard-data";
 import { useOptimisticStatusUpdate, useOptimisticDelete } from "@/hooks/use-optimistic-mutations";
 import { toast } from "sonner";
@@ -62,8 +61,8 @@ interface Quote {
   preferredDate: string | null;
   notes: string | null;
   status: "new" | "quoted" | "accepted" | "declined" | "completed";
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const shippingMethods = [
@@ -92,7 +91,6 @@ export function QuotesTable() {
   const [isDeleting, setIsDeleting] = useState(false);
   
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   // Fetch quotes using batched dashboard data
   const {
@@ -384,7 +382,7 @@ export function QuotesTable() {
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(quote.created_at).toLocaleDateString(
+                          {new Date(quote.createdAt).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -394,7 +392,7 @@ export function QuotesTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(quote.created_at).toLocaleTimeString(
+                          {new Date(quote.createdAt).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",
@@ -405,7 +403,7 @@ export function QuotesTable() {
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(quote.updated_at).toLocaleDateString(
+                          {new Date(quote.updatedAt).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -415,7 +413,7 @@ export function QuotesTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(quote.updated_at).toLocaleTimeString(
+                          {new Date(quote.updatedAt).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",

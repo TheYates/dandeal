@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/dialog";
 import { Mail, Plus, Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client";
 
 interface EmailSetting {
   id: string;
@@ -55,7 +54,6 @@ interface EmailLog {
 }
 
 export function EmailManagement() {
-  const supabase = createClient();
   const [settings, setSettings] = useState<EmailSetting[]>([]);
   const [globalSettings, setGlobalSettings] = useState<GlobalEmailSettings>({
     enabled: false,
@@ -85,20 +83,7 @@ export function EmailManagement() {
 
   const fetchSettings = async () => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        toast.error("Not authenticated");
-        return;
-      }
-
-      const response = await fetch("/api/admin/email-settings", {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
+      const response = await fetch("/api/admin/email-settings");
 
       if (response.ok) {
         const data = await response.json();
@@ -116,17 +101,7 @@ export function EmailManagement() {
 
   const fetchGlobalSettings = async () => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) return;
-
-      const response = await fetch("/api/admin/email-settings/global", {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
+      const response = await fetch("/api/admin/email-settings/global");
 
       if (response.ok) {
         const data = await response.json();
@@ -140,17 +115,7 @@ export function EmailManagement() {
 
   const fetchLogs = async (limit = 10) => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) return;
-
-      const response = await fetch(`/api/admin/email-logs?limit=${limit}`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
+      const response = await fetch(`/api/admin/email-logs?limit=${limit}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -163,18 +128,8 @@ export function EmailManagement() {
 
   const fetchAllLogs = async (page = 1) => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) return;
-
       const offset = (page - 1) * logsPerPage;
-      const response = await fetch(`/api/admin/email-logs?limit=${logsPerPage}&offset=${offset}`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
+      const response = await fetch(`/api/admin/email-logs?limit=${logsPerPage}&offset=${offset}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -234,20 +189,10 @@ export function EmailManagement() {
   ) => {
     setSaving(true);
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        toast.error("Not authenticated");
-        return;
-      }
-
       const response = await fetch("/api/admin/email-settings", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           formType,
@@ -290,20 +235,10 @@ export function EmailManagement() {
   const saveGlobalSettings = async () => {
     setSaving(true);
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        toast.error("Not authenticated");
-        return;
-      }
-
       const response = await fetch("/api/admin/email-settings/global", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify(globalSettings),
       });

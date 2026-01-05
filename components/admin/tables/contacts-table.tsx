@@ -33,7 +33,6 @@ import {
 } from "lucide-react";
 import { ContactDetailDialog } from "@/components/admin/dialogs/contact-detail-dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 import { useContactsData } from "@/hooks/use-dashboard-data";
 import { toast } from "sonner";
 import {
@@ -53,8 +52,8 @@ interface Contact {
   subject: string;
   message: string;
   status: "new" | "read" | "responded" | "archived";
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export function ContactsTable() {
@@ -74,7 +73,6 @@ export function ContactsTable() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   // Fetch contacts using batched dashboard data
   const {
@@ -317,7 +315,7 @@ export function ContactsTable() {
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(contact.created_at).toLocaleDateString(
+                          {new Date(contact.createdAt).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -327,7 +325,7 @@ export function ContactsTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(contact.created_at).toLocaleTimeString(
+                          {new Date(contact.createdAt).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",
@@ -338,7 +336,7 @@ export function ContactsTable() {
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white text-xs">
                         <div>
-                          {new Date(contact.updated_at).toLocaleDateString(
+                          {new Date(contact.updatedAt).toLocaleDateString(
                             "en-US",
                             {
                               year: "numeric",
@@ -348,7 +346,7 @@ export function ContactsTable() {
                           )}
                         </div>
                         <div className="text-slate-500 dark:text-slate-400">
-                          {new Date(contact.updated_at).toLocaleTimeString(
+                          {new Date(contact.updatedAt).toLocaleTimeString(
                             "en-US",
                             {
                               hour: "2-digit",

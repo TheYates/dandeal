@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { adminUsers } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import bcrypt from "bcryptjs";
 
 // Helper function to check if user is super admin
-async function checkSuperAdminRole(userId: string) {
+async function checkSuperAdminRole(email: string) {
   const admin = await db.query.adminUsers.findFirst({
-    where: eq(adminUsers.supabaseUserId, userId),
+    where: eq(adminUsers.email, email),
   });
 
   if (!admin || !admin.isActive || admin.role !== "super_admin") {
@@ -19,16 +20,12 @@ async function checkSuperAdminRole(userId: string) {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const isSuperAdmin = await checkSuperAdminRole(user.id);
+    const isSuperAdmin = await checkSuperAdminRole(session.user.email);
     if (!isSuperAdmin) {
       return NextResponse.json(
         { error: "Access denied" },
@@ -52,16 +49,12 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const isSuperAdmin = await checkSuperAdminRole(user.id);
+    const isSuperAdmin = await checkSuperAdminRole(session.user.email);
     if (!isSuperAdmin) {
       return NextResponse.json(
         { error: "Access denied" },
@@ -97,16 +90,12 @@ export async function PATCH(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const isSuperAdmin = await checkSuperAdminRole(user.id);
+    const isSuperAdmin = await checkSuperAdminRole(session.user.email);
     if (!isSuperAdmin) {
       return NextResponse.json(
         { error: "Access denied" },
@@ -115,7 +104,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { email, password, name, role, sendEmail = true } = body;
+    const { email, password, name, role } = body;
 
     if (!email || !password || !name || !role) {
       return NextResponse.json(
@@ -124,64 +113,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create user in Supabase Auth using Admin API
-    const adminClient = createAdminClient();
-    const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: !sendEmail, // Auto-confirm if not sending email
-      user_metadata: {
-        name,
-      },
+    // Check if email already exists
+    const existingUser = await db.query.adminUsers.findFirst({
+      where: eq(adminUsers.email, email),
     });
 
-    if (authError || !authData.user) {
-      console.error("Error creating auth user:", authError);
+    if (existingUser) {
       return NextResponse.json(
-        { error: authError?.message || "Failed to create user" },
-        { status: 400 }
+        { error: "User with this email already exists" },
+        { status: 409 }
       );
     }
 
-    // Add user to admin_users table
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user in admin_users table
     const [newAdmin] = await db
       .insert(adminUsers)
       .values({
-        supabaseUserId: authData.user.id,
         email,
+        password: hashedPassword,
         name,
         role,
-        isActive: !sendEmail, // Only active if auto-confirmed
+        isActive: true,
       })
       .returning();
-
-    // Send confirmation email if requested
-    if (sendEmail) {
-      const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/invite`;
-      const { error: emailError } = await adminClient.auth.admin.inviteUserByEmail(email, {
-        redirectTo: redirectUrl,
-        data: {
-          name,
-          role,
-        },
-      });
-
-      if (emailError) {
-        console.error("Error sending invite email:", emailError);
-        // Don't fail the whole request if email fails
-      }
-
-      return NextResponse.json({ 
-        success: true, 
-        user: newAdmin,
-        message: "User created and confirmation email sent"
-      });
-    }
 
     return NextResponse.json({ 
       success: true, 
       user: newAdmin,
-      message: "User created and activated"
+      message: "User created successfully"
     });
   } catch (error) {
     console.error("Error creating admin user:", error);
@@ -194,16 +156,12 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const isSuperAdmin = await checkSuperAdminRole(user.id);
+    const isSuperAdmin = await checkSuperAdminRole(session.user.email);
     if (!isSuperAdmin) {
       return NextResponse.json(
         { error: "Access denied" },
@@ -218,7 +176,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Missing user id" }, { status: 400 });
     }
 
-    // Get the admin user to find their Supabase auth ID
+    // Get the admin user
     const adminUser = await db.query.adminUsers.findFirst({
       where: eq(adminUsers.id, userId),
     });
@@ -228,7 +186,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Prevent deleting yourself
-    if (adminUser.supabaseUserId === user.id) {
+    if (adminUser.email === session.user.email) {
       return NextResponse.json(
         { error: "Cannot delete your own account" },
         { status: 400 }
@@ -237,17 +195,6 @@ export async function DELETE(request: NextRequest) {
 
     // Delete from admin_users table
     await db.delete(adminUsers).where(eq(adminUsers.id, userId));
-
-    // Delete from Supabase Auth
-    const adminClient = createAdminClient();
-    const { error: authError } = await adminClient.auth.admin.deleteUser(
-      adminUser.supabaseUserId
-    );
-
-    if (authError) {
-      console.error("Error deleting auth user:", authError);
-      // User deleted from admin_users but not from auth - that's okay
-    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

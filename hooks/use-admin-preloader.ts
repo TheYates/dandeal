@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 import { useDashboardDataPrefetch } from "./use-dashboard-data";
 
 // Critical tabs that should be preloaded immediately
@@ -37,7 +36,6 @@ export function useAdminPreloader(options: AdminPreloaderOptions = {}) {
   } = options;
   
   const queryClient = useQueryClient();
-  const supabase = createClient();
   const { prefetchDashboardData } = useDashboardDataPrefetch();
 
   // Preload submissions data (quotes, consultations, contacts)
@@ -52,19 +50,7 @@ export function useAdminPreloader(options: AdminPreloaderOptions = {}) {
       await queryClient.prefetchQuery({
         queryKey,
         queryFn: async () => {
-          const {
-            data: { session },
-          } = await supabase.auth.getSession();
-
-          if (!session) {
-            throw new Error("Not authenticated");
-          }
-
-          const response = await fetch(`/api/admin/submissions?type=${type}`, {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          });
+          const response = await fetch(`/api/admin/submissions?type=${type}`);
 
           if (!response.ok) {
             const errorData = await response.json();
@@ -122,20 +108,10 @@ export function useAdminPreloader(options: AdminPreloaderOptions = {}) {
     if (existingData) return;
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) return;
-
       await queryClient.prefetchQuery({
         queryKey,
         queryFn: async () => {
-          const response = await fetch("/api/admin/email-settings", {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          });
+          const response = await fetch("/api/admin/email-settings");
 
           if (!response.ok) {
             throw new Error("Failed to fetch email settings");
@@ -188,22 +164,10 @@ export function useAdminPreloader(options: AdminPreloaderOptions = {}) {
     if (existingData) return;
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        throw new Error("Not authenticated");
-      }
-
       await queryClient.prefetchQuery({
         queryKey,
         queryFn: async () => {
-          const response = await fetch("/api/admin/users", {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          });
+          const response = await fetch("/api/admin/users");
 
           if (!response.ok) {
             throw new Error("Failed to fetch users");

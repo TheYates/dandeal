@@ -1,33 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { siteSettings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 // GET global email settings
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
+    // Check authentication with NextAuth
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -56,22 +38,9 @@ export async function GET(request: NextRequest) {
 // PATCH update global email settings
 export async function PATCH(request: NextRequest) {
   try {
-    // Check authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
+    // Check authentication with NextAuth
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -93,7 +62,7 @@ export async function PATCH(request: NextRequest) {
           globalEmail: globalEmail,
           overrideIndividualEmailSettings: overrideIndividualSettings,
           updatedAt: new Date(),
-          updatedBy: user.email,
+          updatedBy: session.user.email,
         })
         .where(eq(siteSettings.id, existingSettings.id));
     } else {
@@ -104,7 +73,7 @@ export async function PATCH(request: NextRequest) {
           globalEmailEnabled: enabled,
           globalEmail: globalEmail,
           overrideIndividualEmailSettings: overrideIndividualSettings,
-          updatedBy: user.email,
+          updatedBy: session.user.email,
         });
     }
 

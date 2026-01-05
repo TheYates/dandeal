@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { siteSettings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -50,12 +50,8 @@ function formatSettingsResponse(dbSettings: any) {
 // GET - Fetch site settings
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -112,12 +108,8 @@ export async function GET(request: NextRequest) {
 // PATCH - Update site settings
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -151,7 +143,7 @@ export async function PATCH(request: NextRequest) {
         .set({
           ...dbUpdates,
           updatedAt: new Date(),
-          updatedBy: user.email,
+          updatedBy: session.user.email,
         })
         .where(eq(siteSettings.id, existing.id))
         .returning();
@@ -161,7 +153,7 @@ export async function PATCH(request: NextRequest) {
         .insert(siteSettings)
         .values({
           ...dbUpdates,
-          updatedBy: user.email,
+          updatedBy: session.user.email,
         })
         .returning();
     }
