@@ -30,6 +30,7 @@ import {
   FileText,
   CheckCheck,
   AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import { QuoteDetailDialog } from "@/components/admin/dialogs/quote-detail-dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -230,6 +231,11 @@ export function QuotesTable() {
     }
   };
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+    toast.success('Data refreshed');
+  };
+
   return (
     <>
       <Card>
@@ -282,6 +288,15 @@ export function QuotesTable() {
               <option value="declined">Declined</option>
               <option value="completed">Completed</option>
             </select>
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              size="sm"
+              className="gap-2 bg-transparent"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
             <Button
               onClick={exportData}
               variant="outline"

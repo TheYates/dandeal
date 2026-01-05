@@ -31,6 +31,7 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import { ConsultationDetailDialog } from "@/components/admin/dialogs/consultation-detail-dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -221,6 +222,11 @@ export function ConsultationsTable() {
     }
   };
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+    toast.success('Data refreshed');
+  };
+
   return (
     <>
       <Card>
@@ -273,6 +279,15 @@ export function ConsultationsTable() {
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
             </select>
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              size="sm"
+              className="gap-2 bg-transparent"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
             <Button
               onClick={exportData}
               variant="outline"

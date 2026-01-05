@@ -29,6 +29,7 @@ import {
   CheckCircle,
   MessageSquare,
   AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import { ContactDetailDialog } from "@/components/admin/dialogs/contact-detail-dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -194,6 +195,11 @@ export function ContactsTable() {
     }
   };
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+    toast.success('Data refreshed');
+  };
+
   return (
     <>
       <Card>
@@ -233,6 +239,15 @@ export function ContactsTable() {
               <option value="responded">Responded</option>
               <option value="archived">Archived</option>
             </select>
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              size="sm"
+              className="gap-2 bg-transparent"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
           </div>
 
           {/* Table */}

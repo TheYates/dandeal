@@ -90,8 +90,8 @@ export const contactSubmissions = pgTable("contact_submissions", {
 
 export const adminUsers = pgTable("admin_users", {
   id: uuid("id").primaryKey().defaultRandom(),
-  supabaseUserId: text("supabase_user_id").notNull().unique(),
-  email: text("email").notNull(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(), // Hashed password for NextAuth
   name: text("name").notNull(),
   role: adminRoleEnum("role").notNull().default("viewer"),
   isActive: boolean("is_active").notNull().default(true),

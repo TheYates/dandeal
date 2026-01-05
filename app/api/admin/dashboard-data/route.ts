@@ -1,17 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import {
+  consultationSubmissions,
+  quoteSubmissions,
+  contactSubmissions,
+  dropdownOptions,
+  emailNotificationSettings,
+  emailLogs,
+  testimonials,
+  siteSettings,
+  partners,
+  adminUsers,
+} from "@/lib/db/schema";
+import { eq, desc } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    // Check authentication with NextAuth
+    const session = await auth();
 
-    // Check authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-
-    if (authError || !session) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -31,30 +40,27 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('submissions') || shouldInclude('quotes')) {
       dataKeys.push('quotes');
       dataPromises.push(
-        (async () => await supabase
-          .from('quote_submissions')
-          .select('*')
-          .order('created_at', { ascending: false }))()
+        db.query.quoteSubmissions.findMany({
+          orderBy: [desc(quoteSubmissions.createdAt)],
+        })
       );
     }
 
     if (shouldInclude('submissions') || shouldInclude('consultations')) {
       dataKeys.push('consultations');
       dataPromises.push(
-        (async () => await supabase
-          .from('consultation_submissions')
-          .select('*')
-          .order('created_at', { ascending: false }))()
+        db.query.consultationSubmissions.findMany({
+          orderBy: [desc(consultationSubmissions.createdAt)],
+        })
       );
     }
 
     if (shouldInclude('submissions') || shouldInclude('contacts')) {
       dataKeys.push('contacts');
       dataPromises.push(
-        (async () => await supabase
-          .from('contact_submissions')
-          .select('*')
-          .order('created_at', { ascending: false }))()
+        db.query.contactSubmissions.findMany({
+          orderBy: [desc(contactSubmissions.createdAt)],
+        })
       );
     }
 
@@ -62,29 +68,26 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('dropdowns')) {
       dataKeys.push('services');
       dataPromises.push(
-        (async () => await supabase
-          .from('dropdown_options')
-          .select('*')
-          .eq('type', 'services')
-          .order('created_at', { ascending: false }))()
+        db.query.dropdownOptions.findMany({
+          where: eq(dropdownOptions.type, 'services'),
+          orderBy: [desc(dropdownOptions.createdAt)],
+        })
       );
 
       dataKeys.push('shipping_methods');
       dataPromises.push(
-        (async () => await supabase
-          .from('dropdown_options')
-          .select('*')
-          .eq('type', 'shipping_methods')
-          .order('created_at', { ascending: false }))()
+        db.query.dropdownOptions.findMany({
+          where: eq(dropdownOptions.type, 'shipping_methods'),
+          orderBy: [desc(dropdownOptions.createdAt)],
+        })
       );
 
       dataKeys.push('cargo_types');
       dataPromises.push(
-        (async () => await supabase
-          .from('dropdown_options')
-          .select('*')
-          .eq('type', 'cargo_types')
-          .order('created_at', { ascending: false }))()
+        db.query.dropdownOptions.findMany({
+          where: eq(dropdownOptions.type, 'cargo_types'),
+          orderBy: [desc(dropdownOptions.createdAt)],
+        })
       );
     }
 
@@ -92,19 +95,17 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('email')) {
       dataKeys.push('email_settings');
       dataPromises.push(
-        (async () => await supabase
-          .from('email_notification_settings')
-          .select('*')
-          .order('created_at', { ascending: false }))()
+        db.query.emailNotificationSettings.findMany({
+          orderBy: [desc(emailNotificationSettings.createdAt)],
+        })
       );
 
       dataKeys.push('email_logs');
       dataPromises.push(
-        (async () => await supabase
-          .from('email_logs')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(50))()
+        db.query.emailLogs.findMany({
+          orderBy: [desc(emailLogs.createdAt)],
+          limit: 50,
+        })
       );
     }
 
@@ -112,10 +113,9 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('testimonials')) {
       dataKeys.push('testimonials');
       dataPromises.push(
-        (async () => await supabase
-          .from('testimonials')
-          .select('*')
-          .order('created_at', { ascending: false }))()
+        db.query.testimonials.findMany({
+          orderBy: [desc(testimonials.createdAt)],
+        })
       );
     }
 
@@ -123,17 +123,14 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('settings')) {
       dataKeys.push('site_settings');
       dataPromises.push(
-        (async () => await supabase
-          .from('site_settings')
-          .select('*'))()
+        db.query.siteSettings.findMany()
       );
 
       dataKeys.push('partners');
       dataPromises.push(
-        (async () => await supabase
-          .from('partners')
-          .select('*')
-          .order('created_at', { ascending: false }))()
+        db.query.partners.findMany({
+          orderBy: [desc(partners.createdAt)],
+        })
       );
     }
 
@@ -141,10 +138,9 @@ export async function GET(request: NextRequest) {
     if (shouldInclude('users')) {
       dataKeys.push('users');
       dataPromises.push(
-        (async () => await supabase
-          .from('users')
-          .select('*')
-          .order('created_at', { ascending: false }))()
+        db.query.adminUsers.findMany({
+          orderBy: [desc(adminUsers.createdAt)],
+        })
       );
     }
 
@@ -159,15 +155,7 @@ export async function GET(request: NextRequest) {
       const key = dataKeys[index];
       
       if (result.status === 'fulfilled') {
-        const { data, error } = result.value;
-        
-        if (error) {
-          console.error(`Error fetching ${key}:`, error);
-          errors[key] = error.message;
-          dashboardData[key] = [];
-        } else {
-          dashboardData[key] = data;
-        }
+        dashboardData[key] = result.value || [];
       } else {
         console.error(`Promise rejected for ${key}:`, result.reason);
         errors[key] = result.reason?.message || 'Unknown error';
@@ -178,13 +166,13 @@ export async function GET(request: NextRequest) {
     // Generate statistics
     const stats = {
       totalQuotes: dashboardData.quotes?.length || 0,
-      pendingQuotes: dashboardData.quotes?.filter((q: any) => q.status === 'pending')?.length || 0,
+      pendingQuotes: dashboardData.quotes?.filter((q: any) => q.status === 'new')?.length || 0,
       totalConsultations: dashboardData.consultations?.length || 0,
-      pendingConsultations: dashboardData.consultations?.filter((c: any) => c.status === 'pending')?.length || 0,
+      pendingConsultations: dashboardData.consultations?.filter((c: any) => c.status === 'new')?.length || 0,
       totalContacts: dashboardData.contacts?.length || 0,
-      unreadContacts: dashboardData.contacts?.filter((c: any) => !c.is_read)?.length || 0,
+      unreadContacts: dashboardData.contacts?.filter((c: any) => c.status === 'new')?.length || 0,
       totalTestimonials: dashboardData.testimonials?.length || 0,
-      publishedTestimonials: dashboardData.testimonials?.filter((t: any) => t.is_published)?.length || 0,
+      publishedTestimonials: dashboardData.testimonials?.filter((t: any) => t.isActive)?.length || 0,
       lastUpdated: new Date().toISOString(),
     };
 

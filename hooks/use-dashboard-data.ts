@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 
 interface DashboardData {
   quotes?: any[];
@@ -57,28 +56,14 @@ export function useDashboardData(options: UseDashboardDataOptions = {}) {
     gcTime = 10 * 60 * 1000,    // 10 minutes
   } = options;
 
-  const supabase = createClient();
-
   return useQuery<DashboardResponse>({
     queryKey: ['dashboard-data', ...include.sort()],
     queryFn: async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        throw new Error("Not authenticated");
-      }
-
       const params = new URLSearchParams({
         include: include.join(',')
       });
 
-      const response = await fetch(`/api/admin/dashboard-data?${params}`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
+      const response = await fetch(`/api/admin/dashboard-data?${params}`);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -191,7 +176,6 @@ export function useTestimonialsData() {
 // Prefetch helper for the new batch endpoint
 export function useDashboardDataPrefetch() {
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   const prefetchDashboardData = async (include: string[] = ['submissions', 'dropdowns']) => {
     const queryKey = ['dashboard-data', ...include.sort()];
@@ -201,12 +185,6 @@ export function useDashboardDataPrefetch() {
     if (existingData) return;
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) return;
-
       await queryClient.prefetchQuery({
         queryKey,
         queryFn: async () => {
@@ -214,11 +192,7 @@ export function useDashboardDataPrefetch() {
             include: include.join(',')
           });
 
-          const response = await fetch(`/api/admin/dashboard-data?${params}`, {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          });
+          const response = await fetch(`/api/admin/dashboard-data?${params}`);
 
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);

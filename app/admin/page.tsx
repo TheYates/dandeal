@@ -2,45 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useSession, signOut } from "next-auth/react";
 import { Dashboard } from "@/components/admin/dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function AdminPage() {
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
+  const { data: session, status } = useSession();
   const router = useRouter();
-  const supabase = createClient();
+  const loading = status === "loading";
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  async function checkAuth() {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        toast.error("Please sign in to access the admin dashboard");
-        router.push("/sign-in");
-        return;
-      }
-
-      setAuthenticated(true);
-    } catch (error) {
-      console.error("Auth error:", error);
+    if (status === "unauthenticated") {
+      toast.error("Please sign in to access the admin dashboard");
       router.push("/sign-in");
-    } finally {
-      setLoading(false);
     }
-  }
+  }, [status, router]);
 
   async function handleLogout() {
     try {
-      await supabase.auth.signOut();
+      await signOut({ redirect: false });
       toast.success("Logged out successfully");
       router.push("/sign-in");
     } catch (error) {
@@ -102,10 +83,6 @@ export default function AdminPage() {
         </div>
       </div>
     );
-  }
-
-  if (!authenticated) {
-    return null;
   }
 
   return (

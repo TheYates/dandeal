@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
   consultationSubmissions,
@@ -10,9 +10,9 @@ import {
 import { eq, desc } from "drizzle-orm";
 
 // Helper function to check if user is admin
-async function checkAdminRole(userId: string) {
+async function checkAdminRole(email: string) {
   const admin = await db.query.adminUsers.findFirst({
-    where: eq(adminUsers.supabaseUserId, userId),
+    where: eq(adminUsers.email, email),
   });
 
   if (!admin || !admin.isActive) {
@@ -24,20 +24,17 @@ async function checkAdminRole(userId: string) {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const session = await auth();
 
-    if (!user) {
+    if (!session?.user?.email) {
       console.error("No user found in session");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("User ID:", user.id);
-    const admin = await checkAdminRole(user.id);
+    console.log("User email:", session.user.email);
+    const admin = await checkAdminRole(session.user.email);
     if (!admin) {
-      console.error("User is not an admin:", user.id);
+      console.error("User is not an admin:", session.user.email);
       return NextResponse.json(
         { error: "Access denied" },
         { status: 403 }
@@ -106,16 +103,13 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const session = await auth();
 
-    if (!user) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const admin = await checkAdminRole(user.id);
+    const admin = await checkAdminRole(session.user.email);
     if (!admin) {
       return NextResponse.json(
         { error: "Access denied" },
@@ -183,16 +177,13 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const session = await auth();
 
-    if (!user) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const admin = await checkAdminRole(user.id);
+    const admin = await checkAdminRole(session.user.email);
     if (!admin) {
       return NextResponse.json(
         { error: "Access denied" },
@@ -218,16 +209,38 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    console.log(`[DELETE] Attempting to delete ${type} with id:`, id);
+
+    let deletedCount = 0;
     if (type === "consultation" || type === "consultations") {
-      await db
+      const result = await db
         .delete(consultationSubmissions)
-        .where(eq(consultationSubmissions.id, id));
+        .where(eq(consultationSubmissions.id, id))
+        .returning();
+      deletedCount = result.length;
     } else if (type === "quote" || type === "quotes") {
-      await db.delete(quoteSubmissions).where(eq(quoteSubmissions.id, id));
+      const result = await db
+        .delete(quoteSubmissions)
+        .where(eq(quoteSubmissions.id, id))
+        .returning();
+      deletedCount = result.length;
     } else if (type === "contact" || type === "contacts") {
-      await db.delete(contactSubmissions).where(eq(contactSubmissions.id, id));
+      const result = await db
+        .delete(contactSubmissions)
+        .where(eq(contactSubmissions.id, id))
+        .returning();
+      deletedCount = result.length;
     } else {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+    }
+
+    console.log(`[DELETE] Successfully deleted ${deletedCount} ${type} record(s)`);
+
+    if (deletedCount === 0) {
+      return NextResponse.json(
+        { error: "Record not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({ success: true, message: "Submission deleted" });

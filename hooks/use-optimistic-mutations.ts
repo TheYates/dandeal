@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
 // Generic optimistic update hook
@@ -85,29 +84,24 @@ function getDataTypeFromId(id: string): string {
 }
 
 // Optimistic status update hook
+// Optimistic status update hook
 export function useOptimisticStatusUpdate(dataType: 'quotes' | 'consultations' | 'contacts') {
-  const supabase = createClient();
-  
   const queryKey = ['dashboard-data', 'submissions'];
   
   return useOptimisticUpdate(
     queryKey,
-    async ({ id, status }: { id: string; status: string }) => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        throw new Error("Not authenticated");
+    async (data: Partial<any>) => {
+      const { id, status } = data;
+      
+      // Validate required properties
+      if (!id || !status) {
+        throw new Error("id and status are required");
       }
-
-      const tableName = `${dataType.slice(0, -1)}_submissions`; // quotes -> quote_submissions
       
       const response = await fetch(`/api/admin/submissions`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           id,
@@ -133,25 +127,19 @@ export function useOptimisticStatusUpdate(dataType: 'quotes' | 'consultations' |
 // Optimistic delete hook
 export function useOptimisticDelete(dataType: 'quotes' | 'consultations' | 'contacts') {
   const queryClient = useQueryClient();
-  const supabase = createClient();
   
-  const queryKey = ['dashboard-data', 'submissions'];
+  // Invalidate all dashboard-data queries, not just a specific key
+  const queryKeyPrefix = ['dashboard-data'];
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      console.log('[MUTATION] Starting delete for:', dataType, id);
 
-      if (!session) {
-        throw new Error("Not authenticated");
-      }
-
+      console.log('[MUTATION] Sending DELETE request to API...');
       const response = await fetch(`/api/admin/submissions`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           id,
@@ -159,45 +147,61 @@ export function useOptimisticDelete(dataType: 'quotes' | 'consultations' | 'cont
         }),
       });
 
+      console.log('[MUTATION] Response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('[MUTATION] Delete failed:', errorData);
         throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
+      const result = await response.json();
+      console.log('[MUTATION] Delete successful:', result);
       return { id };
     },
-    onMutate: async (deletedId: string) => {
+    onMutate: async (id: string) => {
+      console.log('[DELETE] Optimistically removing item:', id);
+      
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey });
+      await queryClient.cancelQueries({ queryKey: queryKeyPrefix });
 
       // Snapshot the previous value
-      const previousData = queryClient.getQueryData(queryKey);
+      const previousData = queryClient.getQueryData(queryKeyPrefix);
 
-      // Optimistically remove the item
-      queryClient.setQueryData(queryKey, (old: any) => {
+      // Optimistically remove the item from cache
+      queryClient.setQueryData(['dashboard-data', 'submissions'], (old: any) => {
         if (!old?.data) return old;
 
+        console.log('[DELETE] Removing from cache:', dataType, id);
         return {
           ...old,
           data: {
             ...old.data,
-            [dataType]: old.data[dataType]?.filter((item: any) => item.id !== deletedId) || []
+            [dataType]: old.data[dataType]?.filter((item: any) => item.id !== id) || []
           }
         };
       });
 
       return { previousData };
     },
-    onError: (err, deletedId, context) => {
-      // Rollback
-      queryClient.setQueryData(queryKey, context?.previousData);
-      toast.error('Failed to delete. Item restored.');
-    },
     onSuccess: () => {
+      console.log('[DELETE] Success - confirming deletion');
       toast.success('Deleted successfully');
     },
+    onError: (err, id, context) => {
+      console.error('[DELETE] Error - rolling back:', err);
+      
+      // Rollback to previous data
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKeyPrefix, context.previousData);
+      }
+      
+      toast.error('Failed to delete: ' + err.message);
+    },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
+      // Refetch to ensure we're in sync with the server
+      console.log('[DELETE] Refetching to sync with server');
+      queryClient.invalidateQueries({ queryKey: queryKeyPrefix });
     },
   });
 }
@@ -210,7 +214,14 @@ export function useOptimisticReadStatus(dataType: 'contacts' | 'consultations') 
   
   return useOptimisticUpdate(
     queryKey,
-    async ({ id, is_read }: { id: string; is_read: boolean }) => {
+    async (data: Partial<any>) => {
+      const { id, is_read } = data;
+      
+      // Validate required properties
+      if (!id || is_read === undefined) {
+        throw new Error("id and is_read are required");
+      }
+      
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -240,7 +251,7 @@ export function useOptimisticReadStatus(dataType: 'contacts' | 'consultations') 
       return response.json();
     },
     {
-      successMessage: is_read => `Marked as ${is_read ? 'read' : 'unread'}`,
+      successMessage: 'Read status updated successfully',
       errorMessage: 'Failed to update read status. Changes reverted.',
     }
   );
