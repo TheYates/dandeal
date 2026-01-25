@@ -24,16 +24,19 @@ import {
 } from "@/components/ui/dialog";
 import { Mail, Plus, Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { useEmailSettings, useEmailSettingsMutations, useEmailLogs } from "@/hooks/use-convex-admin";
+import { useSiteSettings, useSiteSettingsMutations } from "@/hooks/use-convex-site-settings";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface EmailSetting {
-  id: string;
+  _id: Id<"emailNotificationSettings">;
   formType: string;
   recipientEmails: string[];
   enabled: boolean;
-  subjectTemplate: string;
+  subjectTemplate?: string;
   includeFormData: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 interface GlobalEmailSettings {
@@ -43,17 +46,25 @@ interface GlobalEmailSettings {
 }
 
 interface EmailLog {
-  id: string;
+  _id: Id<"emailLogs">;
   formType: string;
   recipientEmail: string;
   subject: string;
-  status: "sent" | "failed" | "pending";
-  errorMessage: string | null;
-  sentAt: string | null;
-  createdAt: string;
+  status: string;
+  errorMessage?: string;
+  sentAt?: number;
+  createdAt: number;
 }
 
 export function EmailManagement() {
+  // Convex hooks
+  const { settings: convexEmailSettings, isLoading: emailSettingsLoading } = useEmailSettings();
+  const { upsert: upsertEmailSetting } = useEmailSettingsMutations();
+  const { settings: convexSiteSettings, isLoading: siteSettingsLoading } = useSiteSettings();
+  const { update: updateSiteSettings } = useSiteSettingsMutations();
+  const { logs: convexLogs, isLoading: logsLoading } = useEmailLogs(100);
+
+  // Local state for form handling
   const [settings, setSettings] = useState<EmailSetting[]>([]);
   const [globalSettings, setGlobalSettings] = useState<GlobalEmailSettings>({
     enabled: false,
@@ -65,9 +76,6 @@ export function EmailManagement() {
     globalEmail: "",
     overrideIndividualSettings: false,
   });
-  const [logs, setLogs] = useState<EmailLog[]>([]);
-  const [allLogs, setAllLogs] = useState<EmailLog[]>([]);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showLogsDialog, setShowLogsDialog] = useState(false);
@@ -75,84 +83,56 @@ export function EmailManagement() {
   const [totalPages, setTotalPages] = useState(1);
   const [logsPerPage] = useState(20);
 
+  const loading = emailSettingsLoading || siteSettingsLoading;
+  const logs = convexLogs.slice(0, 10);
+  const allLogs = convexLogs;
+
+  // Sync Convex email settings to local state
   useEffect(() => {
-    fetchSettings();
-    fetchGlobalSettings();
-    fetchLogs();
-  }, []);
-
-  const fetchSettings = async () => {
-    try {
-      const response = await fetch("/api/admin/email-settings");
-
-      if (response.ok) {
-        const data = await response.json();
-        setSettings(data);
-      } else {
-        toast.error("Failed to fetch email settings");
-      }
-    } catch (error) {
-      console.error("Error fetching settings:", error);
-      toast.error("Failed to fetch email settings");
-    } finally {
-      setLoading(false);
+    if (convexEmailSettings && convexEmailSettings.length > 0) {
+      const formattedSettings = convexEmailSettings.map((s: any) => ({
+        ...s,
+        recipientEmails: JSON.parse(s.recipientEmails || "[]"),
+        subjectTemplate: s.subjectTemplate || "",
+      }));
+      setSettings(formattedSettings);
     }
-  };
+  }, [convexEmailSettings]);
 
-  const fetchGlobalSettings = async () => {
-    try {
-      const response = await fetch("/api/admin/email-settings/global");
-
-      if (response.ok) {
-        const data = await response.json();
-        setGlobalSettings(data);
-        setOriginalGlobalSettings(data);
-      }
-    } catch (error) {
-      console.error("Error fetching global settings:", error);
+  // Sync Convex site settings for global email settings
+  useEffect(() => {
+    if (convexSiteSettings) {
+      const globalFromSite = {
+        enabled: convexSiteSettings.globalEmailEnabled || false,
+        globalEmail: convexSiteSettings.globalEmail || "",
+        overrideIndividualSettings: convexSiteSettings.overrideIndividualEmailSettings || false,
+      };
+      setGlobalSettings(globalFromSite);
+      setOriginalGlobalSettings(globalFromSite);
     }
-  };
+  }, [convexSiteSettings]);
 
-  const fetchLogs = async (limit = 10) => {
-    try {
-      const response = await fetch(`/api/admin/email-logs?limit=${limit}`);
-
-      if (response.ok) {
-        const data = await response.json();
-        setLogs(data);
-      }
-    } catch (error) {
-      console.error("Error fetching logs:", error);
+  // Calculate total pages for logs
+  useEffect(() => {
+    if (convexLogs) {
+      setTotalPages(Math.ceil(convexLogs.length / logsPerPage));
     }
-  };
-
-  const fetchAllLogs = async (page = 1) => {
-    try {
-      const offset = (page - 1) * logsPerPage;
-      const response = await fetch(`/api/admin/email-logs?limit=${logsPerPage}&offset=${offset}`);
-
-      if (response.ok) {
-        const data = await response.json();
-        setAllLogs(data.logs || data);
-        if (data.total) {
-          setTotalPages(Math.ceil(data.total / logsPerPage));
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching all logs:", error);
-    }
-  };
+  }, [convexLogs, logsPerPage]);
 
   const handleShowMoreLogs = () => {
     setCurrentPage(1);
-    fetchAllLogs(1);
     setShowLogsDialog(true);
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchAllLogs(page);
   };
+
+  // Get paginated logs for dialog
+  const paginatedLogs = allLogs.slice(
+    (currentPage - 1) * logsPerPage,
+    currentPage * logsPerPage
+  );
 
   const handleAddEmail = (formType: string) => {
     const setting = settings.find((s) => s.formType === formType);
@@ -189,28 +169,18 @@ export function EmailManagement() {
   ) => {
     setSaving(true);
     try {
-      const response = await fetch("/api/admin/email-settings", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          formType,
-          recipientEmails: updatedSetting.recipientEmails,
-          enabled: updatedSetting.enabled,
-          subjectTemplate: updatedSetting.subjectTemplate,
-          includeFormData: updatedSetting.includeFormData,
-        }),
+      await upsertEmailSetting({
+        formType,
+        recipientEmails: JSON.stringify(updatedSetting.recipientEmails),
+        enabled: updatedSetting.enabled,
+        subjectTemplate: updatedSetting.subjectTemplate || undefined,
+        includeFormData: updatedSetting.includeFormData,
       });
 
-      if (response.ok) {
-        setSettings((prev) =>
-          prev.map((s) => (s.formType === formType ? updatedSetting : s))
-        );
-        toast.success("Email settings updated");
-      } else {
-        toast.error("Failed to update settings");
-      }
+      setSettings((prev) =>
+        prev.map((s) => (s.formType === formType ? updatedSetting : s))
+      );
+      toast.success("Email settings updated");
     } catch (error) {
       console.error("Error updating settings:", error);
       toast.error("Error updating settings");
@@ -235,21 +205,15 @@ export function EmailManagement() {
   const saveGlobalSettings = async () => {
     setSaving(true);
     try {
-      const response = await fetch("/api/admin/email-settings/global", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(globalSettings),
+      await updateSiteSettings({
+        globalEmailEnabled: globalSettings.enabled,
+        globalEmail: globalSettings.globalEmail || undefined,
+        overrideIndividualEmailSettings: globalSettings.overrideIndividualSettings,
       });
 
-      if (response.ok) {
-        setOriginalGlobalSettings(globalSettings);
-        setHasUnsavedChanges(false);
-        toast.success("Global email settings saved successfully");
-      } else {
-        toast.error("Failed to save global settings");
-      }
+      setOriginalGlobalSettings(globalSettings);
+      setHasUnsavedChanges(false);
+      toast.success("Global email settings saved successfully");
     } catch (error) {
       console.error("Error updating global settings:", error);
       toast.error("Error updating global settings");
@@ -497,7 +461,7 @@ export function EmailManagement() {
                 <CardDescription>Recent email sending history</CardDescription>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={() => fetchLogs()}>
+            <Button variant="outline" size="sm" onClick={() => toast.success("Logs refreshed")}>
               <RefreshCw className="w-4 h-4" />
             </Button>
           </div>
@@ -539,7 +503,7 @@ export function EmailManagement() {
                   </tr>
                 ) : (
                   logs.slice(0, 10).map((log) => (
-                    <tr key={log.id} className="border-b hover:bg-accent">
+                    <tr key={log._id} className="border-b hover:bg-accent">
                       <td className="py-2 px-2 capitalize">{log.formType}</td>
                       <td className="py-2 px-2">{log.recipientEmail}</td>
                       <td className="py-2 px-2">
@@ -627,7 +591,7 @@ export function EmailManagement() {
                     </tr>
                   ) : (
                     allLogs.map((log) => (
-                      <tr key={log.id} className="border-b hover:bg-muted/20">
+                      <tr key={log._id} className="border-b hover:bg-muted/20">
                         <td className="py-2 px-3 capitalize font-medium text-xs">{log.formType}</td>
                         <td className="py-2 px-3 text-muted-foreground text-xs">{log.recipientEmail}</td>
                         <td className="py-2 px-3">

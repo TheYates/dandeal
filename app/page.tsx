@@ -34,7 +34,7 @@ import EmbeddedConsultationForm from "@/components/forms/EmbeddedConsultationFor
 import QuoteForm from "@/components/forms/QuoteForm";
 import EmbeddedQuoteForm from "@/components/forms/EmbeddedQuoteForm";
 import { TestimonialsDisplay } from "@/components/testimonials-display";
-import { useSiteSettings } from "@/hooks/use-site-settings";
+import { useSiteSettings } from "@/hooks/use-convex-site-settings";
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -96,7 +96,7 @@ export default function Home() {
   }, [heroImages.length]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
 
       {/* Hero Section */}
@@ -105,9 +105,8 @@ export default function Home() {
         {heroImages.map((image, index) => (
           <div
             key={index}
-            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-2000 ${
-              currentSlide === index ? "animate-zoom-in" : ""
-            }`}
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-2000 ${currentSlide === index ? "animate-zoom-in" : ""
+              }`}
             style={{
               backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('${image}')`,
               opacity: currentSlide === index ? 1 : 0,
@@ -118,7 +117,7 @@ export default function Home() {
 
         {/* Content Overlay */}
         <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 w-full">
             {/* Left Content */}
             <div className="flex flex-col justify-center text-white">
               <motion.h1
@@ -173,7 +172,7 @@ export default function Home() {
             </div>
 
             {/* Right Form - Embedded Consultation Form */}
-            <div className="flex items-center justify-center mt-8 lg:mt-0">
+            <div className="flex items-center justify-center mt-8 md:mt-0">
               <EmbeddedConsultationForm />
             </div>
           </div>
@@ -241,20 +240,20 @@ export default function Home() {
       */}
 
       {/* Trusted Shipping Agents Section */}
-      <section className="relative overflow-hidden min-h-screen flex items-center">
+      <section className="relative overflow-visible min-h-0 flex items-center pb-32">
         <div className="max-w-[1600px] mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen lg:min-h-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:min-h-auto">
             {/* Left Content */}
             <div className="bg-white flex flex-col justify-center px-6 sm:px-8 lg:px-12 py-16 lg:py-20">
               <div className="max-w-lg">
-                <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-6 leading-tight">
-                  <span className="text-orange-600">Your Trusted Shipping</span>
+                <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-6 leading-tight text-center md:text-left">
+                  <span className="text-orange-600 ">
+                    Your Trusted Shipping Agents
+                  </span>
                   <br />
-                  <span className="text-gray-900">Agents</span>
-                  <span className="text-orange-600"> from Dubai</span>
+                  <span className="text-orange-600">from </span>
                   <span className="text-gray-900">
-                    {" "}
-                    - China To Ghana & Africa
+                    Dubai - China To Ghana & Africa
                   </span>
                 </h2>
 
@@ -286,7 +285,7 @@ export default function Home() {
                 <img
                   src="/trusted shipping.png"
                   alt="Global Shipping Services"
-                  className="w-auto h-full object-contain max-w-full"
+                  className="block mx-auto w-auto md:w-auto h-auto md:h-full object-contain max-w-full z-20 relative scale-150 translate-x-18 md:translate-x-24 lg:translate-x-0 md:scale-180 lg:scale-140 md:translate-y-28 lg:translate-y-28"
                 />
               </div>
             </div>
@@ -839,7 +838,7 @@ export default function Home() {
 
           {/* Social Media Icons */}
           <div className="flex justify-center gap-4">
-            {settings.facebookUrl && settings.displayFacebook && (
+            {settings?.facebookUrl && settings?.displayFacebook && (
               <a
                 href={settings.facebookUrl}
                 target="_blank"
@@ -849,7 +848,7 @@ export default function Home() {
                 <Facebook className="text-blue-500 text-xl" />
               </a>
             )}
-            {settings.instagramUrl && settings.displayInstagram && (
+            {settings?.instagramUrl && settings?.displayInstagram && (
               <a
                 href={settings.instagramUrl}
                 target="_blank"
@@ -859,7 +858,7 @@ export default function Home() {
                 <Instagram className="text-pink-500 text-xl" />
               </a>
             )}
-            {settings.linkedinUrl && settings.displayLinkedin && (
+            {settings?.linkedinUrl && settings?.displayLinkedin && (
               <a
                 href={settings.linkedinUrl}
                 target="_blank"
@@ -869,7 +868,7 @@ export default function Home() {
                 <Linkedin className="text-blue-500 text-xl" />
               </a>
             )}
-            {settings.twitterUrl && settings.displayTwitter && (
+            {settings?.twitterUrl && settings?.displayTwitter && (
               <a
                 href={settings.twitterUrl}
                 target="_blank"
@@ -879,7 +878,7 @@ export default function Home() {
                 <Twitter className="text-sky-500 text-xl" />
               </a>
             )}
-            {settings.tiktokUrl && settings.displayTiktok && (
+            {settings?.tiktokUrl && settings?.displayTiktok && (
               <a
                 href={settings.tiktokUrl}
                 target="_blank"
@@ -973,8 +972,8 @@ export default function Home() {
           }}
         ></div>
 
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+<div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <div>
               <motion.p

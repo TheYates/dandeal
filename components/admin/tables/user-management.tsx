@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAdminUsers, useAdminUserMutations } from "@/hooks/use-convex-admin";
+import { useInvitations, useInvitationMutations } from "@/hooks/use-invitations";
+import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserPlus, Trash2, Loader2, AlertTriangle } from "lucide-react";
+import { UserPlus, Trash2, Loader2, AlertTriangle, Mail, RefreshCw, XCircle, Clock } from "lucide-react";
 import { UserManagementSkeleton } from "@/components/admin/management/table-skeleton";
 import {
   Dialog,
@@ -35,7 +39,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, CheckCircle } from "lucide-react";
 
 interface User {
-  id: string;
+  _id: Id<"adminUsers">;
   name: string;
   email: string;
   role: "Super Admin" | "Admin" | "Viewer";
@@ -43,36 +47,27 @@ interface User {
   joined: string;
 }
 
-// API function to fetch users
-const fetchUsers = async (): Promise<User[]> => {
-  const response = await fetch("/api/admin/users");
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch users");
-  }
-
-  const data = await response.json();
-  return (data.users || []).map((user: any) => ({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role:
-      user.role === "super_admin"
-        ? "Super Admin"
-        : user.role === "admin"
-        ? "Admin"
-        : "Viewer",
-    status: user.isActive ? "Active" : "Inactive",
-    joined: new Date(user.createdAt).toLocaleString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    }),
-  }));
-};
+// Map Convex user to display format
+const mapConvexUser = (user: any): User => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  role:
+    user.role === "super_admin"
+      ? "Super Admin"
+      : user.role === "admin"
+      ? "Admin"
+      : "Viewer",
+  status: user.isActive ? "Active" : "Inactive",
+  joined: new Date(user.createdAt).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }),
+});
 
 const ROLE_PERMISSIONS = {
   // "Super Admin": {
@@ -91,16 +86,22 @@ const ROLE_PERMISSIONS = {
 };
 
 export function UserManagement() {
-  const queryClient = useQueryClient();
+  // Session for getting current user info
+  const { data: session } = useSession();
+  
+  // Convex hooks
+  const { users: convexUsers, isLoading, error } = useAdminUsers();
+  const { create: createUser, update: updateUser, delete: deleteUser } = useAdminUserMutations();
+  
+  // Invitation hooks
+  const { invitations, stats: invitationStats } = useInvitations();
+  const { create: createInvitation, revoke: revokeInvitation, resend: resendInvitation, delete: deleteInvitationRecord } = useInvitationMutations();
 
-  const { data: users, isLoading, error } = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000,   // 10 minutes
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  });
+  // Map Convex users to display format
+  const users = convexUsers?.map(mapConvexUser) || [];
+  
+  // Filter pending invitations
+  const pendingInvitations = invitations.filter(inv => inv.status === "pending");
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newUser, setNewUser] = useState({
@@ -163,65 +164,48 @@ export function UserManagement() {
   const [isCreating, setIsCreating] = useState(false);
 
   const addUser = async () => {
-    if (!newUser.name.trim() || !newUser.email.trim()) {
+    if (!newUser.email.trim()) {
       setMessageDialog({
         isOpen: true,
         type: "error",
         title: "Missing Fields",
-        message: "Please fill in all required fields (Name and Email)",
+        message: "Please enter an email address",
       });
       return;
     }
 
     try {
       setIsCreating(true);
-      // Send confirmation email if checkbox is checked
-      if (newUser.sendEmail) {
-        console.log("Sending invite email for:", newUser.email);
-        const response = await fetch("/api/send-invite-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: newUser.name,
-            email: newUser.email,
-            role: newUser.role,
-          }),
+      
+      // Map role to Convex format
+      const roleMap: Record<string, "super_admin" | "admin" | "viewer"> = {
+        "Super Admin": "super_admin",
+        "Admin": "admin",
+        "Viewer": "viewer",
+      };
+      
+      // Create invitation using Convex
+      const result = await createInvitation({
+        email: newUser.email.trim(),
+        role: roleMap[newUser.role],
+        invitedBy: session?.user?.id || "unknown",
+        invitedByName: session?.user?.name || "Admin",
+      });
+
+      if (!result.emailSent) {
+        // Invitation created but email failed
+        setMessageDialog({
+          isOpen: true,
+          type: "error",
+          title: "Invitation Created, But Email Failed",
+          message: `The invitation was created but the email could not be sent: ${result.emailError || "Unknown error"}. You can try resending the email from the pending invitations list.`,
         });
-
-        const data = await response.json();
-        console.log("API Response:", data);
-
-        if (!response.ok) {
-          const errorMessage = data.error || data.message || "Unknown error";
-          console.error("API Error:", errorMessage);
-          setMessageDialog({
-            isOpen: true,
-            type: "error",
-            title: "Failed to Create User",
-            message: errorMessage,
-          });
-          return;
-        }
+        setNewUser({ name: "", email: "", role: "Viewer", sendEmail: true });
+        setIsDialogOpen(false);
+        return;
       }
 
-      // Only add to local state after successful API call
-      const user: User = {
-        id: `user_${Date.now()}`,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        status: "Active",
-        joined: new Date().toLocaleString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        }),
-      };
-      // Invalidate and refetch users query
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      // Success!
       setNewUser({ name: "", email: "", role: "Viewer", sendEmail: true });
       setIsDialogOpen(false);
       setMessageDialog({
@@ -257,20 +241,8 @@ export function UserManagement() {
 
     try {
       setIsDeleting(true);
-      const response = await fetch(
-        `/api/admin/users?id=${deleteConfirmDialog.userId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      await deleteUser(deleteConfirmDialog.userId as Id<"adminUsers">);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to delete user");
-      }
-
-      // Invalidate and refetch users query
-      queryClient.invalidateQueries({ queryKey: ['users'] });
       setDeleteConfirmDialog({ isOpen: false, userId: null, userName: "" });
       setMessageDialog({
         isOpen: true,
@@ -307,30 +279,16 @@ export function UserManagement() {
 
     try {
       setIsUpdating(true);
-      const roleMap = {
+      const roleMap: Record<string, "super_admin" | "admin" | "viewer"> = {
         "Super Admin": "super_admin",
         Admin: "admin",
         Viewer: "viewer",
       };
 
-      const response = await fetch("/api/admin/users", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: roleConfirmDialog.userId,
-          updates: {
-            role: roleMap[roleConfirmDialog.newRole],
-          },
-        }),
+      await updateUser(roleConfirmDialog.userId as Id<"adminUsers">, {
+        role: roleMap[roleConfirmDialog.newRole],
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update role");
-      }
-
-      // Invalidate and refetch users query
-      queryClient.invalidateQueries({ queryKey: ['users'] });
       setRoleConfirmDialog({ isOpen: false, userId: null, newRole: null });
       setEditingRole(null);
       setMessageDialog({
@@ -371,24 +329,10 @@ export function UserManagement() {
 
     try {
       setIsUpdating(true);
-      const response = await fetch("/api/admin/users", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: statusConfirmDialog.userId,
-          updates: {
-            isActive: statusConfirmDialog.newStatus === "Active",
-          },
-        }),
+      await updateUser(statusConfirmDialog.userId as Id<"adminUsers">, {
+        isActive: statusConfirmDialog.newStatus === "Active",
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update status");
-      }
-
-      // Invalidate and refetch users query
-      queryClient.invalidateQueries({ queryKey: ['users'] });
       setStatusConfirmDialog({
         isOpen: false,
         userId: null,
@@ -424,6 +368,141 @@ export function UserManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Pending Invitations Section */}
+      {pendingInvitations.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-yellow-600" />
+              Pending Invitations ({pendingInvitations.length})
+            </CardTitle>
+            <CardDescription>
+              Users who have been invited but haven't accepted yet
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-white">
+                      Email
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-white">
+                      Role
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-white">
+                      Invited By
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-white">
+                      Sent
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-white">
+                      Expires
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-900 dark:text-white">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingInvitations.map((invitation) => {
+                    const isExpired = invitation.expiresAt < Date.now();
+                    const formatRole = (role: string) => {
+                      return role === "super_admin" ? "Super Admin" : 
+                             role === "admin" ? "Admin" : "Viewer";
+                    };
+                    const formatDate = (timestamp: number) => {
+                      return new Date(timestamp).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                    };
+
+                    return (
+                      <tr
+                        key={invitation._id}
+                        className="border-b border-slate-100 hover:bg-slate-50 dark:hover:bg-accent"
+                      >
+                        <td className="py-3 px-4 text-slate-900 dark:text-white">
+                          {invitation.email}
+                        </td>
+                        <td className="py-3 px-4">
+                          <Badge variant="outline">
+                            {formatRole(invitation.role)}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4 text-slate-600 dark:text-white">
+                          {invitation.invitedByName}
+                        </td>
+                        <td className="py-3 px-4 text-slate-600 dark:text-white">
+                          {formatDate(invitation.createdAt)}
+                        </td>
+                        <td className="py-3 px-4">
+                          {isExpired ? (
+                            <Badge variant="secondary" className="bg-red-100 text-red-800">
+                              Expired
+                            </Badge>
+                          ) : (
+                            <span className="text-slate-600 dark:text-white">
+                              {formatDate(invitation.expiresAt)}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={async () => {
+                                try {
+                                  await resendInvitation(
+                                    invitation._id,
+                                    invitation.email,
+                                    invitation.role,
+                                    invitation.invitedByName
+                                  );
+                                  toast.success("Invitation resent successfully");
+                                } catch (error) {
+                                  toast.error("Failed to resend invitation");
+                                }
+                              }}
+                              className="gap-1"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                              Resend
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={async () => {
+                                try {
+                                  await revokeInvitation(invitation._id);
+                                  toast.success("Invitation revoked");
+                                } catch (error) {
+                                  toast.error("Failed to revoke invitation");
+                                }
+                              }}
+                              className="text-red-600 hover:text-red-900 gap-1"
+                            >
+                              <XCircle className="w-3 h-3" />
+                              Revoke
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Admin Users Section */}
       <Card>
         <CardHeader className="flex flex-row items-start justify-between">
@@ -585,7 +664,7 @@ export function UserManagement() {
                     .filter((user) => user.role !== "Super Admin")
                     .map((user) => (
                       <tr
-                        key={user.id}
+                        key={user._id}
                         className="border-b border-slate-100 hover:bg-slate-50 dark:hover:bg-accent"
                       >
                         <td className="py-3 px-4 text-slate-900 dark:text-white">
@@ -595,7 +674,7 @@ export function UserManagement() {
                           {user.email}
                         </td>
                         <td className="py-3 px-4">
-                          {editingRole === user.id ? (
+                          {editingRole === user._id ? (
                             <Select
                               value={selectedRole}
                               onValueChange={(value: any) =>
@@ -615,7 +694,7 @@ export function UserManagement() {
                               variant="outline"
                               className="cursor-pointer"
                               onClick={() => {
-                                setEditingRole(user.id);
+                                setEditingRole(user._id);
                                 setSelectedRole(user.role);
                               }}
                             >
@@ -637,12 +716,12 @@ export function UserManagement() {
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex gap-2">
-                            {editingRole === user.id ? (
+                            {editingRole === user._id ? (
                               <>
                                 <Button
                                   size="sm"
                                   onClick={() =>
-                                    openRoleConfirm(user.id, selectedRole)
+                                    openRoleConfirm(user._id, selectedRole)
                                   }
                                   className="bg-green-500 hover:bg-green-600"
                                   disabled={isUpdating}
@@ -669,7 +748,7 @@ export function UserManagement() {
                                   variant="outline"
                                   onClick={() =>
                                     openStatusConfirm(
-                                      user.id,
+                                      user._id,
                                       user.name,
                                       user.status
                                     )
@@ -684,7 +763,7 @@ export function UserManagement() {
                                   size="sm"
                                   variant="ghost"
                                   onClick={() =>
-                                    openDeleteConfirm(user.id, user.name)
+                                    openDeleteConfirm(user._id, user.name)
                                   }
                                   className="text-red-600 hover:text-red-900"
                                   disabled={isDeleting}

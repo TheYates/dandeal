@@ -10,24 +10,22 @@ import { PartnersGalleryView } from "@/components/admin/management/partners-gall
 import { SettingsManagement } from "@/components/admin/management/settings-management";
 import { TestimonialsManagement } from "@/components/admin/management/testimonials-management";
 import { EmailManagement } from "@/components/admin/management/email-management";
+import { InvitationManagement } from "@/components/admin/management/invitation-management";
 import { ModeToggle } from "@/components/ui/modetoggle";
-import { LogOut, Settings, Users, Mail } from "lucide-react";
+import { LogOut, Settings, Users, Mail, UserPlus } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useAdminPreloader } from "@/hooks/use-admin-preloader";
+import { useSession } from "next-auth/react";
 
 interface DashboardProps {
   onLogout: () => void;
 }
 
 export function Dashboard({ onLogout }: DashboardProps) {
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<string>("quotes");
-  
-  // Initialize preloader for critical data fetching
-  const { prefetchForTab } = useAdminPreloader({
-    enabled: true,
-    criticalDelay: 0,     // Load critical data immediately
-    secondaryDelay: 1000  // Load secondary data after 1s
-  });
+
+  const userRole = session?.user?.role as "super_admin" | "admin" | "viewer" | undefined;
+  const canManageInvitations = userRole === "super_admin" || userRole === "admin";
 
   // Load saved tab from localStorage on mount
   useEffect(() => {
@@ -37,13 +35,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
     }
   }, []);
 
-  // Save tab to localStorage and trigger predictive preloading
+  // Save tab to localStorage (Convex handles data fetching automatically)
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     localStorage.setItem("dashboard-active-tab", value);
-    
-    // Predictively preload likely next tabs
-    prefetchForTab(value);
   };
   return (
     <div className="min-h-screen ">
@@ -82,7 +77,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
         >
           {/* Tabs wrapper with horizontal scroll on mobile */}
           <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-            <TabsList className="inline-flex lg:grid w-full lg:max-w-7xl lg:grid-cols-8 h-auto p-1 min-w-max lg:min-w-0">
+            <TabsList className="inline-flex lg:grid w-full lg:max-w-7xl lg:grid-cols-9 h-auto p-1 min-w-max lg:min-w-0">
               <TabsTrigger value="quotes" className="whitespace-nowrap">
                 <span className="hidden sm:inline">Quote Requests</span>
                 <span className="sm:hidden">Quotes</span>
@@ -111,6 +106,15 @@ export function Dashboard({ onLogout }: DashboardProps) {
                 <Users className="w-4 h-4" />
                 Users
               </TabsTrigger>
+              {canManageInvitations && (
+                <TabsTrigger
+                  value="invitations"
+                  className="gap-1 sm:gap-2 whitespace-nowrap"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span className="hidden sm:inline">Invitations</span>
+                </TabsTrigger>
+              )}
               <TabsTrigger
                 value="email"
                 className="gap-1 sm:gap-2 whitespace-nowrap"
@@ -155,6 +159,12 @@ export function Dashboard({ onLogout }: DashboardProps) {
           <TabsContent value="users" className="mt-6">
             <UserManagement />
           </TabsContent>
+
+          {canManageInvitations && (
+            <TabsContent value="invitations" className="mt-6">
+              <InvitationManagement />
+            </TabsContent>
+          )}
 
           <TabsContent value="email" className="mt-6">
             <EmailManagement />

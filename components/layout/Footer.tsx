@@ -1,16 +1,16 @@
 "use client";
 
-import { useSiteSettings } from "@/hooks/use-site-settings";
+import { useSiteSettings } from "@/hooks/use-convex-site-settings";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { FaTiktok } from "react-icons/fa";
 
 export default function Footer() {
-  const { settings, loading } = useSiteSettings();
+  const { settings, isLoading: loading } = useSiteSettings();
 
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           {/* Logo and Description */}
           <div>
             <div className="mb-2">
@@ -104,7 +104,7 @@ export default function Footer() {
             <h3 className="text-base font-bold text-orange-600 mb-3">
               Contact Us
             </h3>
-            {!loading ? (
+            {!loading && settings ? (
               <div className="space-y-2 text-sm">
                 <div>
                   <p className="font-semibold text-gray-900">Call Us:</p>
@@ -192,7 +192,7 @@ export default function Footer() {
             <h3 className="text-base font-bold text-orange-600 mb-3">
               Locate Us
             </h3>
-            {!loading ? (
+            {!loading && settings ? (
               <div className="space-y-2 text-sm">
                 <div>
                   <p className="font-semibold text-gray-900">Kumasi - Ghana:</p>

@@ -1,43 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-
-interface Testimonial {
-  id: string;
-  clientName: string;
-  clientTitle?: string;
-  clientCompany?: string;
-  content: string;
-  rating: string;
-  image?: string;
-  order: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { useTestimonials } from "@/hooks/use-convex-testimonials";
 
 export function TestimonialsDisplay() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchTestimonials = async () => {
-      try {
-        const response = await fetch("/api/testimonials");
-        if (!response.ok) throw new Error("Failed to fetch testimonials");
-        const data = await response.json();
-        setTestimonials(data.testimonials || []);
-      } catch (error) {
-        console.error("Error fetching testimonials:", error);
-        setTestimonials([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTestimonials();
-  }, []);
+  const { testimonials, isLoading: loading } = useTestimonials(true);
 
   if (loading) {
     return (
@@ -71,7 +38,7 @@ export function TestimonialsDisplay() {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {testimonials.map((testimonial, index) => (
         <motion.div
-          key={testimonial.id}
+          key={testimonial._id}
           className={`${getBackgroundColor(index)} rounded-2xl p-8 text-white flex flex-col h-full`}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -91,7 +58,7 @@ export function TestimonialsDisplay() {
             )}
           </div>
           <div className="flex gap-1">
-            {Array.from({ length: parseInt(testimonial.rating) }).map((_, i) => (
+            {Array.from({ length: parseInt(testimonial.rating || "5") }).map((_, i) => (
               <span key={i} className="text-yellow-300">
                 ⭐
               </span>

@@ -14,11 +14,12 @@ import {
 import { ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useDropdownOptions } from "@/hooks/use-dropdown-options";
+import { useDropdownsData } from "@/hooks/use-convex-dashboard";
+import { useConsultationSubmit } from "@/hooks/use-convex-submissions";
 
 export default function EmbeddedConsultationForm() {
-  const { options: services, loading: servicesLoading } =
-    useDropdownOptions("services");
+  const { services, isLoading: servicesLoading } = useDropdownsData();
+  const { submit: submitConsultation } = useConsultationSubmit();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -58,36 +59,27 @@ export default function EmbeddedConsultationForm() {
     setIsLoading(true);
 
     try {
-      console.log("Sending request to /api/consultation");
-      const response = await fetch("/api/consultation", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      await submitConsultation({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        service: formData.service,
+        message: formData.message || undefined,
       });
 
-      console.log("Response status:", response.status);
-      const data = await response.json();
-      console.log("Response data:", data);
+      // Show success message
+      toast.success(
+        "Thank you! Your consultation request has been submitted successfully. We'll contact you soon."
+      );
 
-      if (response.ok) {
-        // Show success message
-        toast.success(
-          "Thank you! Your consultation request has been submitted successfully. We'll contact you soon."
-        );
-
-        // Reset form
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          service: "",
-          message: "",
-        });
-      } else {
-        toast.error(data.error || "Failed to submit consultation request");
-      }
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        service: "",
+        message: "",
+      });
     } catch (error) {
       console.error("Error submitting consultation:", error);
       toast.error("An error occurred. Please try again later.");
@@ -164,7 +156,7 @@ export default function EmbeddedConsultationForm() {
             </SelectTrigger>
             <SelectContent>
               {services.map((service) => (
-                <SelectItem key={service.id} value={service.value}>
+                <SelectItem key={service._id} value={service.value}>
                   {service.label}
                 </SelectItem>
               ))}

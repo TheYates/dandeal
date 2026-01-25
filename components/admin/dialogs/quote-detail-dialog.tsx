@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 interface Quote {
-  id: string;
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -19,12 +19,12 @@ interface Quote {
   destination: string;
   shippingMethod: string;
   cargoType: string;
-  weight: string | null;
-  preferredDate: string | null;
-  notes: string | null;
+  weight?: string;
+  preferredDate?: string;
+  notes?: string;
   status: "new" | "quoted" | "accepted" | "declined" | "completed";
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 interface QuoteDetailDialogProps {
@@ -55,9 +55,9 @@ export function QuoteDetailDialog({
     }
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "Not specified";
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (timestamp: number | undefined) => {
+    if (!timestamp) return "Not specified";
+    return new Date(timestamp).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -72,7 +72,7 @@ export function QuoteDetailDialog({
         <DialogHeader>
           <div>
             <DialogTitle>Quote Request Details</DialogTitle>
-            <p className="text-sm text-slate-500 mt-1">ID: {quote.id}</p>
+            <p className="text-sm text-slate-500 mt-1">ID: {quote._id}</p>
           </div>
         </DialogHeader>
 

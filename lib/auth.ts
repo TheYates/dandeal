@@ -1,9 +1,8 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
-import { adminUsers } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -19,12 +18,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
-          // Find user by email
-          const [user] = await db
-            .select()
-            .from(adminUsers)
-            .where(eq(adminUsers.email, credentials.email as string))
-            .limit(1);
+          // Find user by email using Convex
+          const user = await convex.query(api.auth.getAdminWithPassword, {
+            email: credentials.email as string,
+          });
 
           if (!user) {
             return null;

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
-import { QueryProvider } from "@/components/providers/query-provider";
+import { ConvexClientProvider } from "@/components/providers/convex-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import "./globals.css";
 
@@ -27,11 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans antialiased`}>
-        <SessionProvider>
-          <QueryProvider>
+        <ConvexClientProvider>
+          <SessionProvider>
             {children}
-          </QueryProvider>
-        </SessionProvider>
+          </SessionProvider>
+        </ConvexClientProvider>
         <Analytics />
         <Toaster />
       </body>

@@ -34,9 +34,9 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { ConsultationDetailDialog } from "@/components/admin/dialogs/consultation-detail-dialog";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useConsultationsData } from "@/hooks/use-dashboard-data";
-import { useOptimisticStatusUpdate, useOptimisticDelete } from "@/hooks/use-optimistic-mutations";
+import { useConsultationsData } from "@/hooks/use-convex-dashboard";
+import { useSubmissionMutations } from "@/hooks/use-convex-submissions";
+import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -48,15 +48,15 @@ import {
 } from "@/components/ui/dialog";
 
 interface Consultation {
-  id: string;
+  _id: Id<"consultations">;
   name: string;
   email: string;
   phone: string;
   service: string;
-  message: string | null;
+  message?: string;
   status: "new" | "contacted" | "in_progress" | "completed" | "cancelled";
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 const services = [
@@ -87,9 +87,7 @@ export function ConsultationsTable() {
   });
   const [isDeleting, setIsDeleting] = useState(false);
   
-  const queryClient = useQueryClient();
-
-  // Fetch consultations using batched dashboard data
+  // Fetch consultations using Convex
   const {
     data: consultations,
     isLoading: loading,
@@ -97,14 +95,8 @@ export function ConsultationsTable() {
     stats
   } = useConsultationsData();
 
-  // Optimistic mutation hooks
-  const statusUpdateMutation = useOptimisticStatusUpdate('consultations');
-  const deleteMutation = useOptimisticDelete('consultations');
-
-  // Legacy invalidateCache function for compatibility
-  const invalidateCache = () => {
-    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
-  };
+  // Convex mutation hooks
+  const { updateConsultation, deleteConsultation: deleteConsultationMutation } = useSubmissionMutations();
 
   const toTitleCase = (str: string) => {
     return str
@@ -139,10 +131,16 @@ export function ConsultationsTable() {
   }, [consultations, searchTerm, statusFilter, serviceFilter]);
 
   const updateStatus = async (
-    id: string,
+    id: Id<"consultations">,
     newStatus: Consultation["status"]
   ) => {
-    statusUpdateMutation.mutate({ id, status: newStatus });
+    try {
+      await updateConsultation(id, { status: newStatus });
+      toast.success(`Status updated to ${newStatus}`);
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast.error("Error updating status");
+    }
   };
 
   const deleteConsultation = (id: string, consultationName: string) => {
@@ -157,18 +155,20 @@ export function ConsultationsTable() {
     if (!deleteConfirmDialog.consultationId) return;
 
     setIsDeleting(true);
-    deleteMutation.mutate(deleteConfirmDialog.consultationId, {
-      onSuccess: () => {
-        setDeleteConfirmDialog({
-          isOpen: false,
-          consultationId: null,
-          consultationName: "",
-        });
-      },
-      onSettled: () => {
-        setIsDeleting(false);
-      }
-    });
+    try {
+      await deleteConsultationMutation(deleteConfirmDialog.consultationId as Id<"consultations">);
+      setDeleteConfirmDialog({
+        isOpen: false,
+        consultationId: null,
+        consultationName: "",
+      });
+      toast.success(`Consultation from ${deleteConfirmDialog.consultationName} deleted successfully`);
+    } catch (error) {
+      console.error("Error deleting consultation:", error);
+      toast.error("Error deleting consultation");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const exportData = () => {
@@ -184,14 +184,14 @@ export function ConsultationsTable() {
         "Submitted",
       ],
       ...filteredConsultations.map((c) => [
-        c.id,
+        c._id,
         c.name,
         c.email,
         c.phone,
         c.service,
         c.message || "",
         c.status,
-        new Date(c.created_at).toLocaleString(),
+        new Date(c.createdAt).toLocaleString(),
       ]),
     ]
       .map((row) => row.map((cell) => `"${cell}"`).join(","))
@@ -221,7 +221,7 @@ export function ConsultationsTable() {
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+    // Convex handles reactivity automatically, but we can trigger a toast
     toast.success('Data refreshed');
   };
 
@@ -237,7 +237,7 @@ export function ConsultationsTable() {
         {error && (
           <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-red-800 text-sm">
-              <strong>Error:</strong> {error.message}
+              <strong>Error:</strong> {String(error)}
             </p>
           </div>
         )}
@@ -334,7 +334,7 @@ export function ConsultationsTable() {
                 <tbody>
                   {filteredConsultations.map((consultation) => (
                     <tr
-                      key={consultation.id}
+                      key={consultation._id}
                       className="border-b border-slate-200 hover:bg-slate-50 dark:hover:bg-accent cursor-pointer"
                       onClick={() => {
                         setSelectedConsultation(consultation);
@@ -347,9 +347,9 @@ export function ConsultationsTable() {
                         </div>
                         <div
                           className="text-xs text-slate-500 dark:text-slate-400 font-mono"
-                          title={consultation.id}
+                          title={consultation._id}
                         >
-                          {truncateId(consultation.id)}
+                          {truncateId(consultation._id)}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white">
@@ -431,7 +431,7 @@ export function ConsultationsTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                updateStatus(consultation.id, "new")
+                                updateStatus(consultation._id, "new")
                               }
                               className="flex items-center gap-2"
                             >
@@ -440,7 +440,7 @@ export function ConsultationsTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                updateStatus(consultation.id, "contacted")
+                                updateStatus(consultation._id, "contacted")
                               }
                               className="flex items-center gap-2"
                             >
@@ -449,7 +449,7 @@ export function ConsultationsTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                updateStatus(consultation.id, "in_progress")
+                                updateStatus(consultation._id, "in_progress")
                               }
                               className="flex items-center gap-2"
                             >
@@ -458,7 +458,7 @@ export function ConsultationsTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                updateStatus(consultation.id, "completed")
+                                updateStatus(consultation._id, "completed")
                               }
                               className="flex items-center gap-2"
                             >
@@ -467,7 +467,7 @@ export function ConsultationsTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                updateStatus(consultation.id, "cancelled")
+                                updateStatus(consultation._id, "cancelled")
                               }
                               className="flex items-center gap-2"
                             >
@@ -477,7 +477,7 @@ export function ConsultationsTable() {
                             <DropdownMenuItem
                               onClick={() =>
                                 deleteConsultation(
-                                  consultation.id,
+                                  consultation._id,
                                   consultation.name
                                 )
                               }

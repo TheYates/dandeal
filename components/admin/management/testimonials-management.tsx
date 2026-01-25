@@ -23,18 +23,28 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Trash2, Plus, Edit2, Loader2, Star } from "lucide-react";
-import { useTestimonials, Testimonial } from "@/hooks/use-testimonials";
+import { useTestimonials, useTestimonialMutations } from "@/hooks/use-convex-testimonials";
 import { TestimonialsManagementSkeleton } from "./table-skeleton";
+import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner";
+
+type Testimonial = {
+  _id: Id<"testimonials">;
+  clientName: string;
+  clientTitle?: string;
+  clientCompany?: string;
+  content: string;
+  rating?: string;
+  image?: string;
+  order?: string;
+  isActive: boolean;
+  createdAt: number;
+  updatedAt: number;
+};
 
 export function TestimonialsManagement() {
-  const {
-    testimonials,
-    loading,
-    fetchTestimonials,
-    addTestimonial,
-    updateTestimonial,
-    deleteTestimonial,
-  } = useTestimonials();
+  const { testimonials, isLoading: loading } = useTestimonials(false);
+  const { create: addTestimonial, update: updateTestimonialMutation, delete: deleteTestimonialMutation } = useTestimonialMutations();
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -51,10 +61,6 @@ export function TestimonialsManagement() {
     image: "",
   });
 
-  useEffect(() => {
-    fetchTestimonials();
-  }, [fetchTestimonials]);
-
   const handleAddTestimonial = async () => {
     if (!newTestimonial.clientName || !newTestimonial.content) {
       return;
@@ -62,14 +68,14 @@ export function TestimonialsManagement() {
 
     setIsSubmitting(true);
     try {
-      await addTestimonial(
-        newTestimonial.clientName,
-        newTestimonial.content,
-        newTestimonial.clientTitle,
-        newTestimonial.clientCompany,
-        newTestimonial.rating,
-        newTestimonial.image
-      );
+      await addTestimonial({
+        clientName: newTestimonial.clientName,
+        content: newTestimonial.content,
+        clientTitle: newTestimonial.clientTitle || undefined,
+        clientCompany: newTestimonial.clientCompany || undefined,
+        rating: newTestimonial.rating,
+        image: newTestimonial.image || undefined,
+      });
       setNewTestimonial({
         clientName: "",
         clientTitle: "",
@@ -79,6 +85,9 @@ export function TestimonialsManagement() {
         image: "",
       });
       setIsAddDialogOpen(false);
+      toast.success("Testimonial added successfully");
+    } catch (error) {
+      toast.error("Failed to add testimonial");
     } finally {
       setIsSubmitting(false);
     }
@@ -91,13 +100,13 @@ export function TestimonialsManagement() {
 
     setIsSubmitting(true);
     try {
-      await updateTestimonial(editingTestimonial.id, {
+      await updateTestimonialMutation(editingTestimonial._id, {
         clientName: editingTestimonial.clientName,
-        clientTitle: editingTestimonial.clientTitle,
-        clientCompany: editingTestimonial.clientCompany,
+        clientTitle: editingTestimonial.clientTitle || undefined,
+        clientCompany: editingTestimonial.clientCompany || undefined,
         content: editingTestimonial.content,
         rating: editingTestimonial.rating,
-        image: editingTestimonial.image,
+        image: editingTestimonial.image || undefined,
       });
       setIsEditDialogOpen(false);
       setEditingTestimonial(null);
@@ -111,9 +120,12 @@ export function TestimonialsManagement() {
 
     setIsSubmitting(true);
     try {
-      await deleteTestimonial(deletingTestimonial.id);
+      await deleteTestimonialMutation(deletingTestimonial._id);
       setIsDeleteDialogOpen(false);
       setDeletingTestimonial(null);
+      toast.success("Testimonial deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete testimonial");
     } finally {
       setIsSubmitting(false);
     }
@@ -261,7 +273,7 @@ export function TestimonialsManagement() {
           <div className="space-y-4">
             {testimonials.map((testimonial) => (
               <div
-                key={testimonial.id}
+                key={testimonial._id}
                 className="border rounded-lg p-4 flex items-start justify-between gap-4 hover:bg-gray-50 dark:hover:bg-slate-900"
               >
                 <div className="flex-1 min-w-0">
@@ -280,7 +292,7 @@ export function TestimonialsManagement() {
                     {testimonial.content}
                   </p>
                   <div className="flex items-center gap-1 mt-2">
-                    {Array.from({ length: parseInt(testimonial.rating) }).map((_, i) => (
+                    {Array.from({ length: parseInt(testimonial.rating || "5") }).map((_, i) => (
                       <Star
                         key={i}
                         className="w-3 h-3 fill-yellow-400 text-yellow-400"

@@ -20,12 +20,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Trash2, Plus, Edit2, Loader2, ZoomIn, ZoomOut, X } from "lucide-react";
-import { usePartners } from "@/hooks/use-partners";
+import { usePartners, usePartnerMutations } from "@/hooks/use-convex-partners";
 import { CardSkeleton } from "./table-skeleton";
+import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner";
 
 export function PartnersGalleryView() {
-  const { partners, loading, addPartner, updatePartner, deletePartner } =
-    usePartners();
+  const { partners, isLoading: loading } = usePartners(false);
+  const { create: addPartnerMutation, update: updatePartnerMutation, delete: deletePartnerMutation } = usePartnerMutations();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState<any>(null);
@@ -41,9 +43,16 @@ export function PartnersGalleryView() {
 
     setIsSubmitting(true);
     try {
-      await addPartner(newPartner.name, newPartner.icon, newPartner.image);
+      await addPartnerMutation({
+        name: newPartner.name,
+        icon: newPartner.icon || undefined,
+        image: newPartner.image || undefined,
+      });
       setNewPartner({ name: "", icon: "", image: "" });
       setIsAddDialogOpen(false);
+      toast.success("Partner added successfully");
+    } catch (error) {
+      toast.error("Failed to add partner");
     } finally {
       setIsSubmitting(false);
     }
@@ -56,21 +65,29 @@ export function PartnersGalleryView() {
 
     setIsSubmitting(true);
     try {
-      await updatePartner(editingPartner.id, {
+      await updatePartnerMutation(editingPartner._id as Id<"partners">, {
         name: editingPartner.name,
-        icon: editingPartner.icon,
-        image: editingPartner.image,
+        icon: editingPartner.icon || undefined,
+        image: editingPartner.image || undefined,
       });
       setIsEditDialogOpen(false);
       setEditingPartner(null);
+      toast.success("Partner updated successfully");
+    } catch (error) {
+      toast.error("Failed to update partner");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDeletePartner = async (id: string) => {
+  const handleDeletePartner = async (id: Id<"partners">) => {
     if (confirm("Are you sure you want to delete this partner?")) {
-      await deletePartner(id);
+      try {
+        await deletePartnerMutation(id);
+        toast.success("Partner deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete partner");
+      }
     }
   };
 
@@ -167,7 +184,7 @@ export function PartnersGalleryView() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {partners.map((partner) => (
               <div
-                key={partner.id}
+                key={partner._id}
                 className="relative group border border-slate-700 rounded-lg p-4 bg-gray-50 dark:bg-background hover:shadow-lg transition cursor-pointer"
                 onClick={() => setSelectedImage(partner)}
               >
@@ -192,7 +209,7 @@ export function PartnersGalleryView() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                  <Dialog open={isEditDialogOpen && editingPartner?.id === partner.id} onOpenChange={(open) => {
+                  <Dialog open={isEditDialogOpen && editingPartner?._id === partner._id} onOpenChange={(open) => {
                     if (!open) {
                       setEditingPartner(null);
                     }
@@ -283,7 +300,7 @@ export function PartnersGalleryView() {
                     className="flex-1"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeletePartner(partner.id);
+                      handleDeletePartner(partner._id);
                     }}
                   >
                     <Trash2 className="w-3 h-3 text-red-600" />

@@ -9,15 +9,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 interface Consultation {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   phone: string;
   service: string;
-  message: string | null;
+  message?: string;
   status: "new" | "contacted" | "in_progress" | "completed" | "cancelled";
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 interface ConsultationDetailDialogProps {
@@ -48,8 +48,8 @@ export function ConsultationDetailDialog({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -64,7 +64,7 @@ export function ConsultationDetailDialog({
         <DialogHeader>
           <div>
             <DialogTitle>Consultation Request Details</DialogTitle>
-            <p className="text-sm text-slate-500 mt-1">ID: {consultation.id}</p>
+            <p className="text-sm text-slate-500 mt-1">ID: {consultation._id}</p>
           </div>
         </DialogHeader>
 

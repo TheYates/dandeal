@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
-import { useSiteSettings } from "@/hooks/use-site-settings";
+import { useSiteSettings } from "@/hooks/use-convex-site-settings";
 import QuoteForm from "@/components/forms/QuoteForm";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["700"] });
 
 export default function Header() {
-  const { settings, loading } = useSiteSettings();
+  const { settings, isLoading: loading } = useSiteSettings();
   const [quoteFormOpen, setQuoteFormOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -97,7 +97,7 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <div className="hidden lg:block text-right">
               <div className="text-white text-xs space-y-1">
-                {!loading && (
+                {!loading && settings && (
                   <>
                     {settings.displayPhonePrimary && settings.phonePrimary && (
                       <div>{settings.phonePrimary}</div>

@@ -33,10 +33,10 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { QuoteDetailDialog } from "@/components/admin/dialogs/quote-detail-dialog";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useQuotesData } from "@/hooks/use-dashboard-data";
-import { useOptimisticStatusUpdate, useOptimisticDelete } from "@/hooks/use-optimistic-mutations";
+import { useQuotesData } from "@/hooks/use-convex-dashboard";
+import { useSubmissionMutations } from "@/hooks/use-convex-submissions";
 import { toast } from "sonner";
+import { Id } from "@/convex/_generated/dataModel";
 import { TableSkeleton } from "@/components/admin/management/table-skeleton";
 import {
   Dialog,
@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/dialog";
 
 interface Quote {
-  id: string;
+  _id: Id<"quotes">;
   firstName: string;
   lastName: string;
   email: string;
@@ -57,12 +57,12 @@ interface Quote {
   destination: string;
   shippingMethod: string;
   cargoType: string;
-  weight: string | null;
-  preferredDate: string | null;
-  notes: string | null;
+  weight?: string;
+  preferredDate?: string;
+  notes?: string;
   status: "new" | "quoted" | "accepted" | "declined" | "completed";
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 const shippingMethods = [
@@ -90,9 +90,7 @@ export function QuotesTable() {
   });
   const [isDeleting, setIsDeleting] = useState(false);
   
-  const queryClient = useQueryClient();
-
-  // Fetch quotes using batched dashboard data
+  // Fetch quotes using Convex
   const {
     data: quotes,
     isLoading: loading,
@@ -100,14 +98,8 @@ export function QuotesTable() {
     stats
   } = useQuotesData();
 
-  // Optimistic mutation hooks
-  const statusUpdateMutation = useOptimisticStatusUpdate('quotes');
-  const deleteMutation = useOptimisticDelete('quotes');
-
-  // Legacy invalidateCache function for compatibility
-  const invalidateCache = () => {
-    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
-  };
+  // Convex mutation hooks
+  const { updateQuote, deleteQuote: deleteQuoteMutation } = useSubmissionMutations();
 
   const toTitleCase = (str: string) => {
     return str
@@ -144,8 +136,14 @@ export function QuotesTable() {
     });
   }, [quotes, searchTerm, statusFilter, methodFilter]);
 
-  const updateStatus = async (id: string, newStatus: Quote["status"]) => {
-    statusUpdateMutation.mutate({ id, status: newStatus });
+  const updateStatus = async (id: Id<"quotes">, newStatus: Quote["status"]) => {
+    try {
+      await updateQuote(id, { status: newStatus });
+      toast.success(`Status updated to ${newStatus}`);
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast.error("Error updating status");
+    }
   };
 
   const deleteQuote = (id: string, quoteName: string) => {
@@ -160,14 +158,16 @@ export function QuotesTable() {
     if (!deleteConfirmDialog.quoteId) return;
 
     setIsDeleting(true);
-    deleteMutation.mutate(deleteConfirmDialog.quoteId, {
-      onSuccess: () => {
-        setDeleteConfirmDialog({ isOpen: false, quoteId: null, quoteName: "" });
-      },
-      onSettled: () => {
-        setIsDeleting(false);
-      }
-    });
+    try {
+      await deleteQuoteMutation(deleteConfirmDialog.quoteId as Id<"quotes">);
+      setDeleteConfirmDialog({ isOpen: false, quoteId: null, quoteName: "" });
+      toast.success(`Quote from ${deleteConfirmDialog.quoteName} deleted successfully`);
+    } catch (error) {
+      console.error("Error deleting quote:", error);
+      toast.error("Error deleting quote");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const exportData = () => {
@@ -188,7 +188,7 @@ export function QuotesTable() {
         "Submitted",
       ],
       ...filteredQuotes.map((q) => [
-        q.id,
+        q._id,
         `${q.firstName} ${q.lastName}`,
         q.email,
         q.phone,
@@ -200,7 +200,7 @@ export function QuotesTable() {
         q.preferredDate || "",
         q.notes || "",
         q.status,
-        new Date(q.created_at).toLocaleString(),
+        new Date(q.createdAt).toLocaleString(),
       ]),
     ]
       .map((row) => row.map((cell) => `"${cell}"`).join(","))
@@ -230,7 +230,7 @@ export function QuotesTable() {
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+    // Convex handles reactivity automatically
     toast.success('Data refreshed');
   };
 
@@ -246,7 +246,7 @@ export function QuotesTable() {
         {error && (
           <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-red-800 text-sm">
-              <strong>Error:</strong> {error.message}
+              <strong>Error:</strong> {String(error)}
             </p>
           </div>
         )}
@@ -343,7 +343,7 @@ export function QuotesTable() {
                 <tbody>
                   {filteredQuotes.map((quote) => (
                     <tr
-                      key={quote.id}
+                      key={quote._id}
                       className="border-b border-slate-200 hover:bg-slate-50 dark:hover:bg-accent cursor-pointer"
                       onClick={() => {
                         setSelectedQuote(quote);
@@ -356,9 +356,9 @@ export function QuotesTable() {
                         </div>
                         <div
                           className="text-xs text-slate-500 dark:text-slate-400 font-mono"
-                          title={quote.id}
+                          title={quote._id}
                         >
-                          {truncateId(quote.id)}
+                          {truncateId(quote._id)}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white">
@@ -444,28 +444,28 @@ export function QuotesTable() {
                               View Details
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => updateStatus(quote.id, "new")}
+                              onClick={() => updateStatus(quote._id, "new")}
                               className="flex items-center gap-2"
                             >
                               <Clock className="w-4 h-4" />
                               Mark New
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => updateStatus(quote.id, "quoted")}
+                              onClick={() => updateStatus(quote._id, "quoted")}
                               className="flex items-center gap-2"
                             >
                               <FileText className="w-4 h-4" />
                               Mark Quoted
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => updateStatus(quote.id, "accepted")}
+                              onClick={() => updateStatus(quote._id, "accepted")}
                               className="flex items-center gap-2"
                             >
                               <CheckCircle className="w-4 h-4" />
                               Mark Accepted
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => updateStatus(quote.id, "declined")}
+                              onClick={() => updateStatus(quote._id, "declined")}
                               className="flex items-center gap-2"
                             >
                               <XCircle className="w-4 h-4" />
@@ -473,7 +473,7 @@ export function QuotesTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                updateStatus(quote.id, "completed")
+                                updateStatus(quote._id, "completed")
                               }
                               className="flex items-center gap-2"
                             >
@@ -483,7 +483,7 @@ export function QuotesTable() {
                             <DropdownMenuItem
                               onClick={() =>
                                 deleteQuote(
-                                  quote.id,
+                                  quote._id,
                                   `${quote.firstName} ${quote.lastName}`
                                 )
                               }

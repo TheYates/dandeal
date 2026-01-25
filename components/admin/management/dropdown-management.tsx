@@ -14,7 +14,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Edit2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useDropdownOptions } from "@/hooks/use-dropdown-options";
+import { useDropdownOptions, useDropdownMutations } from "@/hooks/use-convex-admin";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface DropdownManagementProps {
   title: string;
@@ -27,8 +28,8 @@ export function DropdownManagement({
   description,
   type,
 }: DropdownManagementProps) {
-  const { options, loading, addOption, updateOption, deleteOption } =
-    useDropdownOptions(type);
+  const { options, isLoading: loading } = useDropdownOptions(type);
+  const { create: createOption, update: updateOptionMutation, delete: deleteOptionMutation } = useDropdownMutations();
   const [newOption, setNewOption] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -42,7 +43,11 @@ export function DropdownManagement({
 
     setIsSubmitting(true);
     try {
-      await addOption(newOption, newOption);
+      await createOption({
+        type,
+        label: newOption,
+        value: newOption,
+      });
       setNewOption("");
       toast.success("Option added successfully");
     } catch (error) {
@@ -52,10 +57,10 @@ export function DropdownManagement({
     }
   };
 
-  const handleDeleteOption = async (id: string) => {
+  const handleDeleteOption = async (id: Id<"dropdownOptions">) => {
     setIsSubmitting(true);
     try {
-      await deleteOption(id);
+      await deleteOptionMutation(id);
       toast.success("Option deleted successfully");
     } catch (error) {
       toast.error("Failed to delete option");
@@ -64,7 +69,7 @@ export function DropdownManagement({
     }
   };
 
-  const handleSaveEdit = async (id: string) => {
+  const handleSaveEdit = async (id: Id<"dropdownOptions">) => {
     if (!editValue.trim()) {
       toast.error("Please enter a value");
       return;
@@ -72,7 +77,7 @@ export function DropdownManagement({
 
     setIsSubmitting(true);
     try {
-      await updateOption(id, { label: editValue, value: editValue });
+      await updateOptionMutation(id, { label: editValue, value: editValue });
       setEditingId(null);
       setEditValue("");
       toast.success("Option updated successfully");
@@ -132,10 +137,10 @@ export function DropdownManagement({
           ) : (
             options.map((option) => (
               <div
-                key={option.id}
+                key={option._id}
                 className="flex items-center justify-between p-3 bg-slate-50 rounded-md border border-slate-200 dark:bg-background"
               >
-                {editingId === option.id ? (
+                {editingId === option._id ? (
                   <div className="flex gap-2 flex-1">
                     <Input
                       value={editValue}
@@ -145,7 +150,7 @@ export function DropdownManagement({
                       disabled={isSubmitting}
                     />
                     <Button
-                      onClick={() => handleSaveEdit(option.id)}
+                      onClick={() => handleSaveEdit(option._id)}
                       size="sm"
                       className="bg-green-500 hover:bg-green-600"
                       disabled={isSubmitting}
@@ -172,7 +177,7 @@ export function DropdownManagement({
                     </Badge>
                     <div className="flex gap-2">
                       <Button
-                        onClick={() => startEdit(option.id, option.label)}
+                        onClick={() => startEdit(option._id, option.label)}
                         size="sm"
                         variant="ghost"
                         className="text-slate-600 hover:text-slate-900 dark:text-white"
@@ -181,7 +186,7 @@ export function DropdownManagement({
                         <Edit2 className="w-4 h-4" />
                       </Button>
                       <Button
-                        onClick={() => handleDeleteOption(option.id)}
+                        onClick={() => handleDeleteOption(option._id)}
                         size="sm"
                         variant="ghost"
                         className="text-red-600 hover:text-red-900 dark:text-white"

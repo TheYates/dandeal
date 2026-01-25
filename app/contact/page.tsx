@@ -9,10 +9,12 @@ import { toast } from "sonner";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/public/HeroSection";
-import { useSiteSettings } from "@/hooks/use-site-settings";
+import { useSiteSettings } from "@/hooks/use-convex-site-settings";
+import { useContactSubmit } from "@/hooks/use-convex-submissions";
 
 export default function Contact() {
   const { settings } = useSiteSettings();
+  const { submit: submitContact } = useContactSubmit();
   
   const [formData, setFormData] = useState({
     name: "",
@@ -48,31 +50,25 @@ export default function Contact() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      await submitContact({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        subject: formData.subject,
+        message: formData.message,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success(
-          "Thank you! Your message has been sent successfully. We'll get back to you soon."
-        );
-        // Reset form
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          subject: "",
-          message: "",
-        });
-      } else {
-        toast.error(data.error || "Failed to send message");
-      }
+      toast.success(
+        "Thank you! Your message has been sent successfully. We'll get back to you soon."
+      );
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
     } catch (error) {
       console.error("Error submitting contact form:", error);
       toast.error("An error occurred. Please try again later.");
@@ -86,31 +82,31 @@ export default function Contact() {
       icon: Phone,
       title: "Call Us",
       details: [
-        settings.phonePrimary || "+233 25 608 8845",
-        settings.phoneSecondary || "+233 25 608 8846"
+        settings?.phonePrimary || "+233 25 608 8845",
+        settings?.phoneSecondary || "+233 25 608 8846"
       ].filter(Boolean),
     },
     {
       icon: Mail,
       title: "Email Us",
       details: [
-        settings.emailPrimary || "info@dandealimportation.com",
-        settings.emailSupport || "support@dandealimportation.com"
+        settings?.emailPrimary || "info@dandealimportation.com",
+        settings?.emailSupport || "support@dandealimportation.com"
       ].filter(Boolean),
     },
     {
       icon: MapPin,
       title: "Visit Us",
       details: [
-        `Kumasi - Ghana: ${settings.officeKumasi || "Santasi"}`,
-        `Obuasi - Ashanti Region: ${settings.officeObuasi || "Mangoase"}`,
-        `China Office: ${settings.officeChina || "Guangzhou"}`,
+        `Kumasi - Ghana: ${settings?.officeKumasi || "Santasi"}`,
+        `Obuasi - Ashanti Region: ${settings?.officeObuasi || "Mangoase"}`,
+        `China Office: ${settings?.officeChina || "Guangzhou"}`,
       ],
     },
     {
       icon: MessageCircle,
       title: "Message Us",
-      details: [settings.whatsapp || "+49 15212203183"],
+      details: [settings?.whatsapp || "+49 15212203183"],
     },
   ];
 
@@ -316,7 +312,7 @@ export default function Contact() {
             viewport={{ once: true }}
             className="flex justify-center gap-6"
           >
-            {settings.facebookUrl && settings.displayFacebook && (
+            {settings?.facebookUrl && settings?.displayFacebook && (
               <a
                 href={settings.facebookUrl}
                 target="_blank"
@@ -326,7 +322,7 @@ export default function Contact() {
                 <Facebook className="text-blue-500 w-8 h-8" />
               </a>
             )}
-            {settings.instagramUrl && settings.displayInstagram && (
+            {settings?.instagramUrl && settings?.displayInstagram && (
               <a
                 href={settings.instagramUrl}
                 target="_blank"
@@ -336,7 +332,7 @@ export default function Contact() {
                 <Instagram className="text-pink-500 w-8 h-8" />
               </a>
             )}
-            {settings.linkedinUrl && settings.displayLinkedin && (
+            {settings?.linkedinUrl && settings?.displayLinkedin && (
               <a
                 href={settings.linkedinUrl}
                 target="_blank"
@@ -346,7 +342,7 @@ export default function Contact() {
                 <Linkedin className="text-blue-500 w-8 h-8" />
               </a>
             )}
-            {settings.twitterUrl && settings.displayTwitter && (
+            {settings?.twitterUrl && settings?.displayTwitter && (
               <a
                 href={settings.twitterUrl}
                 target="_blank"
@@ -356,7 +352,7 @@ export default function Contact() {
                 <Twitter className="text-sky-400 w-8 h-8" />
               </a>
             )}
-            {settings.tiktokUrl && settings.displayTiktok && (
+            {settings?.tiktokUrl && settings?.displayTiktok && (
               <a
                 href={settings.tiktokUrl}
                 target="_blank"

@@ -24,6 +24,7 @@ import {
   Share2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useSiteSettings, useSiteSettingsMutations } from "@/hooks/use-convex-site-settings";
 
 interface OfficeLocation {
   city: string;
@@ -56,7 +57,8 @@ interface Settings {
 }
 
 export function SettingsManagement() {
-  const [loading, setLoading] = useState(true);
+  const { settings: convexSettings, isLoading: loading } = useSiteSettings();
+  const { update: updateSettings } = useSiteSettingsMutations();
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<Settings>({
     phonePrimary: "",
@@ -86,28 +88,38 @@ export function SettingsManagement() {
     businessHours: "",
   });
 
+  // Sync convex settings to local state when loaded
   useEffect(() => {
-    fetchSettings();
-  }, []);
-
-  const fetchSettings = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/admin/settings");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch settings");
-      }
-
-      const data = await response.json();
-      setSettings(data.settings);
-    } catch (error) {
-      console.error("Error fetching settings:", error);
-      toast.error("Failed to load settings");
-    } finally {
-      setLoading(false);
+    if (convexSettings) {
+      setSettings({
+        phonePrimary: convexSettings.phonePrimary || "",
+        phoneSecondary: convexSettings.phoneSecondary || "",
+        whatsapp: convexSettings.whatsapp || "",
+        whatsappLabel: convexSettings.whatsappLabel || "WhatsApp Us",
+        showWhatsappInHeader: convexSettings.showWhatsappInHeader || false,
+        emailPrimary: convexSettings.emailPrimary || "",
+        emailSupport: convexSettings.emailSupport || "",
+        displayPhonePrimary: convexSettings.displayPhonePrimary ?? true,
+        displayPhoneSecondary: convexSettings.displayPhoneSecondary ?? false,
+        facebookUrl: convexSettings.facebookUrl || "",
+        instagramUrl: convexSettings.instagramUrl || "",
+        linkedinUrl: convexSettings.linkedinUrl || "",
+        twitterUrl: convexSettings.twitterUrl || "",
+        tiktokUrl: convexSettings.tiktokUrl || "",
+        displayFacebook: convexSettings.displayFacebook ?? true,
+        displayInstagram: convexSettings.displayInstagram ?? true,
+        displayLinkedin: convexSettings.displayLinkedin ?? true,
+        displayTwitter: convexSettings.displayTwitter ?? true,
+        displayTiktok: convexSettings.displayTiktok ?? true,
+        officeLocations: [
+          { city: convexSettings.officeKumasi || "", region: "Kumasi", country: "Ghana" },
+          { city: convexSettings.officeObuasi || "", region: "Obuasi - Ashanti Region", country: "Ghana" },
+          { city: convexSettings.officeChina || "", region: "China Office", country: "China" },
+        ],
+        businessHours: convexSettings.businessHours || "",
+      });
     }
-  };
+  }, [convexSettings]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -132,16 +144,31 @@ export function SettingsManagement() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      const response = await fetch("/api/admin/settings", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ updates: settings }),
+      await updateSettings({
+        phonePrimary: settings.phonePrimary || undefined,
+        phoneSecondary: settings.phoneSecondary || undefined,
+        whatsapp: settings.whatsapp || undefined,
+        whatsappLabel: settings.whatsappLabel || undefined,
+        showWhatsappInHeader: settings.showWhatsappInHeader,
+        emailPrimary: settings.emailPrimary || undefined,
+        emailSupport: settings.emailSupport || undefined,
+        displayPhonePrimary: settings.displayPhonePrimary,
+        displayPhoneSecondary: settings.displayPhoneSecondary,
+        facebookUrl: settings.facebookUrl || undefined,
+        instagramUrl: settings.instagramUrl || undefined,
+        linkedinUrl: settings.linkedinUrl || undefined,
+        twitterUrl: settings.twitterUrl || undefined,
+        tiktokUrl: settings.tiktokUrl || undefined,
+        displayFacebook: settings.displayFacebook,
+        displayInstagram: settings.displayInstagram,
+        displayLinkedin: settings.displayLinkedin,
+        displayTwitter: settings.displayTwitter,
+        displayTiktok: settings.displayTiktok,
+        officeKumasi: settings.officeLocations[0]?.city || undefined,
+        officeObuasi: settings.officeLocations[1]?.city || undefined,
+        officeChina: settings.officeLocations[2]?.city || undefined,
+        businessHours: settings.businessHours || undefined,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to update settings");
-      }
-
       toast.success("Settings updated successfully!");
     } catch (error) {
       console.error("Error updating settings:", error);

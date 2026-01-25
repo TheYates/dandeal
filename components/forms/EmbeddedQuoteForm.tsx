@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useQuoteSubmit } from "@/hooks/use-convex-submissions";
 
 export default function EmbeddedQuoteForm() {
+  const { submit: submitQuote } = useQuoteSubmit();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -53,42 +55,39 @@ export default function EmbeddedQuoteForm() {
     setIsLoading(true);
 
     try {
-      console.log("Sending request to /api/quote");
-      const response = await fetch("/api/quote", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      await submitQuote({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        origin: formData.origin,
+        destination: formData.destination,
+        shippingMethod: formData.shippingMethod,
+        cargoType: formData.cargoType,
+        weight: formData.weight || undefined,
+        preferredDate: formData.date || undefined,
+        notes: formData.notes || undefined,
       });
 
-      console.log("Response status:", response.status);
-      const data = await response.json();
-      console.log("Response data:", data);
+      // Show success message
+      toast.success(
+        "Thank you! Your quote request has been submitted successfully. We'll get back to you soon."
+      );
 
-      if (response.ok) {
-        // Show success message
-        toast.success(
-          "Thank you! Your quote request has been submitted successfully. We'll get back to you soon."
-        );
-
-        // Reset form
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          origin: "",
-          destination: "",
-          shippingMethod: "",
-          cargoType: "",
-          weight: "",
-          date: "",
-          notes: "",
-        });
-      } else {
-        toast.error(data.error || "Failed to submit quote request");
-      }
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        origin: "",
+        destination: "",
+        shippingMethod: "",
+        cargoType: "",
+        weight: "",
+        date: "",
+        notes: "",
+      });
     } catch (error) {
       console.error("Error submitting quote:", error);
       toast.error("An error occurred. Please try again later.");
@@ -269,6 +268,7 @@ export default function EmbeddedQuoteForm() {
                   name="date"
                   value={formData.date}
                   onChange={handleInputChange}
+                  min={new Date().toISOString().split('T')[0]}
                   className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>

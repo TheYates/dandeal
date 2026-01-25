@@ -32,8 +32,9 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { ContactDetailDialog } from "@/components/admin/dialogs/contact-detail-dialog";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useContactsData } from "@/hooks/use-dashboard-data";
+import { useContactsData } from "@/hooks/use-convex-dashboard";
+import { useSubmissionMutations } from "@/hooks/use-convex-submissions";
+import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -45,15 +46,15 @@ import {
 } from "@/components/ui/dialog";
 
 interface Contact {
-  id: string;
+  _id: Id<"contacts">;
   name: string;
   email: string;
-  phone: string | null;
+  phone?: string;
   subject: string;
   message: string;
   status: "new" | "read" | "responded" | "archived";
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export function ContactsTable() {
@@ -72,9 +73,7 @@ export function ContactsTable() {
   });
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const queryClient = useQueryClient();
-
-  // Fetch contacts using batched dashboard data
+  // Fetch contacts using Convex
   const {
     data: contacts,
     isLoading: loading,
@@ -82,10 +81,8 @@ export function ContactsTable() {
     stats
   } = useContactsData();
 
-  // Legacy invalidateCache function for compatibility
-  const invalidateCache = () => {
-    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
-  };
+  // Convex mutation hooks
+  const { updateContact, deleteContact: deleteContactMutation } = useSubmissionMutations();
 
   const toTitleCase = (str: string) => {
     return str
@@ -117,19 +114,10 @@ export function ContactsTable() {
     });
   }, [contacts, searchTerm, statusFilter]);
 
-  const updateStatus = async (id: string, newStatus: Contact["status"]) => {
+  const updateStatus = async (id: Id<"contacts">, newStatus: Contact["status"]) => {
     try {
-      const response = await fetch("/api/admin/submissions", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: newStatus, type: "contacts" }),
-      });
-      if (response.ok) {
-        invalidateCache();
-        toast.success(`Status updated to ${newStatus}`);
-      } else {
-        toast.error("Failed to update status");
-      }
+      await updateContact(id, { status: newStatus });
+      toast.success(`Status updated to ${newStatus}`);
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Error updating status");
@@ -149,27 +137,15 @@ export function ContactsTable() {
 
     try {
       setIsDeleting(true);
-      const response = await fetch("/api/admin/submissions", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: deleteConfirmDialog.contactId,
-          type: "contacts",
-        }),
+      await deleteContactMutation(deleteConfirmDialog.contactId as Id<"contacts">);
+      setDeleteConfirmDialog({
+        isOpen: false,
+        contactId: null,
+        contactName: "",
       });
-      if (response.ok) {
-        invalidateCache();
-        setDeleteConfirmDialog({
-          isOpen: false,
-          contactId: null,
-          contactName: "",
-        });
-        toast.success(
-          `Contact message from ${deleteConfirmDialog.contactName} deleted successfully`
-        );
-      } else {
-        toast.error("Failed to delete contact");
-      }
+      toast.success(
+        `Contact message from ${deleteConfirmDialog.contactName} deleted successfully`
+      );
     } catch (error) {
       console.error("Error deleting contact:", error);
       toast.error("Error deleting contact");
@@ -194,7 +170,7 @@ export function ContactsTable() {
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['dashboard-data'] });
+    // Convex handles reactivity automatically
     toast.success('Data refreshed');
   };
 
@@ -210,7 +186,7 @@ export function ContactsTable() {
         {error && (
           <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-red-800 text-sm">
-              <strong>Error:</strong> {error.message}
+              <strong>Error:</strong> {String(error)}
             </p>
           </div>
         )}
@@ -282,7 +258,7 @@ export function ContactsTable() {
                 <tbody>
                   {filteredContacts.map((contact) => (
                     <tr
-                      key={contact.id}
+                      key={contact._id}
                       className="border-b border-slate-200 hover:bg-slate-50 dark:hover:bg-accent cursor-pointer"
                       onClick={() => {
                         setSelectedContact(contact);
@@ -295,9 +271,9 @@ export function ContactsTable() {
                         </div>
                         <div
                           className="text-xs text-slate-500 dark:text-slate-400 font-mono"
-                          title={contact.id}
+                          title={contact._id}
                         >
-                          {truncateId(contact.id)}
+                          {truncateId(contact._id)}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-white">
@@ -376,7 +352,7 @@ export function ContactsTable() {
                               View Details
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => updateStatus(contact.id, "read")}
+                              onClick={() => updateStatus(contact._id, "read")}
                               className="flex items-center gap-2"
                             >
                               <Clock className="w-4 h-4" />
@@ -384,7 +360,7 @@ export function ContactsTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                updateStatus(contact.id, "responded")
+                                updateStatus(contact._id, "responded")
                               }
                               className="flex items-center gap-2"
                             >
@@ -393,7 +369,7 @@ export function ContactsTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                updateStatus(contact.id, "archived")
+                                updateStatus(contact._id, "archived")
                               }
                               className="flex items-center gap-2"
                             >
@@ -402,7 +378,7 @@ export function ContactsTable() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                deleteContact(contact.id, contact.name)
+                                deleteContact(contact._id, contact.name)
                               }
                               className="text-destructive"
                             >

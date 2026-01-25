@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useDropdownOptions } from "@/hooks/use-dropdown-options";
+import { useDropdownsData } from "@/hooks/use-convex-dashboard";
+import { useQuoteSubmit } from "@/hooks/use-convex-submissions";
 
 interface QuoteFormProps {
   trigger?: React.ReactNode;
@@ -27,10 +28,10 @@ export default function QuoteForm({
   open,
   onOpenChange,
 }: QuoteFormProps) {
-  const { options: shippingMethods, loading: shippingLoading } =
-    useDropdownOptions("shipping_methods");
-  const { options: cargoTypes, loading: cargoLoading } =
-    useDropdownOptions("cargo_types");
+  const { shipping_methods: shippingMethods, cargo_types: cargoTypes, isLoading: dropdownsLoading } = useDropdownsData();
+  const shippingLoading = dropdownsLoading;
+  const cargoLoading = dropdownsLoading;
+  const { submit: submitQuote } = useQuoteSubmit();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -79,49 +80,46 @@ export default function QuoteForm({
     setIsLoading(true);
 
     try {
-      console.log("Sending request to /api/quote");
-      const response = await fetch("/api/quote", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      await submitQuote({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        origin: formData.origin,
+        destination: formData.destination,
+        shippingMethod: formData.shippingMethod,
+        cargoType: formData.cargoType,
+        weight: formData.weight || undefined,
+        preferredDate: formData.date || undefined,
+        notes: formData.notes || undefined,
       });
 
-      console.log("Response status:", response.status);
-      const data = await response.json();
-      console.log("Response data:", data);
+      // Show success message
+      toast.success(
+        "Thank you! Your quote request has been submitted successfully. We'll get back to you soon."
+      );
 
-      if (response.ok) {
-        // Show success message
-        toast.success(
-          "Thank you! Your quote request has been submitted successfully. We'll get back to you soon."
-        );
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        origin: "",
+        destination: "",
+        shippingMethod: "",
+        cargoType: "",
+        weight: "",
+        date: "",
+        notes: "",
+      });
 
-        // Reset form
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          origin: "",
-          destination: "",
-          shippingMethod: "",
-          cargoType: "",
-          weight: "",
-          date: "",
-          notes: "",
-        });
-
-        // Close dialog after 2 seconds
-        setTimeout(() => {
-          if (onOpenChange) {
-            onOpenChange(false);
-          }
-        }, 2000);
-      } else {
-        toast.error(data.error || "Failed to submit quote request");
-      }
+      // Close dialog after 2 seconds
+      setTimeout(() => {
+        if (onOpenChange) {
+          onOpenChange(false);
+        }
+      }, 2000);
     } catch (error) {
       console.error("Error submitting quote:", error);
       toast.error("An error occurred. Please try again later.");
@@ -265,7 +263,7 @@ export default function QuoteForm({
                     {shippingLoading ? "Loading..." : "Select Method"}
                   </option>
                   {shippingMethods.map((method) => (
-                    <option key={method.id} value={method.value}>
+                    <option key={method._id} value={method.value}>
                       {method.label}
                     </option>
                   ))}
@@ -287,7 +285,7 @@ export default function QuoteForm({
                     {cargoLoading ? "Loading..." : "Select Cargo Type"}
                   </option>
                   {cargoTypes.map((cargo) => (
-                    <option key={cargo.id} value={cargo.value}>
+                    <option key={cargo._id} value={cargo.value}>
                       {cargo.label}
                     </option>
                   ))}
@@ -315,6 +313,7 @@ export default function QuoteForm({
                   name="date"
                   value={formData.date}
                   onChange={handleInputChange}
+                  min={new Date().toISOString().split('T')[0]}
                   className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>

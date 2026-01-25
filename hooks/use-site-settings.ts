@@ -30,6 +30,7 @@ const defaultSettings: SiteSettings = {
   phonePrimary: "+233 25 608 8845",
   phoneSecondary: "+233 25 608 8846",
   whatsapp: "+49 15212203183",
+  whatsappLabel: "WhatsApp Us",
   emailPrimary: "info@dandealimportation.com",
   emailSupport: "support@dandealimportation.com",
   displayPhonePrimary: true,

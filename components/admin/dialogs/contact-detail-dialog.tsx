@@ -6,15 +6,15 @@ import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 
 interface Contact {
-  id: string
+  _id: string
   name: string
   email: string
-  phone: string | null
+  phone?: string
   subject: string
   message: string
   status: "new" | "read" | "responded" | "archived"
-  createdAt: string
-  updatedAt: string
+  createdAt: number
+  updatedAt: number
 }
 
 interface ContactDetailDialogProps {
@@ -39,8 +39,8 @@ export function ContactDetailDialog({ contact, open, onOpenChange }: ContactDeta
     }
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString()
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleString()
   }
 
   return (
@@ -49,7 +49,7 @@ export function ContactDetailDialog({ contact, open, onOpenChange }: ContactDeta
         <DialogHeader className="flex flex-row items-center justify-between">
           <div>
             <DialogTitle>Contact Message Details</DialogTitle>
-            <p className="text-sm text-slate-500 mt-1">ID: {contact.id}</p>
+            <p className="text-sm text-slate-500 mt-1">ID: {contact._id}</p>
           </div>
           <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
             <X className="w-4 h-4" />
