@@ -39,8 +39,34 @@ export const sendInvitationEmail = action({
     });
     
     // Build the invitation URL
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const inviteUrl = `${baseUrl}/accept-invite?token=${args.token}`;
+    // IMPORTANT: This code runs inside Convex (not your Next.js server runtime),
+    // so it will only see environment variables configured in Convex.
+    //
+    // Prefer a server-side URL (e.g. APP_URL) and fail loudly in production
+    // instead of silently falling back to localhost.
+    const rawBaseUrl =
+      process.env.APP_URL ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.NEXTAUTH_URL ||
+      "";
+
+    const baseUrl = rawBaseUrl.replace(/\/$/, "");
+
+    if (!baseUrl) {
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(
+          "Missing APP_URL (or NEXT_PUBLIC_APP_URL/NEXTAUTH_URL) env var for invitation links. Configure this in Convex environment variables."
+        );
+      }
+      // Local/dev fallback
+      console.warn(
+        "APP_URL not set; falling back to http://localhost:3000 for invitation links (dev only)."
+      );
+    }
+
+    const inviteUrl = `${(baseUrl || "http://localhost:3000")}/accept-invite?token=${encodeURIComponent(
+      args.token
+    )}`;
     
     const roleName = args.role === "super_admin" ? "Super Admin" : args.role === "admin" ? "Admin" : "Viewer";
 
