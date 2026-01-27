@@ -38,6 +38,8 @@ export function useInvitationMutations() {
         token: result.token,
         role: data.role,
         invitedByName: data.invitedByName,
+        // Use the actual deployed origin so invitation links never point at localhost.
+        baseUrl: typeof window !== "undefined" ? window.location.origin : undefined,
       });
 
       return { ...result, emailSent: emailResult.success, emailError: emailResult.error };
@@ -55,6 +57,8 @@ export function useInvitationMutations() {
         token: result.token,
         role,
         invitedByName,
+        // Use the actual deployed origin so resend links never point at localhost.
+        baseUrl: typeof window !== "undefined" ? window.location.origin : undefined,
       });
 
       return { ...result, emailSent: emailResult.success, emailError: emailResult.error };

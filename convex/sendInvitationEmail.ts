@@ -11,6 +11,8 @@ export const sendInvitationEmail = action({
     token: v.string(),
     role: v.string(),
     invitedByName: v.string(),
+    // Optional explicit base URL for invite links (e.g. https://app.example.com)
+    baseUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const emailHost = process.env.EMAIL_HOST;
@@ -44,29 +46,26 @@ export const sendInvitationEmail = action({
     //
     // Prefer a server-side URL (e.g. APP_URL) and fail loudly in production
     // instead of silently falling back to localhost.
-    const rawBaseUrl =
+    const explicitBaseUrl = (args.baseUrl ?? "").trim().replace(/\/$/, "");
+
+    const rawEnvBaseUrl =
       process.env.APP_URL ||
       process.env.NEXT_PUBLIC_APP_URL ||
       process.env.NEXTAUTH_URL ||
       "";
 
-    const baseUrl = rawBaseUrl.replace(/\/$/, "");
+    const envBaseUrl = rawEnvBaseUrl.replace(/\/$/, "");
+    const baseUrl = explicitBaseUrl || envBaseUrl;
 
+    // Never silently send localhost links unless we're truly in a dev environment.
     if (!baseUrl) {
-      if (process.env.NODE_ENV === "production") {
-        throw new Error(
-          "Missing APP_URL (or NEXT_PUBLIC_APP_URL/NEXTAUTH_URL) env var for invitation links. Configure this in Convex environment variables."
-        );
-      }
-      // Local/dev fallback
-      console.warn(
-        "APP_URL not set; falling back to http://localhost:3000 for invitation links (dev only)."
+      // Convex doesn't reliably expose NODE_ENV, so treat missing baseUrl as a configuration error.
+      throw new Error(
+        "Missing base URL for invitation links. Provide args.baseUrl or configure APP_URL in Convex env vars."
       );
     }
 
-    const inviteUrl = `${(baseUrl || "http://localhost:3000")}/accept-invite?token=${encodeURIComponent(
-      args.token
-    )}`;
+    const inviteUrl = `${baseUrl}/accept-invite?token=${encodeURIComponent(args.token)}`;
     
     const roleName = args.role === "super_admin" ? "Super Admin" : args.role === "admin" ? "Admin" : "Viewer";
 
