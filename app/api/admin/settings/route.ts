@@ -1,65 +1,62 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { siteSettings } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
-// Helper function to convert database format to API format
-function formatSettingsResponse(dbSettings: any) {
+// Helper function to convert Convex settings to the admin API response format
+function formatSettingsResponse(settings: any) {
   return {
-    phonePrimary: dbSettings.phonePrimary,
-    phoneSecondary: dbSettings.phoneSecondary,
-    whatsapp: dbSettings.whatsapp,
-    whatsappLabel: dbSettings.whatsappLabel ?? "WhatsApp Us",
-    showWhatsappInHeader: dbSettings.showWhatsappInHeader ?? false,
-    emailPrimary: dbSettings.emailPrimary,
-    emailSupport: dbSettings.emailSupport,
-    displayPhonePrimary: dbSettings.displayPhonePrimary ?? true,
-    displayPhoneSecondary: dbSettings.displayPhoneSecondary ?? false,
-    facebookUrl: dbSettings.facebookUrl,
-    instagramUrl: dbSettings.instagramUrl,
-    linkedinUrl: dbSettings.linkedinUrl,
-    twitterUrl: dbSettings.twitterUrl,
-    tiktokUrl: dbSettings.tiktokUrl,
-    displayFacebook: dbSettings.displayFacebook ?? true,
-    displayInstagram: dbSettings.displayInstagram ?? true,
-    displayLinkedin: dbSettings.displayLinkedin ?? true,
-    displayTwitter: dbSettings.displayTwitter ?? true,
-    displayTiktok: dbSettings.displayTiktok ?? true,
+    phonePrimary: settings?.phonePrimary ?? null,
+    phoneSecondary: settings?.phoneSecondary ?? null,
+    whatsapp: settings?.whatsapp ?? null,
+    whatsappLabel: settings?.whatsappLabel ?? "WhatsApp Us",
+    showWhatsappInHeader: settings?.showWhatsappInHeader ?? false,
+    emailPrimary: settings?.emailPrimary ?? null,
+    emailSupport: settings?.emailSupport ?? null,
+    displayPhonePrimary: settings?.displayPhonePrimary ?? true,
+    displayPhoneSecondary: settings?.displayPhoneSecondary ?? false,
+    facebookUrl: settings?.facebookUrl ?? "",
+    instagramUrl: settings?.instagramUrl ?? "",
+    linkedinUrl: settings?.linkedinUrl ?? "",
+    twitterUrl: settings?.twitterUrl ?? "",
+    tiktokUrl: settings?.tiktokUrl ?? "",
+    displayFacebook: settings?.displayFacebook ?? true,
+    displayInstagram: settings?.displayInstagram ?? true,
+    displayLinkedin: settings?.displayLinkedin ?? true,
+    displayTwitter: settings?.displayTwitter ?? true,
+    displayTiktok: settings?.displayTiktok ?? true,
     officeLocations: [
       {
-        city: dbSettings.officeKumasi || "",
+        city: settings?.officeKumasi ?? "",
         region: "Kumasi",
         country: "Ghana",
       },
       {
-        city: dbSettings.officeObuasi || "",
+        city: settings?.officeObuasi ?? "",
         region: "Obuasi - Ashanti Region",
         country: "Ghana",
       },
       {
-        city: dbSettings.officeChina || "",
+        city: settings?.officeChina ?? "",
         region: "China Office",
         country: "China",
       },
     ],
-    businessHours: dbSettings.businessHours,
+    businessHours: settings?.businessHours ?? "",
   };
 }
 
-// GET - Fetch site settings
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch settings (there should only be one row)
-    const settings = await db.query.siteSettings.findFirst();
+    const settings = await convex.query(api.siteSettings.get, {});
 
     if (!settings) {
-      // Return default values if no settings exist
+      // Keep previous defaults
       return NextResponse.json({
         settings: {
           phonePrimary: "+233 25 608 8845",
@@ -98,14 +95,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ settings: formatSettingsResponse(settings) });
   } catch (error) {
     console.error("Error fetching settings:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch settings" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch settings" }, { status: 500 });
   }
 }
 
-// PATCH - Update site settings
 export async function PATCH(request: NextRequest) {
   try {
     const session = await auth();
@@ -117,56 +110,31 @@ export async function PATCH(request: NextRequest) {
     const { updates } = body;
 
     if (!updates) {
-      return NextResponse.json(
-        { error: "Updates are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Updates are required" }, { status: 400 });
     }
 
     // Convert officeLocations array back to individual fields
-    const dbUpdates = { ...updates };
-    if (updates.officeLocations && Array.isArray(updates.officeLocations)) {
+    const dbUpdates: Record<string, unknown> = { ...updates };
+    if (Array.isArray(updates.officeLocations)) {
       dbUpdates.officeKumasi = updates.officeLocations[0]?.city || "";
       dbUpdates.officeObuasi = updates.officeLocations[1]?.city || "";
       dbUpdates.officeChina = updates.officeLocations[2]?.city || "";
       delete dbUpdates.officeLocations;
     }
 
-    // Check if settings exist
-    const existing = await db.query.siteSettings.findFirst();
+    await convex.mutation(api.siteSettings.update, {
+      ...(dbUpdates as any),
+      updatedBy: session.user.email,
+    });
 
-    let result;
-    if (existing) {
-      // Update existing settings
-      result = await db
-        .update(siteSettings)
-        .set({
-          ...dbUpdates,
-          updatedAt: new Date(),
-          updatedBy: session.user.email,
-        })
-        .where(eq(siteSettings.id, existing.id))
-        .returning();
-    } else {
-      // Create new settings
-      result = await db
-        .insert(siteSettings)
-        .values({
-          ...dbUpdates,
-          updatedBy: session.user.email,
-        })
-        .returning();
-    }
+    const refreshed = await convex.query(api.siteSettings.get, {});
 
     return NextResponse.json({
       message: "Settings updated successfully",
-      settings: formatSettingsResponse(result[0]),
+      settings: formatSettingsResponse(refreshed),
     });
   } catch (error) {
     console.error("Error updating settings:", error);
-    return NextResponse.json(
-      { error: "Failed to update settings" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update settings" }, { status: 500 });
   }
 }

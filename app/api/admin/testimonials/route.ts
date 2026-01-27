@@ -1,29 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { testimonials } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 // GET - Fetch all testimonials (admin)
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const allTestimonials = await db
-      .select()
-      .from(testimonials)
-      .orderBy(desc(testimonials.order));
+    const allTestimonials = await convex.query(api.testimonials.list, { activeOnly: false });
+    // Keep old order: desc by `order`
+    allTestimonials.sort((a: any, b: any) => {
+      const orderA = parseInt(a.order || "0", 10);
+      const orderB = parseInt(b.order || "0", 10);
+      return orderB - orderA;
+    });
 
     return NextResponse.json({ testimonials: allTestimonials });
   } catch (error) {
     console.error("Error fetching testimonials:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch testimonials" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch testimonials" }, { status: 500 });
   }
 }
 
@@ -36,8 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { clientName, clientTitle, clientCompany, content, rating, image } =
-      body;
+    const { clientName, clientTitle, clientCompany, content, rating, image } = body;
 
     if (!clientName || !content) {
       return NextResponse.json(
@@ -46,28 +44,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const [newTestimonial] = await db
-      .insert(testimonials)
-      .values({
-        clientName,
-        clientTitle: clientTitle || null,
-        clientCompany: clientCompany || null,
-        content,
-        rating: rating || "5",
-        image: image || null,
-      })
-      .returning();
+    const existing = await convex.query(api.testimonials.list, { activeOnly: false });
+    const maxOrder = existing.reduce((acc: number, t: any) => {
+      const v = parseInt(t.order || "0", 10);
+      return Number.isFinite(v) ? Math.max(acc, v) : acc;
+    }, 0);
 
-    return NextResponse.json(
-      { testimonial: newTestimonial },
-      { status: 201 }
-    );
+    const id = await convex.mutation(api.testimonials.create, {
+      clientName,
+      clientTitle: clientTitle || undefined,
+      clientCompany: clientCompany || undefined,
+      content,
+      rating: rating ? String(rating) : undefined,
+      image: image || undefined,
+      order: String(maxOrder + 1),
+    });
+
+    const testimonial = await convex.query(api.testimonials.get, { id: id as any });
+
+    return NextResponse.json({ testimonial }, { status: 201 });
   } catch (error) {
     console.error("Error creating testimonial:", error);
-    return NextResponse.json(
-      { error: "Failed to create testimonial" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create testimonial" }, { status: 500 });
   }
 }
 
@@ -83,35 +81,20 @@ export async function PATCH(request: NextRequest) {
     const { id, updates } = body;
 
     if (!id || !updates) {
-      return NextResponse.json(
-        { error: "ID and updates are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "ID and updates are required" }, { status: 400 });
     }
 
-    const [updatedTestimonial] = await db
-      .update(testimonials)
-      .set({
-        ...updates,
-        updatedAt: new Date(),
-      })
-      .where(eq(testimonials.id, id))
-      .returning();
+    await convex.mutation(api.testimonials.update, { id: id as any, ...(updates as any) });
 
-    if (!updatedTestimonial) {
-      return NextResponse.json(
-        { error: "Testimonial not found" },
-        { status: 404 }
-      );
+    const testimonial = await convex.query(api.testimonials.get, { id: id as any });
+    if (!testimonial) {
+      return NextResponse.json({ error: "Testimonial not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ testimonial: updatedTestimonial });
+    return NextResponse.json({ testimonial });
   } catch (error) {
     console.error("Error updating testimonial:", error);
-    return NextResponse.json(
-      { error: "Failed to update testimonial" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update testimonial" }, { status: 500 });
   }
 }
 
@@ -127,21 +110,13 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json(
-        { error: "Testimonial ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Testimonial ID is required" }, { status: 400 });
     }
 
-    await db.delete(testimonials).where(eq(testimonials.id, id));
-
+    await convex.mutation(api.testimonials.remove, { id: id as any });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting testimonial:", error);
-    return NextResponse.json(
-      { error: "Failed to delete testimonial" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete testimonial" }, { status: 500 });
   }
 }
-

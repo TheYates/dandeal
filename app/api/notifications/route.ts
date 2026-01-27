@@ -1,75 +1,86 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { emailNotificationSettings, emailLogs, siteSettings } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 import { sendEmail } from "@/lib/email/nodemailer";
 import { getEmailTemplate } from "@/lib/email/templates";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 export async function POST(request: NextRequest) {
   try {
     const { type, submission } = await request.json();
 
     if (!type || !submission) {
+      return NextResponse.json({ error: "Missing type or submission" }, { status: 400 });
+    }
+
+    const normalizedType = String(type).toLowerCase();
+    if (!["quote", "consultation", "contact"].includes(normalizedType)) {
       return NextResponse.json(
-        { error: "Missing type or submission" },
+        { error: `Unsupported notification type: ${type}` },
         { status: 400 }
       );
     }
 
-    // Check for global email settings first
-    const globalSettings = await db.query.siteSettings.findFirst();
+    const parseEmailList = (value: unknown): string[] => {
+      if (typeof value !== "string") return [];
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed.filter((v) => typeof v === "string") : [];
+      } catch {
+        return [];
+      }
+    };
+
+    const normalizeEmails = (emails: string[]): string[] => {
+      const isValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      return [...new Set(emails.map((e) => e.trim()).filter((e) => e && isValid(e)))];
+    };
+
+    // Convex-only settings resolution
+    const convexGlobalSettings = await convex.query(api.siteSettings.get, {});
+
+    const globalEnabled = Boolean(convexGlobalSettings?.globalEmailEnabled);
+    const rawGlobalEmail = String(convexGlobalSettings?.globalEmail ?? "");
+    const overrideIndividuals = Boolean(
+      convexGlobalSettings?.overrideIndividualEmailSettings
+    );
+
     let recipientEmails: string[] = [];
 
-    if (globalSettings?.globalEmailEnabled && globalSettings.globalEmail) {
-      // Use global email settings
-      recipientEmails = [globalSettings.globalEmail];
-      
-      // If override is enabled, skip individual settings check
-      if (globalSettings.overrideIndividualEmailSettings) {
-        console.log(`Using global email override for form type: ${type}`);
-      } else {
-        // Add individual recipients if not overriding
-        const settings = await db.query.emailNotificationSettings.findFirst({
-          where: eq(emailNotificationSettings.formType, type),
-        });
+    // Support a single address or a comma/semicolon separated list.
+    const globalEmails = rawGlobalEmail
+      .split(/[;,]/g)
+      .map((e) => e.trim())
+      .filter(Boolean);
 
-        if (settings && settings.enabled) {
-          try {
-            const individualEmails = JSON.parse(settings.recipientEmails || "[]");
-            recipientEmails = [...recipientEmails, ...individualEmails];
-          } catch (e) {
-            console.error("Failed to parse individual recipient emails:", e);
-          }
+    if (globalEnabled && globalEmails.length > 0) {
+      recipientEmails = globalEmails;
+
+      if (!overrideIndividuals) {
+        const perForm = await convex.query(api.emailSettings.getByFormType, {
+          formType: normalizedType,
+        });
+        if (perForm?.enabled) {
+          recipientEmails = recipientEmails.concat(parseEmailList(perForm.recipientEmails));
         }
       }
     } else {
-      // Use individual form type settings
-      const settings = await db.query.emailNotificationSettings.findFirst({
-        where: eq(emailNotificationSettings.formType, type),
+      const perForm = await convex.query(api.emailSettings.getByFormType, {
+        formType: normalizedType,
       });
 
-      if (!settings || !settings.enabled) {
-        console.warn(`Email notifications disabled for form type: ${type}`);
+      if (!perForm || !perForm.enabled) {
         return NextResponse.json({
           success: true,
           message: "Notifications disabled for this form type",
         });
       }
 
-      // Parse recipient emails
-      try {
-        recipientEmails = JSON.parse(settings.recipientEmails || "[]");
-      } catch (e) {
-        console.error("Failed to parse recipient emails:", e);
-        recipientEmails = [];
-      }
+      recipientEmails = parseEmailList(perForm.recipientEmails);
     }
 
-    // Remove duplicates and filter out empty emails
-    recipientEmails = [...new Set(recipientEmails.filter(email => email.trim()))];
+    recipientEmails = normalizeEmails(recipientEmails);
 
     if (recipientEmails.length === 0) {
-      console.warn(`No recipient emails configured for form type: ${type}`);
       return NextResponse.json({
         success: true,
         message: "No recipients configured",
@@ -79,37 +90,36 @@ export async function POST(request: NextRequest) {
     // Get email template
     const emailData = {
       ...submission,
-      name: submission.name || `${submission.firstName} ${submission.lastName}`,
+      name: submission.name || `${submission.firstName ?? ""} ${submission.lastName ?? ""}`.trim(),
     };
 
     const { subject, html, text } = getEmailTemplate(
-      type as "quote" | "consultation" | "contact",
+      normalizedType as "quote" | "consultation" | "contact",
       emailData,
       true
     );
 
-    // Send emails to all recipients
-    const emailPromises = recipientEmails.map(async (email) => {
-      const result = await sendEmail(email, subject, html, text);
+    // Send emails + log results in Convex
+    const results = await Promise.all(
+      recipientEmails.map(async (email) => {
+        const result = await sendEmail(email, subject, html, text);
 
-      // Log the email attempt
-      await db
-        .insert(emailLogs)
-        .values({
-          formType: type,
-          submissionId: submission.id,
-          recipientEmail: email,
-          subject,
-          status: result.success ? "sent" : "failed",
-          errorMessage: result.error || null,
-          sentAt: result.success ? new Date() : null,
-        })
-        .catch((err) => console.error("Failed to log email:", err));
+        await convex
+          .mutation(api.emailLogs.create, {
+            formType: normalizedType,
+            submissionId: submission?.id ? String(submission.id) : undefined,
+            recipientEmail: email,
+            subject,
+            status: result.success ? "sent" : "failed",
+            errorMessage: result.error || undefined,
+            sentAt: result.success ? Date.now() : undefined,
+          })
+          .catch((err) => console.error("Failed to log email:", err));
 
-      return result;
-    });
+        return result;
+      })
+    );
 
-    const results = await Promise.all(emailPromises);
     const successCount = results.filter((r) => r.success).length;
 
     return NextResponse.json({
@@ -119,9 +129,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error processing notification:", error);
-    return NextResponse.json(
-      { error: "Failed to process notification" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to process notification" }, { status: 500 });
   }
 }

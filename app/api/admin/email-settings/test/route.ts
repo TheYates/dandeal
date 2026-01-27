@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/nodemailer";
 import { getEmailTemplate } from "@/lib/email/templates";
-import { db } from "@/lib/db";
-import { emailLogs } from "@/lib/db/schema";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,16 +59,16 @@ export async function POST(request: NextRequest) {
     // Send test email
     const result = await sendEmail(testEmail, subject, html, text);
 
-    // Log the test email attempt
+    // Log the test email attempt (Convex, so it appears in admin UI)
     try {
-      await db.insert(emailLogs).values({
-        formType: formType,
-        submissionId: null,
+      await convex.mutation(api.emailLogs.create, {
+        formType: String(formType).toLowerCase(),
+        submissionId: undefined,
         recipientEmail: testEmail,
         subject,
         status: result.success ? "sent" : "failed",
-        errorMessage: result.error || null,
-        sentAt: result.success ? new Date() : null,
+        errorMessage: result.error || undefined,
+        sentAt: result.success ? Date.now() : undefined,
       });
     } catch (logError) {
       console.error("Failed to log test email:", logError);

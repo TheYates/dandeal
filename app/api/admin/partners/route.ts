@@ -1,58 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { partners } from "@/lib/db/schema";
-import { eq, asc } from "drizzle-orm";
-import { rateLimit, RATE_LIMITS } from "@/lib/rate-limit";
-
 import { auth } from "@/lib/auth";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 // Enable ISR with 5 minute revalidation for GET requests
 export const revalidate = 300;
 
-export async function GET(request: NextRequest) {
+async function requireAuth() {
+  const session = await auth();
+  if (!session?.user?.email) return null;
+  return session;
+}
+
+export async function GET(_request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.email) {
+    const session = await requireAuth();
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Select only needed fields for optimization
-    const allPartners = await db
-      .select({
-        id: partners.id,
-        name: partners.name,
-        icon: partners.icon,
-        image: partners.image,
-        order: partners.order,
-        isActive: partners.isActive,
-      })
-      .from(partners)
-      .where(eq(partners.isActive, true))
-      .orderBy(asc(partners.order));
+    const partners = await convex.query(api.partners.list, { activeOnly: true });
 
     return NextResponse.json(
-      { partners: allPartners },
+      { partners },
       {
         headers: {
           "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
           "CDN-Cache-Control": "public, s-maxage=3600",
-          "Vary": "Accept-Encoding",
+          Vary: "Accept-Encoding",
         },
       }
     );
   } catch (error) {
     console.error("Error fetching partners:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch partners" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch partners" }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.email) {
+    const session = await requireAuth();
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -66,45 +54,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the highest order value
-    const lastPartner = await db
-      .select()
-      .from(partners)
-      .orderBy(asc(partners.order))
-      .limit(1);
+    const existing = await convex.query(api.partners.list, { activeOnly: false });
+    const maxOrder = existing.reduce((acc: number, p: any) => {
+      const v = parseInt(p.order || "0", 10);
+      return Number.isFinite(v) ? Math.max(acc, v) : acc;
+    }, 0);
 
-    const nextOrder = lastPartner.length > 0 
-      ? (parseInt(lastPartner[0].order || "0") + 1).toString()
-      : "0";
+    const id = await convex.mutation(api.partners.create, {
+      name,
+      icon: icon || undefined,
+      image: image || undefined,
+      order: String(maxOrder + 1),
+    });
 
-    const newPartner = await db
-      .insert(partners)
-      .values({
-        name,
-        icon: icon || null,
-        image: image || null,
-        order: nextOrder,
-        isActive: true,
-      })
-      .returning();
+    const partner = await convex.query(api.partners.get, { id: id as any });
 
     return NextResponse.json(
-      { partner: newPartner[0], message: "Partner created successfully" },
+      { partner, message: "Partner created successfully" },
       { status: 201 }
     );
   } catch (error) {
     console.error("Error creating partner:", error);
-    return NextResponse.json(
-      { error: "Failed to create partner" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create partner" }, { status: 500 });
   }
 }
 
 export async function PATCH(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.email) {
+    const session = await requireAuth();
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -112,49 +90,33 @@ export async function PATCH(request: NextRequest) {
     const { id, name, icon, image, isActive } = body;
 
     if (!id) {
-      return NextResponse.json(
-        { error: "Partner ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Partner ID is required" }, { status: 400 });
     }
 
-    const updateData: any = {};
-    if (name !== undefined) updateData.name = name;
-    if (icon !== undefined) updateData.icon = icon;
-    if (image !== undefined) updateData.image = image;
-    if (isActive !== undefined) updateData.isActive = isActive;
-    updateData.updatedAt = new Date();
-
-    const updatedPartner = await db
-      .update(partners)
-      .set(updateData)
-      .where(eq(partners.id, id))
-      .returning();
-
-    if (updatedPartner.length === 0) {
-      return NextResponse.json(
-        { error: "Partner not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      partner: updatedPartner[0],
-      message: "Partner updated successfully",
+    await convex.mutation(api.partners.update, {
+      id: id as any,
+      name,
+      icon,
+      image,
+      isActive,
     });
+
+    const partner = await convex.query(api.partners.get, { id: id as any });
+    if (!partner) {
+      return NextResponse.json({ error: "Partner not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ partner, message: "Partner updated successfully" });
   } catch (error) {
     console.error("Error updating partner:", error);
-    return NextResponse.json(
-      { error: "Failed to update partner" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update partner" }, { status: 500 });
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.email) {
+    const session = await requireAuth();
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -162,33 +124,19 @@ export async function DELETE(request: NextRequest) {
     const { id } = body;
 
     if (!id) {
-      return NextResponse.json(
-        { error: "Partner ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Partner ID is required" }, { status: 400 });
     }
 
-    const deletedPartner = await db
-      .delete(partners)
-      .where(eq(partners.id, id))
-      .returning();
-
-    if (deletedPartner.length === 0) {
-      return NextResponse.json(
-        { error: "Partner not found" },
-        { status: 404 }
-      );
+    const existing = await convex.query(api.partners.get, { id: id as any });
+    if (!existing) {
+      return NextResponse.json({ error: "Partner not found" }, { status: 404 });
     }
 
-    return NextResponse.json({
-      message: "Partner deleted successfully",
-    });
+    await convex.mutation(api.partners.remove, { id: id as any });
+
+    return NextResponse.json({ message: "Partner deleted successfully" });
   } catch (error) {
     console.error("Error deleting partner:", error);
-    return NextResponse.json(
-      { error: "Failed to delete partner" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete partner" }, { status: 500 });
   }
 }
-

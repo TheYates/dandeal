@@ -1,82 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { emailNotificationSettings } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 /**
  * Initialize email notification settings for all form types
- * This endpoint creates default email settings if they don't exist
- * 
+ *
  * Usage: POST /api/admin/email-settings/init
- * Body: { recipientEmail: "email@example.com" }
+ * Body: { recipientEmail?: string }
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { recipientEmail } = body;
-
-    if (!recipientEmail) {
-      return NextResponse.json(
-        { error: "recipientEmail is required" },
-        { status: 400 }
-      );
+    const session = await auth();
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const formTypes = ["quote", "consultation", "contact"];
-    const results = [];
+    const body = await request.json().catch(() => ({}));
+    const recipientEmail = (body?.recipientEmail as string | undefined) || undefined;
 
-    for (const formType of formTypes) {
-      // Check if settings already exist
-      const existing = await db.query.emailNotificationSettings.findFirst({
-        where: eq(emailNotificationSettings.formType, formType),
-      });
+    // Ensure base docs exist
+    await convex.mutation(api.emailSettings.init, {});
 
-      if (existing) {
-        // Update existing settings to add the recipient email if not already there
-        const currentEmails = JSON.parse(existing.recipientEmails || "[]");
-        if (!currentEmails.includes(recipientEmail)) {
-          currentEmails.push(recipientEmail);
-        }
+    if (recipientEmail) {
+      const formTypes = ["quote", "consultation", "contact"] as const;
+      for (const formType of formTypes) {
+        const current = await convex.query(api.emailSettings.getByFormType, { formType });
+        const currentEmails: string[] = (() => {
+          try {
+            return JSON.parse(current?.recipientEmails || "[]");
+          } catch {
+            return [];
+          }
+        })();
 
-        const updated = await db
-          .update(emailNotificationSettings)
-          .set({
-            recipientEmails: JSON.stringify(currentEmails),
-            enabled: true,
-            updatedAt: new Date(),
-          })
-          .where(eq(emailNotificationSettings.formType, formType))
-          .returning();
+        if (!currentEmails.includes(recipientEmail)) currentEmails.push(recipientEmail);
 
-        results.push({
+        await convex.mutation(api.emailSettings.upsert, {
           formType,
-          status: "updated",
-          recipientEmails: currentEmails,
-        });
-      } else {
-        // Create new settings
-        const inserted = await db
-          .insert(emailNotificationSettings)
-          .values({
-            formType,
-            recipientEmails: JSON.stringify([recipientEmail]),
-            enabled: true,
-            includeFormData: true,
-          })
-          .returning();
-
-        results.push({
-          formType,
-          status: "created",
-          recipientEmails: [recipientEmail],
+          recipientEmails: JSON.stringify(currentEmails),
+          enabled: true,
         });
       }
     }
 
+    const settings = await convex.query(api.emailSettings.list, {});
+
     return NextResponse.json({
       success: true,
       message: "Email notification settings initialized",
-      results,
+      results: settings,
     });
   } catch (error) {
     console.error("Error initializing email settings:", error);
@@ -86,4 +59,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

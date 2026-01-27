@@ -472,14 +472,15 @@ export default function Home() {
               <div className="flex gap-6 mt-10">
                 <div className="w-56 h-48 sm:w-72 sm:h-56 bg-gray-300 rounded-lg overflow-hidden">
                   <img
-                    src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=300&h=200&fit=crop"
+                    src="https://images.unsplash.com/photo-1519003722824-194d4455a60c"
+                    
                     alt="Shipping"
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="w-56 h-48 sm:w-72 sm:h-56 bg-gray-300 rounded-lg overflow-hidden">
                   <img
-                    src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop"
+                    src="https://images.unsplash.com/photo-1552664730-d307ca884978"
                     alt="Logistics"
                     className="w-full h-full object-cover"
                   />

@@ -1,12 +1,12 @@
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
-import { adminUsers } from "@/lib/db/schema";
 import { NextRequest, NextResponse } from "next/server";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 /**
- * API route to create an initial admin user
+ * API route to create an initial admin user.
  * This should be disabled or protected in production!
- * 
+ *
  * Usage: POST /api/create-admin
  * Body: { "email": "admin@example.com", "password": "yourpassword", "name": "Admin Name" }
  */
@@ -25,42 +25,38 @@ export async function POST(request: NextRequest) {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the admin user
-    const [newUser] = await db
-      .insert(adminUsers)
-      .values({
+    try {
+      const id = await convex.mutation(api.adminUsers.create, {
         email,
         password: hashedPassword,
         name,
         role: "super_admin",
-        isActive: true,
-      })
-      .returning();
+      });
 
-    return NextResponse.json({
-      success: true,
-      message: "Admin user created successfully",
-      user: {
-        id: newUser.id,
-        email: newUser.email,
-        name: newUser.name,
-        role: newUser.role,
-      },
-    });
+      const user = await convex.query(api.adminUsers.get, { id: id as any });
+
+      return NextResponse.json({
+        success: true,
+        message: "Admin user created successfully",
+        user: {
+          id: user?._id ? String(user._id) : String(id),
+          email: user?.email ?? email,
+          name: user?.name ?? name,
+          role: user?.role ?? "super_admin",
+        },
+      });
+    } catch (err: any) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.toLowerCase().includes("exists")) {
+        return NextResponse.json(
+          { error: "User with this email already exists" },
+          { status: 409 }
+        );
+      }
+      throw err;
+    }
   } catch (error: any) {
     console.error("Error creating admin user:", error);
-    
-    if (error.code === "23505") {
-      // Unique constraint violation
-      return NextResponse.json(
-        { error: "User with this email already exists" },
-        { status: 409 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Failed to create admin user" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create admin user" }, { status: 500 });
   }
 }

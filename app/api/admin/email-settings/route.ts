@@ -1,97 +1,64 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { emailNotificationSettings } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 // GET all email notification settings
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    // Check authentication with NextAuth
     const session = await auth();
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const settings = await db.query.emailNotificationSettings.findMany();
+    const settings = await convex.query(api.emailSettings.list, {});
 
-    // Parse recipient emails from JSON strings
-    const parsedSettings = settings.map((setting) => ({
+    // Parse recipient emails from JSON strings to arrays (admin UI expects arrays)
+    const parsed = settings.map((setting: any) => ({
       ...setting,
-      recipientEmails: JSON.parse(setting.recipientEmails || "[]"),
+      recipientEmails: (() => {
+        try {
+          return JSON.parse(setting.recipientEmails || "[]");
+        } catch {
+          return [];
+        }
+      })(),
     }));
 
-    return NextResponse.json(parsedSettings);
+    return NextResponse.json(parsed);
   } catch (error) {
     console.error("Error fetching email settings:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch email settings" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch email settings" }, { status: 500 });
   }
 }
 
 // PATCH update email notification settings
 export async function PATCH(request: NextRequest) {
   try {
-    // Check authentication with NextAuth
     const session = await auth();
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
     const { formType, recipientEmails, enabled, subjectTemplate, includeFormData } = body;
 
     if (!formType) {
-      return NextResponse.json(
-        { error: "formType is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "formType is required" }, { status: 400 });
     }
 
-    // Update or insert settings
-    const result = await db
-      .update(emailNotificationSettings)
-      .set({
-        recipientEmails: JSON.stringify(recipientEmails || []),
-        enabled: enabled !== undefined ? enabled : true,
-        subjectTemplate: subjectTemplate || null,
-        includeFormData: includeFormData !== undefined ? includeFormData : true,
-        updatedAt: new Date(),
-      })
-      .where(eq(emailNotificationSettings.formType, formType))
-      .returning();
+    await convex.mutation(api.emailSettings.upsert, {
+      formType,
+      recipientEmails: JSON.stringify(recipientEmails || []),
+      enabled: enabled !== undefined ? Boolean(enabled) : undefined,
+      subjectTemplate: subjectTemplate ?? undefined,
+      includeFormData: includeFormData !== undefined ? Boolean(includeFormData) : undefined,
+    });
 
-    if (result.length === 0) {
-      // Insert if not found
-      const inserted = await db
-        .insert(emailNotificationSettings)
-        .values({
-          formType,
-          recipientEmails: JSON.stringify(recipientEmails || []),
-          enabled: enabled !== undefined ? enabled : true,
-          subjectTemplate: subjectTemplate || null,
-          includeFormData: includeFormData !== undefined ? includeFormData : true,
-        })
-        .returning();
-
-      return NextResponse.json(inserted[0]);
-    }
-
-    return NextResponse.json(result[0]);
+    const updated = await convex.query(api.emailSettings.getByFormType, { formType });
+    return NextResponse.json(updated);
   } catch (error) {
     console.error("Error updating email settings:", error);
-    return NextResponse.json(
-      { error: "Failed to update email settings" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update email settings" }, { status: 500 });
   }
 }
-

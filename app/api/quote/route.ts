@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { quoteSubmissions } from "@/lib/db/schema";
 import { rateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 export async function POST(request: NextRequest) {
   try {
     // Apply rate limiting
     const rateLimitResult = await rateLimit(request, RATE_LIMITS.FORM_SUBMISSION);
-    
+
     if (!rateLimitResult.success) {
       return NextResponse.json(
-        { 
+        {
           error: "Too many requests. Please try again later.",
           retryAfter: rateLimitResult.reset,
         },
@@ -20,7 +20,9 @@ export async function POST(request: NextRequest) {
             "X-RateLimit-Limit": rateLimitResult.limit.toString(),
             "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
             "X-RateLimit-Reset": rateLimitResult.reset.toString(),
-            "Retry-After": (rateLimitResult.reset - Math.floor(Date.now() / 1000)).toString(),
+            "Retry-After": (
+              rateLimitResult.reset - Math.floor(Date.now() / 1000)
+            ).toString(),
           },
         }
       );
@@ -52,53 +54,58 @@ export async function POST(request: NextRequest) {
       !shippingMethod ||
       !cargoType
     ) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Insert into database
-    const [submission] = await db
-      .insert(quoteSubmissions)
-      .values({
-        firstName,
-        lastName,
-        email,
-        phone,
-        origin,
-        destination,
-        shippingMethod,
-        cargoType,
-        weight: weight || null,
-        preferredDate: date || null,
-        notes: notes || null,
-      })
-      .returning();
+    // Insert into Convex
+    const submissionId = await convex.mutation(api.quotes.create, {
+      firstName,
+      lastName,
+      email,
+      phone,
+      origin,
+      destination,
+      shippingMethod,
+      cargoType,
+      weight: weight || undefined,
+      preferredDate: date || undefined,
+      notes: notes || undefined,
+    });
 
     // Send notification email (non-blocking)
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notifications`, {
+    const notificationUrl = new URL("/api/notifications", request.url);
+    fetch(notificationUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         type: "quote",
-        submission,
+        submission: {
+          id: String(submissionId),
+          firstName,
+          lastName,
+          email,
+          phone,
+          origin,
+          destination,
+          shippingMethod,
+          cargoType,
+          weight,
+          date,
+          notes,
+        },
       }),
-    }).catch((error) => console.error("Email notification failed:", error));
+    }).catch((error) => console.error("[Quote] Email notification failed:", error));
 
     return NextResponse.json(
       {
         success: true,
         message: "Quote request submitted successfully",
-        id: submission.id,
+        id: String(submissionId),
       },
       { status: 201 }
     );
   } catch (error) {
     console.error("Error submitting quote:", error);
-    return NextResponse.json(
-      { error: "Failed to submit quote request" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to submit quote request" }, { status: 500 });
   }
 }

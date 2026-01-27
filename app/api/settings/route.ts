@@ -1,70 +1,69 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { rateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 // Enable ISR with 5 minute revalidation
 export const revalidate = 300;
 
-// Helper function to format settings for public API
-function formatPublicSettings(dbSettings: any) {
+const defaultSettings = {
+  phonePrimary: "+233 25 608 8845",
+  phoneSecondary: "+233 25 608 8846",
+  whatsapp: "+49 15212203183",
+  whatsappLabel: "WhatsApp Us",
+  showWhatsappInHeader: false,
+  emailPrimary: "info@dandealimportation.com",
+  emailSupport: "support@dandealimportation.com",
+  displayPhonePrimary: true,
+  displayPhoneSecondary: false,
+  facebookUrl: "",
+  instagramUrl: "",
+  linkedinUrl: "",
+  twitterUrl: "",
+  tiktokUrl: "",
+  displayFacebook: true,
+  displayInstagram: true,
+  displayLinkedin: true,
+  displayTwitter: true,
+  displayTiktok: true,
+  officeKumasi: "Santasi",
+  officeObuasi: "Mangoase",
+  officeChina: "Guangzhou",
+  businessHours: "Monday - Friday: 9:00 AM - 6:00 PM",
+};
+
+function formatPublicSettings(settings: any) {
   return {
-    phonePrimary: dbSettings.phonePrimary,
-    phoneSecondary: dbSettings.phoneSecondary,
-    whatsapp: dbSettings.whatsapp,
-    whatsappLabel: dbSettings.whatsappLabel ?? "WhatsApp Us",
-    showWhatsappInHeader: dbSettings.showWhatsappInHeader ?? false,
-    emailPrimary: dbSettings.emailPrimary,
-    emailSupport: dbSettings.emailSupport,
-    displayPhonePrimary: dbSettings.displayPhonePrimary ?? true,
-    displayPhoneSecondary: dbSettings.displayPhoneSecondary ?? false,
-    facebookUrl: dbSettings.facebookUrl,
-    instagramUrl: dbSettings.instagramUrl,
-    linkedinUrl: dbSettings.linkedinUrl,
-    twitterUrl: dbSettings.twitterUrl,
-    tiktokUrl: dbSettings.tiktokUrl,
-    displayFacebook: dbSettings.displayFacebook ?? true,
-    displayInstagram: dbSettings.displayInstagram ?? true,
-    displayLinkedin: dbSettings.displayLinkedin ?? true,
-    displayTwitter: dbSettings.displayTwitter ?? true,
-    displayTiktok: dbSettings.displayTiktok ?? true,
-    officeKumasi: dbSettings.officeKumasi,
-    officeObuasi: dbSettings.officeObuasi,
-    officeChina: dbSettings.officeChina,
-    businessHours: dbSettings.businessHours,
+    phonePrimary: settings.phonePrimary ?? null,
+    phoneSecondary: settings.phoneSecondary ?? null,
+    whatsapp: settings.whatsapp ?? null,
+    whatsappLabel: settings.whatsappLabel ?? "WhatsApp Us",
+    showWhatsappInHeader: settings.showWhatsappInHeader ?? false,
+    emailPrimary: settings.emailPrimary ?? null,
+    emailSupport: settings.emailSupport ?? null,
+    displayPhonePrimary: settings.displayPhonePrimary ?? true,
+    displayPhoneSecondary: settings.displayPhoneSecondary ?? false,
+    facebookUrl: settings.facebookUrl ?? "",
+    instagramUrl: settings.instagramUrl ?? "",
+    linkedinUrl: settings.linkedinUrl ?? "",
+    twitterUrl: settings.twitterUrl ?? "",
+    tiktokUrl: settings.tiktokUrl ?? "",
+    displayFacebook: settings.displayFacebook ?? true,
+    displayInstagram: settings.displayInstagram ?? true,
+    displayLinkedin: settings.displayLinkedin ?? true,
+    displayTwitter: settings.displayTwitter ?? true,
+    displayTiktok: settings.displayTiktok ?? true,
+    officeKumasi: settings.officeKumasi ?? "",
+    officeObuasi: settings.officeObuasi ?? "",
+    officeChina: settings.officeChina ?? "",
+    businessHours: settings.businessHours ?? "",
   };
 }
 
 // GET - Fetch site settings (public endpoint)
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    // Fetch settings (there should only be one row)
-    const settings = await db.query.siteSettings.findFirst();
-
-    const data = settings ? formatPublicSettings(settings) : {
-      phonePrimary: "+233 25 608 8845",
-      phoneSecondary: "+233 25 608 8846",
-      whatsapp: "+49 15212203183",
-      whatsappLabel: "WhatsApp Us",
-      showWhatsappInHeader: false,
-      emailPrimary: "info@dandealimportation.com",
-      emailSupport: "support@dandealimportation.com",
-      displayPhonePrimary: true,
-      displayPhoneSecondary: false,
-      facebookUrl: "",
-      instagramUrl: "",
-      linkedinUrl: "",
-      twitterUrl: "",
-      tiktokUrl: "",
-      displayFacebook: true,
-      displayInstagram: true,
-      displayLinkedin: true,
-      displayTwitter: true,
-      displayTiktok: true,
-      officeKumasi: "Santasi",
-      officeObuasi: "Mangoase",
-      officeChina: "Guangzhou",
-      businessHours: "Monday - Friday: 9:00 AM - 6:00 PM",
-    };
+    const settings = await convex.query(api.siteSettings.get, {});
+    const data = settings ? formatPublicSettings(settings) : defaultSettings;
 
     return NextResponse.json(
       { settings: data },
@@ -78,9 +77,15 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error fetching settings:", error);
+    // Keep the public site functional even if Convex is temporarily unavailable.
     return NextResponse.json(
-      { error: "Failed to fetch settings" },
-      { status: 500 }
+      { settings: defaultSettings },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+          Vary: "Accept-Encoding",
+        },
+      }
     );
   }
 }

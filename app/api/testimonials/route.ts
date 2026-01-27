@@ -1,33 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { testimonials } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 // GET - Fetch all active testimonials (public endpoint)
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const allTestimonials = await db
-      .select()
-      .from(testimonials)
-      .where(eq(testimonials.isActive, true))
-      .orderBy(desc(testimonials.order));
+    const allTestimonials = await convex.query(api.testimonials.list, {
+      activeOnly: true,
+    });
+
+    // Keep ordering consistent with the old Postgres endpoint (desc by `order`).
+    const sorted = [...allTestimonials].sort((a: any, b: any) => {
+      const orderA = parseInt(a.order || "0", 10);
+      const orderB = parseInt(b.order || "0", 10);
+      return orderB - orderA;
+    });
 
     return NextResponse.json(
-      { testimonials: allTestimonials },
+      { testimonials: sorted },
       {
         headers: {
           "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
           "CDN-Cache-Control": "public, s-maxage=3600",
-          "Vary": "Accept-Encoding",
+          Vary: "Accept-Encoding",
         },
       }
     );
   } catch (error) {
     console.error("Error fetching testimonials:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch testimonials" },
-      { status: 500 }
-    );
+    return NextResponse.json({ testimonials: [] }, { status: 200 });
   }
 }
-

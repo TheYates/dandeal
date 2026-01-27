@@ -1,12 +1,14 @@
 "use client";
 
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
-// Form submission mutations (for public forms)
+// Form submission actions (for public forms)
+// We use Convex actions instead of mutations so we can send notification emails
+// immediately after creating the submission.
 export function useConsultationSubmit() {
-  const createConsultation = useMutation(api.consultations.create);
+  const submitConsultation = useAction(api.notifications.submitConsultation);
 
   return {
     submit: async (data: {
@@ -16,13 +18,13 @@ export function useConsultationSubmit() {
       service: string;
       message?: string;
     }) => {
-      return await createConsultation(data);
+      return await submitConsultation(data);
     },
   };
 }
 
 export function useQuoteSubmit() {
-  const createQuote = useMutation(api.quotes.create);
+  const submitQuote = useAction(api.notifications.submitQuote);
 
   return {
     submit: async (data: {
@@ -38,13 +40,13 @@ export function useQuoteSubmit() {
       preferredDate?: string;
       notes?: string;
     }) => {
-      return await createQuote(data);
+      return await submitQuote(data);
     },
   };
 }
 
 export function useContactSubmit() {
-  const createContact = useMutation(api.contacts.create);
+  const submitContact = useAction(api.notifications.submitContact);
 
   return {
     submit: async (data: {
@@ -54,7 +56,7 @@ export function useContactSubmit() {
       subject: string;
       message: string;
     }) => {
-      return await createContact(data);
+      return await submitContact(data);
     },
   };
 }

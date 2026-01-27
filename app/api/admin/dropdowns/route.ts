@@ -1,7 +1,6 @@
-import { db } from "@/lib/db";
-import { dropdownOptions } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { convex } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,30 +8,18 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get("type");
 
     if (!type) {
-      return NextResponse.json(
-        { error: "Type parameter is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Type parameter is required" }, { status: 400 });
     }
 
-    const options = await db
-      .select()
-      .from(dropdownOptions)
-      .where(
-        and(
-          eq(dropdownOptions.type, type as any),
-          eq(dropdownOptions.isActive, true)
-        )
-      )
-      .orderBy(dropdownOptions.order);
+    const options = await convex.query(api.dropdownOptions.list, {
+      type: type as any,
+      activeOnly: true,
+    });
 
     return NextResponse.json({ options });
   } catch (error) {
     console.error("Error fetching dropdown options:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch dropdown options" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch dropdown options" }, { status: 500 });
   }
 }
 
@@ -48,64 +35,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newOption = await db
-      .insert(dropdownOptions)
-      .values({
-        type: type as any,
-        label,
-        value,
-        order: "0",
-        isActive: true,
-      })
-      .returning();
+    const id = await convex.mutation(api.dropdownOptions.create, {
+      type: type as any,
+      label,
+      value,
+      order: "0",
+    });
 
-    return NextResponse.json({ option: newOption[0] }, { status: 201 });
+    const option = await convex.query(api.dropdownOptions.get, { id: id as any });
+
+    return NextResponse.json({ option }, { status: 201 });
   } catch (error) {
     console.error("Error creating dropdown option:", error);
-    return NextResponse.json(
-      { error: "Failed to create dropdown option" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create dropdown option" }, { status: 500 });
   }
 }
 
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, label, value, isActive } = body;
+    const { id, label, value, isActive, order } = body;
 
     if (!id) {
-      return NextResponse.json(
-        { error: "ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    const updated = await db
-      .update(dropdownOptions)
-      .set({
-        ...(label && { label }),
-        ...(value && { value }),
-        ...(isActive !== undefined && { isActive }),
-        updatedAt: new Date(),
-      })
-      .where(eq(dropdownOptions.id, id))
-      .returning();
+    await convex.mutation(api.dropdownOptions.update, {
+      id: id as any,
+      label,
+      value,
+      isActive,
+      order,
+    });
 
-    if (updated.length === 0) {
-      return NextResponse.json(
-        { error: "Dropdown option not found" },
-        { status: 404 }
-      );
+    const updated = await convex.query(api.dropdownOptions.get, { id: id as any });
+
+    if (!updated) {
+      return NextResponse.json({ error: "Dropdown option not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ option: updated[0] });
+    return NextResponse.json({ option: updated });
   } catch (error) {
     console.error("Error updating dropdown option:", error);
-    return NextResponse.json(
-      { error: "Failed to update dropdown option" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update dropdown option" }, { status: 500 });
   }
 }
 
@@ -115,23 +87,14 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json(
-        { error: "ID parameter is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "ID parameter is required" }, { status: 400 });
     }
 
-    await db
-      .delete(dropdownOptions)
-      .where(eq(dropdownOptions.id, id));
+    await convex.mutation(api.dropdownOptions.remove, { id: id as any });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting dropdown option:", error);
-    return NextResponse.json(
-      { error: "Failed to delete dropdown option" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete dropdown option" }, { status: 500 });
   }
 }
-
