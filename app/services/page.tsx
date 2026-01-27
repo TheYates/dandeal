@@ -492,11 +492,8 @@ export default function Services() {
         </div>
       </section>
 
-      {/* CTA Section - 80% Viewport Height */}
-      <section
-        className="relative overflow-hidden flex items-center justify-center"
-        style={{ height: "80vh" }}
-      >
+      {/* CTA Section - Compact & Responsive */}
+      <section className="relative overflow-hidden flex items-center justify-center py-16 md:py-24 lg:min-h-[50vh]">
         {/* Background Image with Overlay */}
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -514,13 +511,13 @@ export default function Services() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
               We support clients in sourcing and procuring goods and equipment
               locally and internationally, ensuring quality and timely supply.
             </h2>
             <ConsultationForm
               trigger={
-                <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-10 py-4 text-lg font-semibold">
+                <Button className="bg-orange-600 hover:bg-red-700 text-white rounded-full px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-semibold">
                   Book A Free Consultation
                 </Button>
               }
